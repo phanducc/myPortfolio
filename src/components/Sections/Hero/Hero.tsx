@@ -167,19 +167,7 @@ const Hero = () => {
                             }
                         }}>
 
-                            <Image
-
-                            
-                            layout='fill'
-
-                                style={{
-                                opacity: 0,
-                                borderRadius: '6px',
-                                zIndex: '2'
-                            }}
-                                className='img1'
-                                src={`/avatar.png`}
-                                alt="Personal Image"/>
+                            <Image fill style={{ opacity: 0, borderRadius: '6px', zIndex: '2' }} className='img1' src={`/avatar.png`} alt="Personal Image"/>
                             <Box
                                 className='gradientBg'
                                 sx={{

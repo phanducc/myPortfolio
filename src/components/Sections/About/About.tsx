@@ -57,11 +57,7 @@ const About = () => {
                             backgroundImage:colorMode.mode === 'dark' ? 'radial-gradient(white 2px, transparent 0)' : 'radial-gradient(black 2px, transparent 0)',
                             backgroundSize: '15px 13px'
                         }}></Box>
-                        <Image
-                            alt='Personal Image'
-                            className='img1 '
-                            layout='fill'
-                            src={`/avatar.png`}/>
+                        <Image alt='Personal Image' className='img1 ' fill src={`/avatar.png`}/>
                     </Box>
                 </Grid>
                 <Grid item xs={12} sm={12} md={7.5} lg={7}>
