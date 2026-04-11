@@ -1,19 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    images: { unoptimized: true }
-    reactStrictMode: true,
-    swcMinify: false,
-    images: {
-        domains: ['open.cruip.com','ucarecdn.com', 'www.svgrepo.com','images.unsplash.com', 'res.cloudinary.com']
-    },
-    webpack(config) {
-        config
-            .module
-            .rules
-            .push({test: /\.svg$/, use: ["@svgr/webpack"]});
-
-        return config;
-    }
+  reactStrictMode: true,
+  swcMinify: false,
+  output: 'export', 
+  images: {
+    unoptimized: true
+  }
 }
 
 module.exports = nextConfig
