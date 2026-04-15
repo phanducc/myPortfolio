@@ -27,11 +27,16 @@
             <p class="gsap-hero">Hiện đang theo học tại Đại học Mở Hà Nội. Tôi đam mê nghiên cứu, thiết kế phần cứng vi điều khiển (Arduino, STM32, 8086) và phát triển các nền tảng Web hiện đại. Mục tiêu của tôi là tạo ra những sản phẩm hoàn chỉnh, kết nối mượt mà từ lõi vi mạch bên trong đến giao diện người dùng bên ngoài.</p>
             <div class="hero-buttons gsap-hero">
                 <a href="#projects" class="btn primary">Xem Dự Án</a>
-                <a href="https://github.com/phanducc" target="_blank" class="btn secondary"><i class="fab fa-github"></i> GitHub</a>
+                <a href="https://drive.google.com/drive/folders/1hXrsWs6UghZl9KgGeRy7BNWd_RMmR1zL?usp=sharing" target="_blank" class="btn secondary">Xem CV</a>
             </div>
         </div>
-        <div class="hero-image gsap-img">
-            <img src="avatar.png" alt="Phan Văn Đức">
+        
+        <div class="hero-image-wrapper">
+            <div class="dotted-bg gsap-dotted"></div>
+            <img src="avatar.png" alt="Phan Văn Đức" class="gsap-img">
+            <div class="quote-box gsap-quote">
+                <p>“Người có học mới có tiến bộ. Càng học càng tiến bộ.”<br><br>– Hồ Chí Minh</p>
+            </div>
         </div>
     </section>
 
@@ -80,9 +85,15 @@
         </div>
     </section>
 
+    <section class="cta-section">
+        <div class="cta-box gsap-cta-box">
+            <h2 class="gsap-cta-text">Bạn thấy hứng thú với các dự án của tôi?</h2>
+            <a href="#contact" class="btn btn-white gsap-cta-btn">Hãy kết nối ngay!</a>
+        </div>
+    </section>
+
     <footer id="contact">
-        <h2 class="gsap-scroll">Sẵn sàng hợp tác?</h2>
-        <p class="gsap-scroll">Nếu bạn thấy hứng thú với các dự án trên, hãy kết nối với tôi!</p>
+        <h2 class="gsap-scroll">Thông Tin Liên Hệ</h2>
         <div class="social-links gsap-scroll">
             <a href="mailto:phanduc.2915@gmail.com"><i class="fas fa-envelope"></i> Email</a>
             <a href="https://www.facebook.com/phanduc2915/" target="_blank"><i class="fab fa-facebook"></i> Facebook</a>
@@ -95,59 +106,56 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
     <script>
-        // 1. CHUẨN BỊ GSAP
         gsap.registerPlugin(ScrollTrigger);
 
-        // 2. HIỆU ỨNG CON TRỎ CHUỘT (Cursor Animation)
+        /* 1. Hiệu ứng con trỏ chuột */
         const cursor = document.querySelector('.custom-cursor');
-        const links = document.querySelectorAll('a, .btn');
+        const links = document.querySelectorAll('a, .btn, .project-card');
 
-        // Chuột chạy theo tay
         document.addEventListener('mousemove', (e) => {
             cursor.style.left = e.clientX + 'px';
             cursor.style.top = e.clientY + 'px';
         });
 
-        // Chuột phình to khi chỉ vào link
         links.forEach(link => {
             link.addEventListener('mouseenter', () => cursor.classList.add('hovering'));
             link.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
         });
 
-        // 3. HIỆU ỨNG LOAD TRANG BAN ĐẦU (Hero Section)
+        /* 2. Hiệu ứng Load trang ban đầu (Hero) */
         gsap.from(".gsap-nav", { y: -50, opacity: 0, duration: 1, stagger: 0.2, ease: "power3.out" });
-        gsap.from(".gsap-hero", { y: 50, opacity: 0, duration: 1, stagger: 0.2, delay: 0.5, ease: "power3.out" });
-        gsap.from(".gsap-img", { x: 50, opacity: 0, duration: 1.2, delay: 1, ease: "power3.out" });
+        gsap.from(".gsap-hero", { y: 50, opacity: 0, duration: 1, stagger: 0.2, delay: 0.3, ease: "power3.out" });
+        
+        // Ảnh, chấm bi và Quote trượt lên lần lượt
+        gsap.from(".gsap-img", { y: 50, opacity: 0, duration: 1, delay: 0.8, ease: "power3.out" });
+        gsap.from(".gsap-dotted", { opacity: 0, scale: 0, duration: 0.8, delay: 1.2, ease: "back.out(1.7)" });
+        gsap.from(".gsap-quote", { x: 50, opacity: 0, duration: 1, delay: 1.4, ease: "power3.out" });
 
-        // 4. HIỆU ỨNG KHI CUỘN CHUỘT XUỐNG (Scroll Animations)
-        // Hiệu ứng mờ dần cho tiêu đề và kỹ năng
+        /* 3. Hiệu ứng cuộn chuột chung */
         gsap.utils.toArray('.gsap-scroll').forEach(element => {
             gsap.from(element, {
-                scrollTrigger: {
-                    trigger: element,
-                    start: "top 85%", // Khi phần tử chạm mốc 85% màn hình thì chạy
-                },
-                y: 40,
-                opacity: 0,
-                duration: 0.8,
-                ease: "power2.out"
+                scrollTrigger: { trigger: element, start: "top 85%" },
+                y: 40, opacity: 0, duration: 0.8, ease: "power2.out"
             });
         });
 
-        // Hiệu ứng nhảy lên từng cái một cho Thẻ Dự Án
+        /* 4. Thẻ dự án nhảy lên so le */
         gsap.from(".gsap-card", {
-            scrollTrigger: {
-                trigger: ".projects-grid",
-                start: "top 80%",
-            },
-            y: 50,
-            opacity: 0,
-            duration: 0.8,
-            stagger: 0.2, // Từng thẻ hiện lên cách nhau 0.2 giây
-            ease: "power3.out"
+            scrollTrigger: { trigger: ".projects-grid", start: "top 80%" },
+            y: 50, opacity: 0, duration: 0.8, stagger: 0.2, ease: "power3.out"
         });
 
-        // 5. CUỘN MƯỢT CHO MENU
+        /* 5. HIỆU ỨNG DẢI BĂNG CTA TRƯỢT TỪ TRÁI SANG */
+        gsap.from(".gsap-cta-box", {
+            scrollTrigger: { trigger: ".cta-section", start: "top 80%" },
+            x: "-100%", duration: 1.2, ease: "power3.inOut" // Trượt ngang giống code Nextjs
+        });
+        gsap.from(".gsap-cta-text, .gsap-cta-btn", {
+            scrollTrigger: { trigger: ".cta-section", start: "top 80%" },
+            opacity: 0, y: 20, duration: 0.8, delay: 1, stagger: 0.2
+        });
+
+        /* 6. Cuộn mượt khi click Menu */
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
