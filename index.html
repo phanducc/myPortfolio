@@ -93,7 +93,7 @@
     </section>
 
     <footer id="contact">
-        <h2>Thông Tin Liên Hệ</h2>
+        <h2 class="gsap-scroll">Thông Tin Liên Hệ</h2>
         <div class="social-links gsap-scroll">
             <a href="mailto:phanduc.2915@gmail.com"><i class="fas fa-envelope"></i> Email</a>
             <a href="https://www.facebook.com/phanduc2915/" target="_blank"><i class="fab fa-facebook"></i> Facebook</a>
@@ -147,7 +147,7 @@
         /* 3. Hiệu ứng cuộn chuột chung */
         gsap.utils.toArray('.gsap-scroll').forEach(element => {
             gsap.from(element, {
-                scrollTrigger: { trigger: element, start: "top 85%" },
+                scrollTrigger: { trigger: element, start: "top bottom" },
                 y: 40, opacity: 0, duration: 0.8, ease: "power2.out"
             });
         });
