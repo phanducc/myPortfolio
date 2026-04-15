@@ -93,7 +93,7 @@
     </section>
 
     <footer id="contact">
-        <h2 class="gsap-scroll">Thông Tin Liên Hệ</h2>
+        <h2>Thông Tin Liên Hệ</h2>
         <div class="social-links gsap-scroll">
             <a href="mailto:phanduc.2915@gmail.com"><i class="fas fa-envelope"></i> Email</a>
             <a href="https://www.facebook.com/phanduc2915/" target="_blank"><i class="fab fa-facebook"></i> Facebook</a>
@@ -108,6 +108,19 @@
     <script>
         gsap.registerPlugin(ScrollTrigger);
 
+        let lastScroll = 0;
+        window.addEventListener("scroll", () => {
+            const currentScroll = window.pageYOffset;
+            if (currentScroll > lastScroll && currentScroll > 100) {
+                // Cuộn xuống - Ẩn nav
+                gsap.to("nav", { y: -100, duration: 0.5 });
+            } else {
+                // Cuộn lên - Hiện nav
+                gsap.to("nav", { y: 0, duration: 0.5 });
+            }
+            lastScroll = currentScroll;
+        });
+        
         /* 1. Hiệu ứng con trỏ chuột */
         const cursor = document.querySelector('.custom-cursor');
         const links = document.querySelectorAll('a, .btn, .project-card');
@@ -160,6 +173,16 @@
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
                 document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // Hiệu ứng phình nhẹ và đổi màu khi hover vào card
+        document.querySelectorAll('.project-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                gsap.to(card, { scale: 1.03, borderColor: "#0092ff", duration: 0.3 });
+            });
+            card.addEventListener('mouseleave', () => {
+                gsap.to(card, { scale: 1, borderColor: "rgba(255,255,255,0.05)", duration: 0.3 });
             });
         });
     </script>
