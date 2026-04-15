@@ -154,17 +154,17 @@
 
         /* 4. Thẻ dự án nhảy lên so le */
         gsap.from(".gsap-card", {
-            scrollTrigger: { trigger: ".projects-grid", start: "top 80%" },
+            scrollTrigger: { trigger: ".projects-grid", start: "top bottom" },
             y: 50, opacity: 0, duration: 0.8, stagger: 0.2, ease: "power3.out"
         });
 
         /* 5. HIỆU ỨNG DẢI BĂNG CTA TRƯỢT TỪ TRÁI SANG */
         gsap.from(".gsap-cta-box", {
-            scrollTrigger: { trigger: ".cta-section", start: "top 80%" },
+            scrollTrigger: { trigger: ".cta-section", start: "top bottom" },
             x: "-100%", duration: 1.2, ease: "power3.inOut" // Trượt ngang giống code Nextjs
         });
         gsap.from(".gsap-cta-text, .gsap-cta-btn", {
-            scrollTrigger: { trigger: ".cta-section", start: "top 80%" },
+            scrollTrigger: { trigger: ".cta-section", start: "top bottom" },
             opacity: 0, y: 20, duration: 0.8, delay: 1, stagger: 0.2
         });
 
