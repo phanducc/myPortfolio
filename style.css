@@ -9,7 +9,7 @@
     --text-muted: #a0aab2;
 }
 
-body { background-color: var(--bg-color); color: var(--text-main); line-height: 1.6; overflow-x: hidden; }
+body { background-color: var(--bg-color); color: var(--text-main); line-height: 1.6; overflow-x: hidden; width: 100%; margin: 0; padding: 0; }
 
 /* Con trỏ chuột Custom */
 @media (pointer: fine) { body, a, button, .btn { cursor: none; } }
