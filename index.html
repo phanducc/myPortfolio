@@ -108,22 +108,21 @@
     <script>
         gsap.registerPlugin(ScrollTrigger);
 
+        /* --- 1. Ẩn/Hiện Menu khi cuộn --- */
         let lastScroll = 0;
         window.addEventListener("scroll", () => {
             const currentScroll = window.pageYOffset;
             if (currentScroll > lastScroll && currentScroll > 100) {
-                // Cuộn xuống - Ẩn nav
-                gsap.to("nav", { y: -100, duration: 0.5 });
+                gsap.to("nav", { y: -100, duration: 0.5 }); // Cuộn xuống -> Ẩn
             } else {
-                // Cuộn lên - Hiện nav
-                gsap.to("nav", { y: 0, duration: 0.5 });
+                gsap.to("nav", { y: 0, duration: 0.5 }); // Cuộn lên -> Hiện
             }
             lastScroll = currentScroll;
         });
-        
-        /* 1. Hiệu ứng con trỏ chuột */
+
+        /* --- 2. Con trỏ chuột Custom --- */
         const cursor = document.querySelector('.custom-cursor');
-        const links = document.querySelectorAll('a, .btn, .project-card');
+        const links = document.querySelectorAll('a, .btn, .project-card, button, .tags span');
 
         document.addEventListener('mousemove', (e) => {
             cursor.style.left = e.clientX + 'px';
@@ -135,40 +134,52 @@
             link.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
         });
 
-        /* 2. Hiệu ứng Load trang ban đầu (Hero) */
+        /* --- 3. Đổi nền Sáng/Tối --- */
+        const themeBtn = document.getElementById('theme-toggle');
+        if (themeBtn) {
+            themeBtn.addEventListener('click', () => {
+                document.body.classList.toggle('light-mode');
+                const icon = themeBtn.querySelector('i');
+                icon.classList.toggle('fa-moon');
+                icon.classList.toggle('fa-sun');
+            });
+        }
+
+        /* --- 4. Hiệu ứng Load trang (Hero) - Chạy ngay lập tức --- */
         gsap.from(".gsap-nav", { y: -50, opacity: 0, duration: 1, stagger: 0.2, ease: "power3.out" });
         gsap.from(".gsap-hero", { y: 50, opacity: 0, duration: 1, stagger: 0.2, delay: 0.3, ease: "power3.out" });
-        
-        // Ảnh, chấm bi và Quote trượt lên lần lượt
         gsap.from(".gsap-img", { y: 50, opacity: 0, duration: 1, delay: 0.8, ease: "power3.out" });
         gsap.from(".gsap-dotted", { opacity: 0, scale: 0, duration: 0.8, delay: 1.2, ease: "back.out(1.7)" });
         gsap.from(".gsap-quote", { x: 50, opacity: 0, duration: 1, delay: 1.4, ease: "power3.out" });
 
-        /* 3. Hiệu ứng cuộn chuột chung */
-        gsap.utils.toArray('.gsap-scroll').forEach(element => {
-            gsap.from(element, {
-                scrollTrigger: { trigger: element, start: "top bottom" },
-                y: 40, opacity: 0, duration: 0.8, ease: "power2.out"
+        /* --- 5. BẮT ĐÚNG BỆNH TÀNG HÌNH: Đợi web load xong 100% mới bật cuộn --- */
+        window.addEventListener("load", () => {
+            gsap.utils.toArray('.gsap-scroll').forEach(element => {
+                gsap.from(element, {
+                    scrollTrigger: { trigger: element, start: "top 95%" },
+                    y: 40, opacity: 0, duration: 0.8, ease: "power2.out"
+                });
             });
+
+            gsap.from(".gsap-card", {
+                scrollTrigger: { trigger: ".projects-grid", start: "top 95%" },
+                y: 50, opacity: 0, duration: 0.8, stagger: 0.2, ease: "power3.out"
+            });
+
+            gsap.from(".gsap-cta-box", {
+                scrollTrigger: { trigger: ".cta-section", start: "top 95%" },
+                x: "-100%", duration: 1.2, ease: "power3.inOut"
+            });
+            gsap.from(".gsap-cta-text, .gsap-cta-btn", {
+                scrollTrigger: { trigger: ".cta-section", start: "top 95%" },
+                opacity: 0, y: 20, duration: 0.8, delay: 1, stagger: 0.2
+            });
+
+            // Lệnh chốt hạ: Bắt GSAP tính toán lại tọa độ một lần cuối
+            ScrollTrigger.refresh(); 
         });
 
-        /* 4. Thẻ dự án nhảy lên so le */
-        gsap.from(".gsap-card", {
-            scrollTrigger: { trigger: ".projects-grid", start: "top bottom" },
-            y: 50, opacity: 0, duration: 0.8, stagger: 0.2, ease: "power3.out"
-        });
-
-        /* 5. HIỆU ỨNG DẢI BĂNG CTA TRƯỢT TỪ TRÁI SANG */
-        gsap.from(".gsap-cta-box", {
-            scrollTrigger: { trigger: ".cta-section", start: "top bottom" },
-            x: "-100%", duration: 1.2, ease: "power3.inOut" // Trượt ngang giống code Nextjs
-        });
-        gsap.from(".gsap-cta-text, .gsap-cta-btn", {
-            scrollTrigger: { trigger: ".cta-section", start: "top bottom" },
-            opacity: 0, y: 20, duration: 0.8, delay: 1, stagger: 0.2
-        });
-
-        /* 6. Cuộn mượt khi click Menu */
+        /* --- 6. Cuộn mượt & Hover 3D Thẻ dự án --- */
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -176,7 +187,6 @@
             });
         });
 
-        // Hiệu ứng phình nhẹ và đổi màu khi hover vào card
         document.querySelectorAll('.project-card').forEach(card => {
             card.addEventListener('mouseenter', () => {
                 gsap.to(card, { scale: 1.03, borderColor: "#0092ff", duration: 0.3 });
@@ -186,5 +196,5 @@
             });
         });
     </script>
-</body>
+    </body>
 </html>
