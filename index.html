@@ -61,21 +61,21 @@
     <section id="projects" class="projects-section">
         <h2 class="section-title gsap-scroll">Dự Án Tiêu Biểu</h2>
         <div class="projects-grid">
-            <div class="project-card gsap-card">
+            <div class="project-card gsap-scroll">
                 <h3>Mạch Máy Tính Bỏ Túi</h3>
                 <p>Thiết kế máy tính điện tử sử dụng Arduino Uno R3 và Keypad 4x4. Ứng dụng thuật toán RPN để xử lý logic các phép toán phức tạp.</p>
                 <div class="project-links">
                     <a href="https://github.com/phanducc" target="_blank"><i class="fab fa-github"></i> Source Code</a>
                 </div>
             </div>
-            <div class="project-card gsap-card">
+            <div class="project-card gsap-scroll">
                 <h3>Nền Tảng Freefilm</h3>
                 <p>Website xem phim trực tuyến kéo dữ liệu API từ OPhim và NguonC. Tối ưu hóa tốc độ và triển khai trên Cloudflare Pages.</p>
                 <div class="project-links">
                     <a href="https://freefilm.pp.ua" target="_blank"><i class="fas fa-external-link-alt"></i> Xem Web</a>
                 </div>
             </div>
-            <div class="project-card gsap-card">
+            <div class="project-card gsap-scroll">
                 <h3>CNN Nhận Dạng MNIST</h3>
                 <p>Xây dựng mô hình Mạng nơ-ron tích chập (CNN) trên môi trường MATLAB để nhận diện chính xác chữ số viết tay.</p>
                 <div class="project-links">
@@ -159,11 +159,6 @@
                     scrollTrigger: { trigger: element, start: "top 95%" },
                     y: 40, opacity: 0, duration: 0.8, ease: "power2.out"
                 });
-            });
-
-            gsap.from(".gsap-card", {
-                scrollTrigger: { trigger: ".projects-grid", start: "top 95%" },
-                y: 50, opacity: 0, duration: 0.8, stagger: 0.2, ease: "power3.out"
             });
 
             gsap.from(".gsap-cta-box", {
