@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phan Đức | Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="custom-cursor"></div>
+
+    <nav>
+        <div class="logo gsap-nav">Phan Đức.</div>
+        <ul class="nav-links gsap-nav">
+            <li><a href="#about">Về Tôi</a></li>
+            <li><a href="#skills">Kỹ Năng</a></li>
+            <li><a href="#projects">Dự Án</a></li>
+            <li><a href="#contact" class="btn-contact">Liên Hệ</a></li>
+        </ul>
+    </nav>
+
+    <section id="about" class="hero">
+        <div class="hero-content">
+            <h1 class="gsap-hero">Xin chào, tôi là <span>Phan Văn Đức</span></h1>
+            <h2 class="gsap-hero">Sinh viên Kỹ thuật Điện tử - Viễn thông & Lập trình viên</h2>
+            <p class="gsap-hero">Hiện đang theo học tại Đại học Mở Hà Nội. Tôi đam mê nghiên cứu, thiết kế phần cứng vi điều khiển (Arduino, STM32, 8086) và phát triển các nền tảng Web hiện đại. Mục tiêu của tôi là tạo ra những sản phẩm hoàn chỉnh, kết nối mượt mà từ lõi vi mạch bên trong đến giao diện người dùng bên ngoài.</p>
+            <div class="hero-buttons gsap-hero">
+                <a href="#projects" class="btn primary">Xem Dự Án</a>
+                <a href="https://github.com/phanducc" target="_blank" class="btn secondary"><i class="fab fa-github"></i> GitHub</a>
+            </div>
+        </div>
+        <div class="hero-image gsap-img">
+            <img src="avatar.png" alt="Phan Văn Đức">
+        </div>
+    </section>
+
+    <section id="skills" class="skills-section">
+        <h2 class="section-title gsap-scroll">Kỹ Năng & Công Nghệ</h2>
+        <div class="skills-grid">
+            <div class="skill-category gsap-scroll">
+                <h3>Phần Cứng & Hệ Thống Nhúng</h3>
+                <div class="tags">
+                    <span>Arduino</span><span>ESP32</span><span>STM32</span><span>Intel 8086</span><span>Mạch Điện Tử</span>
+                </div>
+            </div>
+            <div class="skill-category gsap-scroll">
+                <h3>Phần Mềm & Lập Trình</h3>
+                <div class="tags">
+                    <span>C/C++</span><span>Python</span><span>HTML/CSS/JS</span><span>MATLAB</span><span>Cloudflare</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="projects-section">
+        <h2 class="section-title gsap-scroll">Dự Án Tiêu Biểu</h2>
+        <div class="projects-grid">
+            <div class="project-card gsap-card">
+                <h3>Mạch Máy Tính Bỏ Túi</h3>
+                <p>Thiết kế máy tính điện tử sử dụng Arduino Uno R3 và Keypad 4x4. Ứng dụng thuật toán RPN để xử lý logic các phép toán phức tạp.</p>
+                <div class="project-links">
+                    <a href="https://github.com/phanducc" target="_blank"><i class="fab fa-github"></i> Source Code</a>
+                </div>
+            </div>
+            <div class="project-card gsap-card">
+                <h3>Nền Tảng Freefilm</h3>
+                <p>Website xem phim trực tuyến kéo dữ liệu API từ OPhim và NguonC. Tối ưu hóa tốc độ và triển khai trên Cloudflare Pages.</p>
+                <div class="project-links">
+                    <a href="https://freefilm.pp.ua" target="_blank"><i class="fas fa-external-link-alt"></i> Xem Web</a>
+                </div>
+            </div>
+            <div class="project-card gsap-card">
+                <h3>CNN Nhận Dạng MNIST</h3>
+                <p>Xây dựng mô hình Mạng nơ-ron tích chập (CNN) trên môi trường MATLAB để nhận diện chính xác chữ số viết tay.</p>
+                <div class="project-links">
+                    <a href="https://github.com/phanducc" target="_blank"><i class="fab fa-github"></i> Source Code</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer id="contact">
+        <h2 class="gsap-scroll">Sẵn sàng hợp tác?</h2>
+        <p class="gsap-scroll">Nếu bạn thấy hứng thú với các dự án trên, hãy kết nối với tôi!</p>
+        <div class="social-links gsap-scroll">
+            <a href="mailto:phanduc.2915@gmail.com"><i class="fas fa-envelope"></i> Email</a>
+            <a href="https://www.facebook.com/phanduc2915/" target="_blank"><i class="fab fa-facebook"></i> Facebook</a>
+            <a href="https://github.com/phanducc" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+        </div>
+        <p class="copyright">© 2026 Phan Văn Đức. Code bằng HTML/CSS/JS thuần.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <script>
+        // 1. CHUẨN BỊ GSAP
+        gsap.registerPlugin(ScrollTrigger);
+
+        // 2. HIỆU ỨNG CON TRỎ CHUỘT (Cursor Animation)
+        const cursor = document.querySelector('.custom-cursor');
+        const links = document.querySelectorAll('a, .btn');
+
+        // Chuột chạy theo tay
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        // Chuột phình to khi chỉ vào link
+        links.forEach(link => {
+            link.addEventListener('mouseenter', () => cursor.classList.add('hovering'));
+            link.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
+        });
+
+        // 3. HIỆU ỨNG LOAD TRANG BAN ĐẦU (Hero Section)
+        gsap.from(".gsap-nav", { y: -50, opacity: 0, duration: 1, stagger: 0.2, ease: "power3.out" });
+        gsap.from(".gsap-hero", { y: 50, opacity: 0, duration: 1, stagger: 0.2, delay: 0.5, ease: "power3.out" });
+        gsap.from(".gsap-img", { x: 50, opacity: 0, duration: 1.2, delay: 1, ease: "power3.out" });
+
+        // 4. HIỆU ỨNG KHI CUỘN CHUỘT XUỐNG (Scroll Animations)
+        // Hiệu ứng mờ dần cho tiêu đề và kỹ năng
+        gsap.utils.toArray('.gsap-scroll').forEach(element => {
+            gsap.from(element, {
+                scrollTrigger: {
+                    trigger: element,
+                    start: "top 85%", // Khi phần tử chạm mốc 85% màn hình thì chạy
+                },
+                y: 40,
+                opacity: 0,
+                duration: 0.8,
+                ease: "power2.out"
+            });
+        });
+
+        // Hiệu ứng nhảy lên từng cái một cho Thẻ Dự Án
+        gsap.from(".gsap-card", {
+            scrollTrigger: {
+                trigger: ".projects-grid",
+                start: "top 80%",
+            },
+            y: 50,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.2, // Từng thẻ hiện lên cách nhau 0.2 giây
+            ease: "power3.out"
+        });
+
+        // 5. CUỘN MƯỢT CHO MENU
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>
