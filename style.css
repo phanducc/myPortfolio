@@ -142,8 +142,10 @@ body { background-color: var(--bg-color); color: var(--text-color); line-height:
 /* Dự Án */
 .projects-section { max-width: 1200px; margin: 0 auto; padding: 60px 40px 100px; }
 .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+.project-card { display: flex; flex-direction: column; height: 100%; }
 .project-card h3 { font-size: 1.5rem; font-weight: 800; margin-bottom: 15px; color: var(--primary-color); }
 .project-card p { opacity: 0.8; margin-bottom: 20px; min-height: 80px; font-size: 15px; }
+.project-links { margin-top: auto; display: flex; justify-content: flex-end; }
 
 /* CTA Box */
 .cta-section { max-width: 800px; margin: 0 auto; padding: 0 40px 80px; }
@@ -165,8 +167,10 @@ body { background-color: var(--bg-color); color: var(--text-color); line-height:
 
 /* Responsive */
 @media (max-width: 820px) {
+    .glass-header { height: auto; padding: 15px 0; }
     .header-container { flex-direction: column; gap: 15px; padding: 0 20px; }
     .header-right { display: none; }
+    .nav-item { padding: 0 12px; font-size: 14px; }
     .hero { flex-direction: column; text-align: center; padding-top: 140px; }
     .hero-content { padding-right: 0; margin-bottom: 60px; }
     .hero-buttons { justify-content: center; }
