@@ -49,6 +49,7 @@
             <img src="avatar.png" alt="Phan Văn Đức" class="gsap-img">
             <div class="quote-box glass-panel gsap-quote">
                 <p>“Người có học mới có tiến bộ. Càng học càng tiến bộ.”</p>
+                <p style="text-align: right; margin-top: 8px; font-size: 13px; color: var(--primary-color); font-style: normal;">- Hồ Chí Minh</p>
             </div>
         </div>
     </section>
@@ -161,7 +162,7 @@
         gsap.from(".gsap-hero", { y: 50, opacity: 0, duration: 1, stagger: 0.2, delay: 0.3, ease: "power3.out" });
         gsap.from(".gsap-img", { y: 50, opacity: 0, duration: 1, delay: 0.8, ease: "power3.out" });
         gsap.from(".gsap-dotted", { opacity: 0, scale: 0, duration: 0.8, delay: 1.2, ease: "back.out(1.7)" });
-        gsap.from(".gsap-quote", { x: 50, opacity: 0, duration: 1, delay: 1.4, ease: "power3.out" });
+        gsap.from(".gsap-quote", { x: 50, opacity: 0, duration: 1, delay: 0.8, ease: "power3.out", clearProps: "all" });
 
         window.addEventListener("load", () => {
             gsap.utils.toArray('.gsap-scroll').forEach(element => {
