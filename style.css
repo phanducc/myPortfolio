@@ -101,12 +101,15 @@ body { background-color: var(--bg-color); color: var(--text-color); line-height:
     position: relative; z-index: 2;
 }
 .quote-box {
-    position: absolute; bottom: -30px; left: -60px; width: 280px; z-index: 3;
+    position: absolute; bottom: -80px; left: -60px; width: 280px; z-index: 3;
     padding: 15px 20px !important;
 }
 .quote-box.glass-panel {
     background: rgba(5, 5, 5, 0.75);
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transform: translateZ(0); /* Ép trình duyệt render đồ họa cứng, fix lỗi biến mất */
+    transition: background 0.3s ease, border-color 0.3s ease; /* Ngăn CSS xung đột với GSAP */
 }
 .quote-box p { font-size: 14px; margin: 0; font-style: italic; font-weight: 600; text-align: center; }
 
@@ -175,7 +178,7 @@ body { background-color: var(--bg-color); color: var(--text-color); line-height:
     .hero-content { padding-right: 0; margin-bottom: 60px; }
     .hero-buttons { justify-content: center; }
     .hero-image-wrapper { width: 260px; height: 340px; margin: 0 auto; }
-    .quote-box { left: 5%; bottom: -20px; width: 90%; }
+    .quote-box { left: 5%; bottom: -60px; width: 90%; }
     .skills-grid { flex-direction: column; }
     .social-links { flex-wrap: wrap; }
 }
