@@ -179,7 +179,7 @@ body { background-color: var(--bg-color); color: var(--text-color); line-height:
     .hero-content { padding-right: 0; margin-bottom: 60px; }
     .hero-buttons { justify-content: center; }
     .hero-image-wrapper { width: 260px; height: 340px; margin: 0 auto; }
-    .quote-box { left: 5%; bottom: -60px; width: 90%; }
+    .quote-box { left: 5%; bottom: -80px; width: 90%; }
     .skills-grid { flex-direction: column; }
     .social-links { flex-wrap: wrap; }
 }
