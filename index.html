@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Phan Đức | Portfolio</title>
-    <link rel="icon" type="image/png" href="phanduc.png">
+    <link rel="icon" type="image/png" href="assets/phanduc.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -16,8 +16,8 @@
 
     <header class="glass-header">
         <div class="header-container">
-            <div class="logo gsap-nav" style="display: flex; align-items: center; gap: 12px;">
-                <img src="phanduc.png" alt="Phan Đức Icon" style="height: 52px; width: 52px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color); background-color: #fff; padding: 3px;">
+            <div class="logo gsap-nav">
+                <img src="assets/phanduc.png" alt="Phan Đức Icon" class="logo-img">
                 PHAN ĐỨC.
             </div>
             <div class="nav-pill gsap-nav">
@@ -40,16 +40,16 @@
             <p class="gsap-hero">Đam mê nghiên cứu, thiết kế phần cứng vi điều khiển và phát triển các nền tảng Web hiện đại. Mục tiêu của tôi là tạo ra những sản phẩm hoàn chỉnh, kết nối mượt mà từ lõi vi mạch bên trong đến giao diện UI/UX bên ngoài.</p>
             <div class="hero-buttons gsap-hero">
                 <a href="#projects" class="btn primary">Xem Dự Án 🍿</a>
-                <a href="#" target="_blank" class="btn secondary">Tải CV 📄</a>
+                <a href="#" class="btn secondary">Tải CV 📄</a>
             </div>
         </div>
         
         <div class="hero-image-wrapper">
             <div class="glow-bg gsap-dotted"></div>
-            <img src="avatar.png" alt="Phan Văn Đức" class="gsap-img">
+            <img src="assets/avatar.png" alt="Phan Văn Đức" class="gsap-img">
             <div class="quote-box glass-panel gsap-quote">
                 <p>“Người có học mới có tiến bộ. Càng học càng tiến bộ.”</p>
-                <p style="text-align: right; margin-top: 8px; font-size: 13px; color: var(--primary-color); font-style: normal;">- Hồ Chí Minh</p>
+                <p class="quote-author">- Hồ Chí Minh</p>
             </div>
         </div>
     </section>
@@ -78,31 +78,31 @@
             <div class="project-card glass-panel gsap-scroll">
                 <h3>Nền Tảng Freefilm</h3>
                 <p>Website xem phim trực tuyến kéo dữ liệu API từ bên thứ 3. Tối ưu hóa tốc độ, giao diện siêu mượt và không giật lag.</p>
-                <div class="tags" style="margin-bottom: 15px;">
+                <div class="tags">
                     <span>HTML/CSS/JS</span><span>API</span><span>Cloudflare</span>
                 </div>
                 <div class="project-links">
-                    <a href="https://freefilm.pp.ua" target="_blank" class="btn secondary" style="padding: 5px 15px; font-size: 13px;">Xem Web 🎬</a>
+                    <a href="https://freefilm.pp.ua" target="_blank" class="btn secondary">Xem Web 🎬</a>
                 </div>
             </div>
             <div class="project-card glass-panel gsap-scroll">
                 <h3>Mạch Máy Tính Bỏ Túi</h3>
                 <p>Thiết kế máy tính điện tử sử dụng Arduino Uno R3 và Keypad 4x4. Ứng dụng thuật toán RPN để xử lý logic phép toán.</p>
-                <div class="tags" style="margin-bottom: 15px;">
+                <div class="tags">
                     <span>C/C++</span><span>Arduino</span>
                 </div>
                 <div class="project-links">
-                    <a href="https://github.com/phanducc/mini-calc-atmega328p" target="_blank" class="btn secondary" style="padding: 5px 15px; font-size: 13px;">Source Code ⌨️</a>
+                    <a href="https://github.com/phanducc/mini-calc-atmega328p" target="_blank" class="btn secondary">Source Code ⌨️</a>
                 </div>
             </div>
             <div class="project-card glass-panel gsap-scroll">
                 <h3>Game 2D Circle Fight</h3>
                 <p>Tựa game giải đố - vượt chướng ngại vật 2D áp dụng kiến trúc Hướng đối tượng (OOP). Tích hợp thư viện tmxlite để xử lý và đọc bản đồ trực tiếp từ phần mềm Tiled.</p>
-                <div class="tags" style="margin-bottom: 15px;">
+                <div class="tags">
                     <span>C++</span><span>SFML</span><span>OOP</span><span>Tiled Map</span>
                 </div>
                 <div class="project-links">
-                    <a href="https://github.com/phanducc/circle_fight" target="_blank" class="btn secondary" style="padding: 5px 15px; font-size: 13px;">Source Code 🎮</a>
+                    <a href="https://github.com/phanducc/circle_fight" target="_blank" class="btn secondary">Source Code 🎮</a>
                 </div>
             </div>
         </div>
@@ -134,9 +134,9 @@
         gsap.registerPlugin(ScrollTrigger);
 
         let lastScroll = 0;
+        const header = document.querySelector('.glass-header');
         window.addEventListener("scroll", () => {
-            const currentScroll = window.pageYOffset;
-            const header = document.querySelector('.glass-header');
+            const currentScroll = window.scrollY;
             if (currentScroll > lastScroll && currentScroll > 80) {
                 header.classList.add('hide');
             } else {
