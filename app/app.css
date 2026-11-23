@@ -36,7 +36,7 @@ body.app select { cursor: pointer; }
     display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
 }
 .app-header .brand { display: flex; align-items: center; gap: 10px; color: var(--text-color); text-decoration: none; font-weight: 800; letter-spacing: 1px; }
-.app-header .brand img { width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(255,255,255,.7); background: #fff; padding: 2px; object-fit: cover; filter: grayscale(1); }
+.app-header .brand img { width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(255,255,255,.7); background: #fff; padding: 2px; object-fit: cover; }
 .app-tabs {
     display: flex; gap: 4px; padding: 4px; border-radius: 999px;
     background: var(--glass-fill); border: 1px solid var(--glass-border);
