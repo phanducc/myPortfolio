@@ -90,6 +90,16 @@
     }
 
     el.date.max = PD.today();
+    Array.prototype.forEach.call(document.querySelectorAll('.chip[data-d]'), function (c) {
+        c.addEventListener('click', function () { el.date.value = PD.addDays(PD.today(), +c.getAttribute('data-d')); previewTotal(); });
+    });
+    $('f-last').addEventListener('click', function () {      // điền số của lần nhập gần nhất trước ngày đang chọn
+        var d = el.date.value, prev = null;
+        rows().forEach(function (r) { if (!PD.isDay(d) || r.date < d) prev = r; });
+        if (!prev) return say('Chưa có lần nhập nào trước ngày này.', true);
+        el.cash.value = PD.vnd(prev.cash); el.bank.value = PD.vnd(prev.bank); previewTotal();
+        say('Đã điền số của ngày ' + PD.fmtDay(prev.date) + '. Sửa lại rồi bấm Lưu.');
+    });
     PD.moneyInput(el.cash, previewTotal);
     PD.moneyInput(el.bank, previewTotal);
     el.date.addEventListener('change', previewTotal);
@@ -137,33 +147,47 @@
 
     function renderTable(list) {
         if (!list.length) {
-            el.tbody.innerHTML = '<tr><td colspan="7" class="none">Chưa có dữ liệu. Nhập số liệu đầu tiên ở phía trên.</td></tr>';
+            el.tbody.innerHTML = '<tr><td colspan="7" class="none">' + PD.emptyHtml('Chưa có dữ liệu. Nhập số liệu đầu tiên ở phía trên.') + '</td></tr>';
             return;
         }
-        el.tbody.innerHTML = list.slice().reverse().map(function (r) {
+        var fm = flows(list).byMonth, curMonth = '', html = '';
+        list.slice().reverse().forEach(function (r) {
+            var m = r.date.slice(0, 7);
+            if (m !== curMonth) {                                   // dòng tiêu đề nhóm theo tháng, kèm tổng thu chi của tháng
+                curMonth = m; var o = fm[m] || { thu: 0, chi: 0 };
+                html += '<tr class="grp"><td colspan="7"><div class="gw"><span>' + PD.monthLabel(m) + '</span><span class="gs">Thu ' + PD.vnd(o.thu) + ' · Chi ' + PD.vnd(o.chi) + '</span></div></td></tr>';
+            }
             var note = r.gap ? ' <span style="color:var(--ink-3);font-size:12px">(so với ' + PD.fmtDay(r.prevDate).slice(0, 5) + ')</span>' : '';
-            return '<tr><td>' + PD.fmtDay(r.date) + '</td><td>' + PD.vnd(r.cash) + '</td><td>' + PD.vnd(r.bank) + '</td><td>' + PD.vnd(r.sav) + '</td>' +
-                '<td><b>' + PD.vnd(r.total) + '</b></td><td>' + PD.delta(r.diff) + note + '</td>' +
+            html += '<tr><td>' + PD.fmtDay(r.date) + '<span class="dow">' + PD.dow(r.date) + '</span></td><td>' + PD.vnd(r.cash) + '</td><td>' + PD.vnd(r.bank) + '</td><td>' + PD.vnd(r.sav) + '</td>' +
+                '<td><b>' + PD.vnd(r.total) + '</b></td><td>' + PD.pill(r.diff) + note + '</td>' +
                 '<td class="act"><button type="button" class="link-btn" data-a="edit" data-d="' + r.date + '">Sửa</button>' +
                 '<button type="button" class="link-btn del" data-a="del" data-d="' + r.date + '">Xoá</button></td></tr>';
-        }).join('');
+        });
+        el.tbody.innerHTML = html;
     }
 
     /* ---------- Ô tóm tắt ---------- */
     function renderSummary(list) {
         if (!list.length) { el.summary.innerHTML = ''; return; }
         var last = list[list.length - 1];
-        var tile = function (label, value, unit, cls) {
-            return '<div class="tile' + (cls ? ' ' + cls : '') + '"><div class="lb">' + label + '</div><div class="v">' + value + '</div><div class="u">' + unit + '</div></div>';
-        };
         var diffLabel = last.prevDate === null ? 'Chênh lệch' : 'Chênh lệch so với ' + (last.gap ? PD.fmtDay(last.prevDate).slice(0, 5) : 'hôm qua');
         // Hàng trên: tiền mặt · tiền tài khoản · chênh lệch · tiền tiết kiệm. Hàng dưới: một ô rộng cả trang là tổng tài sản
+        // Thanh cơ cấu: tổng tài sản gồm tiền mặt / tài khoản / tiết kiệm bao nhiêu %
+        var parts = [['Tiền mặt', last.cash, '--s1', ''], ['Tiền tài khoản', last.bank, '--s2', ''], ['Tiết kiệm', last.sav, '--s3', '']];
+        var comp = '';
+        if (last.total > 0) {
+            comp = '<div class="comp"><div class="bar">' + parts.map(function (p) {
+                return p[1] > 0 ? '<i style="--c:var(' + p[2] + ');width:' + (p[1] / last.total * 100).toFixed(2) + '%" title="' + p[0] + '"></i>' : '';
+            }).join('') + '</div><div class="keys">' + parts.map(function (p) {
+                return '<span><i style="--c:var(' + p[2] + ')"></i>' + p[0] + ' <b>' + PD.num(p[1] / last.total * 100, 1) + '%</b></span>';
+            }).join('') + '</div></div>';
+        }
         el.summary.innerHTML =
-            tile('Tiền mặt', PD.vnd(last.cash), 'đ') +
-            tile('Tiền tài khoản', PD.vnd(last.bank), 'đ') +
-            tile(diffLabel, PD.delta(last.diff), last.diff === null ? 'chưa có ngày trước để so sánh' : 'đ') +
-            tile('Tiền tiết kiệm', PD.vnd(last.sav), 'đ') +
-            tile('Tổng tài sản', PD.vnd(last.total) + ' đ', 'Tiền mặt + tiền tài khoản + tiền tiết kiệm · ngày ' + PD.fmtDay(last.date), 'wide');
+            PD.tile({ label: 'Tiền mặt', value: PD.vnd(last.cash), icon: 'wallet' }) +
+            PD.tile({ label: 'Tiền tài khoản', value: PD.vnd(last.bank), icon: 'card' }) +
+            PD.tile({ label: diffLabel, value: PD.delta(last.diff), icon: 'trend', sub: last.diff === null ? 'chưa có ngày trước để so sánh' : '', cur: last.diff !== null }) +
+            PD.tile({ label: 'Tiền tiết kiệm', value: PD.vnd(last.sav), icon: 'coins' }) +
+            PD.tile({ label: 'Tổng tài sản', value: PD.vnd(last.total), icon: 'pie', cls: 'wide', sub: 'Tiền mặt + tiền tài khoản + tiền tiết kiệm · ngày ' + PD.fmtDay(last.date), extra: comp });
     }
 
     /* ---------- Khung tài khoản tiết kiệm ---------- */
@@ -203,7 +227,7 @@
     var emptyBox = function (box, canvas, text) {
         var old = box.querySelector('.chart-empty'); if (old) old.remove();
         canvas.style.display = text ? 'none' : '';
-        if (text) { var d = document.createElement('div'); d.className = 'chart-empty'; d.textContent = text; box.appendChild(d); }
+        if (text) { var d = document.createElement('div'); d.className = 'chart-empty'; d.innerHTML = PD.emptyHtml(text); box.appendChild(d); }
     };
 
     /** Thu = phần tăng, chi = phần giảm của tổng tiền so với lần nhập trước; gộp theo ngày và theo tháng */
@@ -246,10 +270,18 @@
             el.tcSub.textContent = 'Tháng ' + mm + '/' + tc.year + ' · từng ngày trong tháng';
         }
         var net = T - C;
-        var tile = function (label, value, unit) { return '<div class="tile"><div class="lb">' + label + '</div><div class="v">' + value + '</div><div class="u">' + unit + '</div></div>'; };
         el.tcTiles.innerHTML =
-            tile('Tổng thu', PD.vnd(T), 'đ') + tile('Tổng chi', PD.vnd(C), 'đ') +
-            tile('Chênh lệch (thu − chi)', PD.delta(net), 'đ');
+            PD.tile({ label: 'Tổng thu', value: PD.vnd(T), icon: 'up' }) + PD.tile({ label: 'Tổng chi', value: PD.vnd(C), icon: 'down' }) +
+            PD.tile({ label: 'Chênh lệch (thu − chi)', value: PD.delta(net), icon: 'scale' });
+        // Thanh so sánh thu với chi
+        var ratio = $('tc-ratio');
+        if (T + C > 0) {
+            var pt = T / (T + C) * 100, pc = 100 - pt;
+            ratio.hidden = false;
+            ratio.innerHTML = '<div class="bar">' + (T > 0 ? '<i style="--c:var(--s1);width:' + pt.toFixed(2) + '%"></i>' : '') + (C > 0 ? '<i class="hatch" style="--c:var(--s2);width:' + pc.toFixed(2) + '%"></i>' : '') +
+                '</div><div class="keys"><span><i style="--c:var(--s1)"></i>Thu <b>' + PD.num(pt, 1) + '%</b></span><span><i class="hatch" style="--c:var(--s2)"></i>Chi <b>' + PD.num(pc, 1) + '%</b></span>' +
+                (T > 0 ? '<span>Đã chi <b>' + PD.num(C / T * 100, 0) + '%</b> số thu</span>' : '') + '</div>';
+        } else { ratio.hidden = true; ratio.innerHTML = ''; }
 
         if (T === 0 && C === 0) {
             emptyBox(el.tcBox, $('tc-chart'), 'Chưa có số liệu thu chi trong ' + (tc.month === 'all' ? 'năm ' + tc.year : 'tháng ' + tc.month + '/' + tc.year) + '.');
@@ -262,6 +294,17 @@
             tipTitle: function (i) { return tips[i]; }
         });
     }
+    // ‹ › chuyển tháng (hoặc năm nếu đang xem cả năm)
+    function stepFlows(dir) {
+        var y = +tc.year, m = tc.month === 'all' ? 0 : +tc.month;
+        if (tc.month === 'all') y += dir; else { m += dir; if (m < 1) { m = 12; y--; } else if (m > 12) { m = 1; y++; } }
+        var ys = Array.prototype.map.call(el.tcYear.options, function (o) { return +o.value; });
+        if (ys.indexOf(y) < 0) return;
+        tc.year = String(y); if (tc.month !== 'all') tc.month = String(m);
+        renderFlows(enrich(rows()));
+    }
+    $('tc-prev').addEventListener('click', function () { stepFlows(-1); });
+    $('tc-next').addEventListener('click', function () { stepFlows(1); });
     el.tcYear.addEventListener('change', function () { tc.year = el.tcYear.value; renderFlows(enrich(rows())); });
     el.tcMonth.addEventListener('change', function () { tc.month = el.tcMonth.value; renderFlows(enrich(rows())); });
 
@@ -298,7 +341,7 @@
             return { label: label, color: PD.cssVar(cssName), dash: dash, data: recent.map(function (r) { return { x: PD.dayMs(r.date), y: r[key] }; }) };
         };
         chart = PD.lineChart(canvas, {
-            datasets: [series('Tổng', '--s1', 'total'), series('Tiền mặt', '--s2', 'cash', [8, 5]), series('Tiền tài khoản', '--s3', 'bank', [2, 5])],
+            datasets: [(function () { var s = series('Tổng', '--s1', 'total'); s.area = true; return s; })(), series('Tiền mặt', '--s2', 'cash', [8, 5]), series('Tiền tài khoản', '--s3', 'bank', [2, 5])],
             points: true,
             xMin: PD.dayMs(from), xMax: PD.dayMs(to), xStep: xStep,
             xFmt: PD.fmtDM,

@@ -31,6 +31,43 @@
         return '<span class="' + cls + '">' + PD.pct(p) + '</span>';
     };
 
+    /** Nhãn tăng/giảm dạng viên thuốc: tăng = nền trắng, giảm = viền; luôn có mũi tên và dấu +/− */
+    PD.pill = function (n, suffix) {
+        if (n === null || n === undefined || isNaN(n)) return '<span class="pill flat">—</span>';
+        var cls = n > 0 ? 'up' : n < 0 ? 'down' : 'flat';
+        var arrow = n > 0 ? '▲' : n < 0 ? '▼' : '■';
+        return '<span class="pill ' + cls + '">' + arrow + ' ' + PD.signed(n) + (suffix || '') + '</span>';
+    };
+
+    /* ---------- Biểu tượng (SVG nét mảnh, đơn sắc) ---------- */
+    var ICONS = {
+        wallet: '<path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H18a1 1 0 0 1 1 1v2"/><path d="M4 7.5V17a2 2 0 0 0 2 2h12a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1H6.5A2.5 2.5 0 0 1 4 7.5z"/><circle cx="15.5" cy="13.5" r="1" fill="currentColor"/>',
+        card: '<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3 10h18M7 15h4"/>',
+        coins: '<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/>',
+        trend: '<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
+        pie: '<circle cx="12" cy="12" r="9"/><path d="M12 3v9h9"/>',
+        up: '<circle cx="12" cy="12" r="9"/><path d="M12 16V8M8.5 11.5L12 8l3.5 3.5"/>',
+        down: '<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8.5 12.5L12 16l3.5-3.5"/>',
+        gold: '<path d="M3 18l3-8h12l3 8z"/><path d="M8.5 10l1-4h5l1 4"/>',
+        scale: '<path d="M12 4v16M6 20h12M5 8h14"/><path d="M5 8l-3 6a3 3 0 0 0 6 0zM19 8l-3 6a3 3 0 0 0 6 0z"/>',
+        target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/>',
+        empty: '<path d="M4 7h16M4 12h10M4 17h6"/>'
+    };
+    PD.icon = function (name) {
+        return '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + (ICONS[name] || '') + '</svg>';
+    };
+    /** Ô số liệu: biểu tượng + nhãn, số lớn kèm ký hiệu "đ" mờ, dòng phụ.
+     *  o: { label, value (html), sub, icon, cls, cur (false = không thêm "đ"), extra (html thêm bên dưới) } */
+    PD.tile = function (o) {
+        return '<div class="tile' + (o.cls ? ' ' + o.cls : '') + '">' +
+            '<div class="lb">' + (o.icon ? '<span class="ic">' + PD.icon(o.icon) + '</span>' : '') + '<span>' + o.label + '</span></div>' +
+            '<div class="v">' + o.value + (o.cur === false ? '' : '<span class="cur">đ</span>') + '</div>' +
+            (o.sub ? '<div class="u">' + o.sub + '</div>' : '') + (o.extra || '') + '</div>';
+    };
+    /** Trạng thái trống: biểu tượng + chữ */
+    PD.emptyHtml = function (text) { return '<div class="empty"><span class="ic">' + PD.icon('empty') + '</span><span>' + text + '</span></div>'; };
+    PD.dow = function (date) { return ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'][new Date(PD.dayMs(date)).getUTCDay()]; };
+
     /* ---------- Ngày (chuỗi "YYYY-MM-DD", theo giờ Việt Nam) ---------- */
     PD.today = function () {
         var p = new Intl.DateTimeFormat('en-GB', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date());
@@ -216,7 +253,14 @@
         var datasets = opt.datasets.map(function (d) {
             return {
                 label: d.label, data: d.data,
-                borderColor: d.color, backgroundColor: d.color,
+                borderColor: d.color,
+                backgroundColor: d.area ? function (ctx) {
+                    var a = ctx.chart.chartArea; if (!a) return 'rgba(255,255,255,0)';
+                    var gr = ctx.chart.ctx.createLinearGradient(0, a.top, 0, a.bottom);
+                    gr.addColorStop(0, 'rgba(255,255,255,.18)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+                    return gr;
+                } : d.color,
+                fill: d.area ? 'start' : false,
                 borderWidth: 2.5, borderDash: d.dash || [], tension: 0, stepped: d.stepped || false,
                 pointRadius: d.pointRadius !== undefined ? d.pointRadius : (opt.points ? 4 : 0), pointHoverRadius: 6,
                 pointBackgroundColor: d.color, pointBorderColor: surface, pointBorderWidth: 2,
@@ -321,7 +365,7 @@
         var el = document.getElementById('app-header');
         if (!el) return;
         var tab = function (href, label, key) {
-            return '<a href="' + href + '"' + (active === key ? ' class="active" aria-current="page"' : '') + '>' + label + '</a>';
+            return '<a href="' + href + '"' + (active === key ? ' class="active" aria-current="page"' : '') + '>' + PD.icon(key === 'chitieu' ? 'wallet' : 'gold') + '<span>' + label + '</span></a>';
         };
         el.className = 'app-header';
         el.innerHTML = '<div class="inner"><a class="brand" href="/"><img src="/assets/phanduc.png" alt="">PHAN ĐỨC.</a>' +
