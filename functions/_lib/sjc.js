@@ -9,18 +9,33 @@ export const GOLD_IDS = {
 };
 
 async function callSjc(params) {
-  const res = await fetch(SJC_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-      'X-Requested-With': 'XMLHttpRequest',
-      Referer: 'https://sjc.com.vn/bieu-do-gia-vang',
-      'User-Agent': 'Mozilla/5.0 (compatible; GoldWidget/1.0)',
-    },
-    body: new URLSearchParams(params).toString(),
-  });
-  if (!res.ok) throw new Error(`SJC trả về HTTP ${res.status}`);
-  const json = await res.json();
+  let res;
+  try {
+    res = await fetch(SJC_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        Accept: 'application/json, text/javascript, */*; q=0.01',
+        'Accept-Language': 'vi-VN,vi;q=0.9,en;q=0.8',
+        'X-Requested-With': 'XMLHttpRequest',
+        Origin: 'https://sjc.com.vn',
+        Referer: 'https://sjc.com.vn/bieu-do-gia-vang',
+        // SJC có thể chặn User-Agent lạ nên dùng UA giống trình duyệt thông thường
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+      },
+      body: new URLSearchParams(params).toString(),
+      signal: AbortSignal.timeout(10000),
+    });
+  } catch (e) {
+    // Lỗi mạng / hết thời gian chờ: nói rõ để dễ chẩn đoán
+    throw new Error(`Không kết nối được SJC (${e.name === 'TimeoutError' ? 'quá 10 giây' : e.message})`);
+  }
+  const text = await res.text();
+  if (!res.ok) throw new Error(`SJC trả về HTTP ${res.status}${res.status === 403 ? ' (SJC từ chối request từ máy chủ)' : ''}`);
+  let json;
+  try { json = JSON.parse(text); } catch {
+    throw new Error(`SJC không trả về JSON (${res.headers.get('content-type') || 'không rõ loại'}, ${text.length} ký tự)`);
+  }
   if (!json.success) throw new Error('SJC trả về success=false');
   return json;
 }
