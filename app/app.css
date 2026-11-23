@@ -82,6 +82,14 @@ button.btn { font-family: inherit; }
 .legend i { width: 22px; height: 0; border-top: 3px solid var(--c, currentColor); display: inline-block; }
 .legend i.dash { border-top-style: dashed; }
 .legend i.dot { border-top-style: dotted; }
+.legend i.box { width: 14px; height: 14px; border: 1px solid var(--c); border-radius: 3px; background: var(--c); }
+.legend i.box.hatch { background: repeating-linear-gradient(45deg, var(--c) 0 2px, transparent 2px 5px); }
+.picker { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+.picker .field { min-width: 120px; }
+.picker select { min-height: 40px; padding: 6px 12px; }
+.picker .step { display: flex; gap: 6px; align-items: flex-end; }
+.btn.icon { padding: 0; width: 40px; height: 40px; font-size: 18px; line-height: 1; }
+.btn.icon:disabled { opacity: 0.35; pointer-events: none; }
 .chart-box { position: relative; height: 320px; margin-top: 8px; }
 .chart-box[hidden], .tbl-wrap[hidden] { display: none; }
 .chart-empty { display: flex; align-items: center; justify-content: center; height: 100%; color: var(--ink-3); text-align: center; padding: 0 16px; }

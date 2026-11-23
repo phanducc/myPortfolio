@@ -12,9 +12,14 @@
     var el = {
         form: $('form'), date: $('f-date'), cash: $('f-cash'), bank: $('f-bank'),
         total: $('f-total'), diff: $('f-diff'), submit: $('f-submit'), cancel: $('f-cancel'), msg: $('f-msg'),
-        summary: $('summary'), tbody: $('tbody'), chartBox: $('chart-box')
+        summary: $('summary'), tbody: $('tbody'), chartBox: $('chart-box'),
+        tcYear: $('tc-year'), tcMonth: $('tc-month'), tcTiles: $('tc-tiles'), tcBox: $('tc-box'), tcSub: $('tc-sub'),
+        chRange: $('ch-range'), chOlder: $('ch-older'), chNewer: $('ch-newer'), chTitle: $('t-chart')
     };
-    var chart = null;
+    var chart = null, tcChart = null;
+    var nowYM = PD.today().slice(0, 7);
+    var tc = { year: nowYM.slice(0, 4), month: String(+nowYM.slice(5, 7)) };   // thu/chi: năm + tháng ('all' = cả năm)
+    var chRange = 'last30';              // biểu đồ đường: 'last30' hoặc 'YYYY-MM'
     var editing = null;                  // ngày đang sửa
     var cache = [];                      // dữ liệu mới nhất từ Firestore
     var unwatch = null;
@@ -143,38 +148,130 @@
             tile('Tiền tài khoản', PD.vnd(last.bank), 'đ');
     }
 
-    /* ---------- Biểu đồ 30 ngày ---------- */
-    function renderChart(list) {
-        if (chart) { chart.destroy(); chart = null; }
-        var today = PD.today(), from = PD.addDays(today, -(DAYS - 1));
-        var recent = list.filter(function (r) { return r.date >= from; });
-        var old = el.chartBox.querySelector('.chart-empty');
-        if (old) old.remove();
-        var canvas = $('chart');
-        if (!recent.length) {
-            canvas.style.display = 'none';
-            var d = document.createElement('div');
-            d.className = 'chart-empty';
-            d.textContent = list.length ? 'Chưa có số liệu trong 30 ngày gần nhất.' : 'Chưa có dữ liệu để vẽ biểu đồ.';
-            el.chartBox.appendChild(d);
+    /* ---------- Tổng thu · tổng chi theo tháng ---------- */
+    var fillSelect = function (sel, opts, value) {
+        sel.innerHTML = opts.map(function (o) { return '<option value="' + o[0] + '">' + PD.esc(o[1]) + '</option>'; }).join('');
+        sel.value = value;
+    };
+    var emptyBox = function (box, canvas, text) {
+        var old = box.querySelector('.chart-empty'); if (old) old.remove();
+        canvas.style.display = text ? 'none' : '';
+        if (text) { var d = document.createElement('div'); d.className = 'chart-empty'; d.textContent = text; box.appendChild(d); }
+    };
+
+    /** Thu = phần tăng, chi = phần giảm của tổng tiền so với lần nhập trước; gộp theo ngày và theo tháng */
+    function flows(list) {
+        var byDay = {}, byMonth = {};
+        list.forEach(function (r) {
+            if (r.diff === null) return;                    // lần nhập đầu tiên chưa có gì để so sánh
+            var thu = Math.max(r.diff, 0), chi = Math.max(-r.diff, 0), m = r.date.slice(0, 7);
+            byDay[r.date] = { thu: thu, chi: chi };
+            var o = byMonth[m] = byMonth[m] || { thu: 0, chi: 0 };
+            o.thu += thu; o.chi += chi;
+        });
+        return { byDay: byDay, byMonth: byMonth };
+    }
+
+    function renderFlows(list) {
+        if (tcChart) { tcChart.destroy(); tcChart = null; }
+        // Danh sách năm: các năm có dữ liệu + năm hiện tại
+        var years = {}; years[nowYM.slice(0, 4)] = 1;
+        list.forEach(function (r) { years[r.date.slice(0, 4)] = 1; });
+        var ys = Object.keys(years).sort().reverse();
+        if (ys.indexOf(tc.year) < 0) tc.year = ys[0];
+        fillSelect(el.tcYear, ys.map(function (y) { return [y, y]; }), tc.year);
+        var mopts = [['all', 'Cả năm']]; for (var i = 1; i <= 12; i++) mopts.push([String(i), 'Tháng ' + i]);
+        fillSelect(el.tcMonth, mopts, tc.month);
+
+        var f = flows(list), labels = [], thu = [], chi = [], tips = [], T = 0, C = 0;
+        if (tc.month === 'all') {
+            for (var m = 1; m <= 12; m++) {
+                var key = tc.year + '-' + (m < 10 ? '0' : '') + m, o = f.byMonth[key] || { thu: 0, chi: 0 };
+                labels.push('T' + m); tips.push('Tháng ' + m + '/' + tc.year); thu.push(o.thu); chi.push(o.chi); T += o.thu; C += o.chi;
+            }
+            el.tcSub.textContent = 'Năm ' + tc.year + ' · từng tháng trong năm';
+        } else {
+            var mm = +tc.month, n = PD.daysInMonth(+tc.year, mm);
+            for (var d = 1; d <= n; d++) {
+                var ds = tc.year + '-' + (mm < 10 ? '0' : '') + mm + '-' + (d < 10 ? '0' : '') + d, o2 = f.byDay[ds] || { thu: 0, chi: 0 };
+                labels.push(String(d)); tips.push(PD.fmtDay(ds)); thu.push(o2.thu); chi.push(o2.chi); T += o2.thu; C += o2.chi;
+            }
+            el.tcSub.textContent = 'Tháng ' + mm + '/' + tc.year + ' · từng ngày trong tháng';
+        }
+        var net = T - C;
+        var tile = function (label, value, unit) { return '<div class="tile"><div class="lb">' + label + '</div><div class="v">' + value + '</div><div class="u">' + unit + '</div></div>'; };
+        el.tcTiles.innerHTML =
+            tile('Tổng thu', PD.vnd(T), 'đ') + tile('Tổng chi', PD.vnd(C), 'đ') +
+            tile('Chênh lệch (thu − chi)', PD.delta(net), 'đ');
+
+        if (T === 0 && C === 0) {
+            emptyBox(el.tcBox, $('tc-chart'), 'Chưa có số liệu thu chi trong ' + (tc.month === 'all' ? 'năm ' + tc.year : 'tháng ' + tc.month + '/' + tc.year) + '.');
             return;
         }
-        canvas.style.display = '';
+        emptyBox(el.tcBox, $('tc-chart'), '');
+        tcChart = PD.barChart($('tc-chart'), {
+            labels: labels,
+            datasets: [{ label: 'Thu', color: PD.cssVar('--s1'), data: thu }, { label: 'Chi', color: PD.cssVar('--s2'), hatch: true, data: chi }],
+            tipTitle: function (i) { return tips[i]; }
+        });
+    }
+    el.tcYear.addEventListener('change', function () { tc.year = el.tcYear.value; renderFlows(enrich(rows())); });
+    el.tcMonth.addEventListener('change', function () { tc.month = el.tcMonth.value; renderFlows(enrich(rows())); });
+
+    /* ---------- Biểu đồ đường: 30 ngày gần nhất hoặc theo từng tháng ---------- */
+    function renderChart(list) {
+        if (chart) { chart.destroy(); chart = null; }
+        // Các tháng có dữ liệu (mới nhất trước) để chọn
+        var months = {}; list.forEach(function (r) { months[r.date.slice(0, 7)] = 1; });
+        var ms = Object.keys(months).sort().reverse();
+        var order = ['last30'].concat(ms);
+        if (order.indexOf(chRange) < 0) chRange = 'last30';
+        fillSelect(el.chRange, order.map(function (k) { return [k, k === 'last30' ? '30 ngày gần nhất' : PD.monthLabel(k)]; }), chRange);
+        var idx = order.indexOf(chRange);
+        el.chOlder.disabled = idx >= order.length - 1; el.chNewer.disabled = idx <= 0;
+
+        var from, to, recent, xStep = 5 * 86400000;
+        if (chRange === 'last30') {
+            to = PD.today(); from = PD.addDays(to, -(DAYS - 1));
+            recent = list.filter(function (r) { return r.date >= from; });
+            el.chTitle.textContent = 'Biểu đồ 30 ngày gần nhất';
+        } else {
+            var y = +chRange.slice(0, 4), m = +chRange.slice(5, 7);
+            from = chRange + '-01'; to = chRange + '-' + PD.daysInMonth(y, m);
+            recent = list.filter(function (r) { return r.date.slice(0, 7) === chRange; });
+            el.chTitle.textContent = 'Biểu đồ ' + PD.monthLabel(chRange);
+        }
+        var canvas = $('chart');
+        if (!recent.length) {
+            emptyBox(el.chartBox, canvas, list.length ? 'Chưa có số liệu trong khoảng thời gian này.' : 'Chưa có dữ liệu để vẽ biểu đồ.');
+            return;
+        }
+        emptyBox(el.chartBox, canvas, '');
         var series = function (label, cssName, key, dash) {
             return { label: label, color: PD.cssVar(cssName), dash: dash, data: recent.map(function (r) { return { x: PD.dayMs(r.date), y: r[key] }; }) };
         };
         chart = PD.lineChart(canvas, {
             datasets: [series('Tổng', '--s1', 'total'), series('Tiền mặt', '--s2', 'cash', [8, 5]), series('Tiền tài khoản', '--s3', 'bank', [2, 5])],
             points: true,
-            xMin: PD.dayMs(from), xMax: PD.dayMs(today), xStep: 5 * 86400000,
+            xMin: PD.dayMs(from), xMax: PD.dayMs(to), xStep: xStep,
             xFmt: PD.fmtDM,
             tipTitle: function (x) { return PD.fmtDay(PD.msToDay(x)); }
         });
     }
+    el.chRange.addEventListener('change', function () { chRange = el.chRange.value; renderChart(enrich(rows())); });
+    // ‹ = tháng cũ hơn, › = tháng mới hơn (danh sách sắp xếp mới nhất trước)
+    var stepRange = function (dir) {
+        var opts = Array.prototype.map.call(el.chRange.options, function (o) { return o.value; });
+        var i = opts.indexOf(chRange) + dir;
+        if (i >= 0 && i < opts.length) { chRange = opts[i]; renderChart(enrich(rows())); }
+    };
+    el.chOlder.addEventListener('click', function () { stepRange(1); });
+    el.chNewer.addEventListener('click', function () { stepRange(-1); });
 
     function render() {
         var list = enrich(rows());
         renderSummary(list);
+        renderFlows(list);
         renderTable(list);
         renderChart(list);
         previewTotal();
@@ -210,5 +307,6 @@
         if (unwatch) { unwatch(); unwatch = null; }
         cache = [];
         if (chart) { chart.destroy(); chart = null; }
+        if (tcChart) { tcChart.destroy(); tcChart = null; }
     });
 })();
