@@ -13,7 +13,8 @@ Web cá nhân (tĩnh) tại phanduc.eu.org, kèm 2 ứng dụng:
 chitieu/index.html        trang /chitieu
 taisanvang/index.html     trang /taisanvang
 app/                      CSS + JS dùng chung (common.js, chitieu.js, taisanvang.js, vendor/chart.umd.js)
-functions/                Cloudflare Pages Functions: proxy giá SJC (/api/sjc/current, /api/sjc/history)
+functions/                code proxy giá SJC (/api/sjc/current, /api/sjc/history), được worker.js gọi
+worker.js                 Cloudflare Worker: định tuyến /api/sjc/*
 dev/server.mjs            server chạy thử trên máy
 ```
 
@@ -25,9 +26,9 @@ Số liệu chi tiêu và vàng lưu trong `localStorage` của trình duyệt (
 
 Trình duyệt không gọi thẳng SJC được (CORS), nên `functions/api/sjc/*` gọi hộ, có cache 5 phút (giá hiện tại) và 30 phút (lịch sử). Nếu SJC lỗi thì trả lại bản cũ trong cache. Đây là API nội bộ của SJC nên có thể đổi bất cứ lúc nào.
 
-## Triển khai (Cloudflare Pages)
+## Triển khai (Cloudflare Workers)
 
-Kết nối repo với Cloudflare Pages, không cần build command, thư mục output là `/` (gốc repo). Cloudflare tự nhận thư mục `functions/`. Trang tĩnh thì host nào cũng chạy được, nhưng giá SJC cần Cloudflare Pages Functions.
+Web chạy trên **Cloudflare Workers + static assets** (cấu hình trong `wrangler.jsonc`). `worker.js` chỉ chạy cho `/api/*`, các đường khác trả file tĩnh trực tiếp. `.assetsignore` giữ mã nguồn server (`worker.js`, `functions/`, `dev/`) khỏi bị phục vụ công khai. Push lên `main` là Cloudflare tự deploy.
 
 ## Chạy thử trên máy
 
