@@ -251,11 +251,11 @@
         canvas.style.display = '';
         var first = pts[0], last = pts[pts.length - 1], dlt = last.sell - first.sell;
         $('hist-change').innerHTML = 'Giá bán ra ' + DAYS + ' ngày qua: <b>' + PD.delta(dlt, ' đ') + ' (' + PD.pct(dlt / first.sell * 100) + ')</b> · từ ' + PD.vnd(first.sell) + ' đến ' + PD.vnd(last.sell) + ' đ/lượng';
-        var series = function (label, color, key) {
-            return { label: label, color: color, data: pts.map(function (p) { return { x: p.t, y: p[key] }; }) };
+        var series = function (label, color, key, dash) {
+            return { label: label, color: color, dash: dash, data: pts.map(function (p) { return { x: p.t, y: p[key] }; }) };
         };
         histChart = PD.lineChart(canvas, {
-            datasets: [series('Bán ra', PD.cssVar('--s1'), 'sell'), series('Mua vào', PD.cssVar('--s2'), 'buy')],
+            datasets: [series('Bán ra', PD.cssVar('--s1'), 'sell'), series('Mua vào', PD.cssVar('--s2'), 'buy', [8, 5])],
             xMin: first.t, xMax: last.t,
             xFmt: function (v) { return PD.fmtStamp(v, false); },
             tipTitle: function (x) { return PD.fmtStamp(x, true); }
