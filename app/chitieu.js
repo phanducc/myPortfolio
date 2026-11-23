@@ -2,7 +2,8 @@
 (function () {
     'use strict';
 
-    var KEY = 'pd.chitieu.v1';          // [{ date:'YYYY-MM-DD', cash:number, bank:number }]
+    var COL = 'chitieu';                // Firestore: chitieu/{YYYY-MM-DD} = { date, cash, bank }
+    var LEGACY_KEY = 'pd.chitieu.v1';   // dữ liệu cũ lưu trong trình duyệt (trước khi có tài khoản)
     var DAYS = 30;
     var $ = function (id) { return document.getElementById(id); };
 
@@ -15,13 +16,17 @@
     };
     var chart = null;
     var editing = null;                  // ngày đang sửa
+    var cache = [];                      // dữ liệu mới nhất từ Firestore
+    var unwatch = null;
 
     var valid = function (r) {
         return r && PD.isDay(r.date) && isFinite(r.cash) && isFinite(r.bank) && r.cash >= 0 && r.bank >= 0;
     };
     var rows = function () {
-        return PD.load(KEY).filter(valid).sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+        return cache.filter(valid).sort(function (a, b) { return a.date < b.date ? -1 : 1; });
     };
+    var toItem = function (r) { return { id: r.date, data: { date: r.date, cash: r.cash, bank: r.bank } }; };
+    var saveFail = function (e) { say('Lưu thất bại: ' + (e && e.message || e), true); };
 
     /** Thêm tổng và chênh lệch so với hôm qua (nếu thiếu hôm qua thì so với ngày gần nhất trước đó) */
     function enrich(list) {
@@ -77,13 +82,12 @@
         if (isNaN(cash) && isNaN(bank)) return say('Nhập ít nhất một khoản tiền.', true);
         cash = isNaN(cash) ? 0 : cash; bank = isNaN(bank) ? 0 : bank;
 
-        var list = PD.load(KEY).filter(function (r) { return valid(r) && r.date !== date && r.date !== editing; });
         var existed = rows().some(function (r) { return r.date === date; });
-        list.push({ date: date, cash: cash, bank: bank });
-        if (!PD.save(KEY, list)) return say('Không lưu được (trình duyệt chặn lưu trữ).', true);
+        var row = { date: date, cash: cash, bank: bank };
+        PDCloud.put(COL, date, toItem(row).data).catch(saveFail);
+        if (editing && editing !== date) PDCloud.remove(COL, editing).catch(saveFail);   // đổi ngày khi sửa
         say((existed || editing ? 'Đã cập nhật ' : 'Đã lưu ') + 'ngày ' + PD.fmtDay(date) + '.');
         resetForm();
-        render();
     });
     el.cancel.addEventListener('click', function () { resetForm(); say(''); });
 
@@ -94,9 +98,8 @@
         var date = b.getAttribute('data-d');
         if (b.getAttribute('data-a') === 'del') {
             if (!confirm('Xoá số liệu ngày ' + PD.fmtDay(date) + '?')) return;
-            PD.save(KEY, PD.load(KEY).filter(function (r) { return r.date !== date; }));
+            PDCloud.remove(COL, date).catch(saveFail);
             if (editing === date) resetForm();
-            render();
         } else {
             var r = rows().filter(function (x) { return x.date === date; })[0];
             if (!r) return;
@@ -177,7 +180,35 @@
         previewTotal();
     }
 
-    PD.backup($('backup'), KEY, 'chitieu-sao-luu.json', valid, function () { render(); });
-    resetForm();
-    render();
+    PD.backup($('backup'), {
+        filename: 'chitieu-sao-luu.json',
+        validate: valid,
+        getAll: function () { return rows().map(function (r) { return { date: r.date, cash: r.cash, bank: r.bank }; }); },
+        replaceAll: function (arr) { return PDCloud.replaceAll(COL, arr.map(toItem)); }
+    });
+
+    function offerLegacy() {
+        PD.legacy($('legacy'), {
+            key: LEGACY_KEY, validate: valid, col: COL, toItem: toItem,
+            exists: function (id) { return cache.some(function (r) { return r.date === id; }); }
+        });
+    }
+
+    PD.auth(function () {
+        resetForm();
+        if (unwatch) unwatch();
+        unwatch = PDCloud.watch(COL, function (docs) {
+            cache = docs;
+            render();
+            offerLegacy();
+        }, function (err) {
+            PD.authFail(err && err.code === 'permission-denied'
+                ? 'Tài khoản này không có quyền truy cập dữ liệu. Hãy đăng nhập bằng đúng tài khoản Google của chủ web.'
+                : 'Không đọc được dữ liệu: ' + (err && err.message || err));
+        });
+    }, function () {
+        if (unwatch) { unwatch(); unwatch = null; }
+        cache = [];
+        if (chart) { chart.destroy(); chart = null; }
+    });
 })();

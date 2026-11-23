@@ -12,15 +12,24 @@ Web cá nhân (tĩnh) tại phanduc.eu.org, kèm 2 ứng dụng:
 ```
 chitieu/index.html        trang /chitieu
 taisanvang/index.html     trang /taisanvang
-app/                      CSS + JS dùng chung (common.js, chitieu.js, taisanvang.js, vendor/chart.umd.js)
+app/                      CSS + JS dùng chung (common.js, firebase.js, chitieu.js, taisanvang.js, vendor/chart.umd.js)
 functions/                code proxy giá SJC (/api/sjc/current, /api/sjc/history), được worker.js gọi
 worker.js                 Cloudflare Worker: định tuyến /api/sjc/*
+firestore.rules          Security Rules tham khảo
 dev/server.mjs            server chạy thử trên máy
 ```
 
 ## Dữ liệu lưu ở đâu
 
-Số liệu chi tiêu và vàng lưu trong `localStorage` của trình duyệt (khoá `pd.chitieu.v1`, `pd.vang.v1`), không gửi lên server. Mỗi thiết bị có dữ liệu riêng. Dùng nút **Xuất file sao lưu / Nhập từ file** để sao lưu hoặc chuyển máy. Xoá dữ liệu trình duyệt sẽ mất dữ liệu nếu chưa xuất file.
+Số liệu lưu trên **Firebase Firestore** (project `pd-budgeting`), đăng nhập bằng Google. Dữ liệu đồng bộ giữa các thiết bị và vẫn dùng được khi mất mạng (tự đồng bộ lại sau).
+
+- Collection `chitieu`: mỗi ngày một document `YYYY-MM-DD` gồm `date`, `cash`, `bank`.
+- Collection `vang`: mỗi lần mua một document gồm `date`, `chi`, `price` (đ/chỉ).
+- Bảo mật nằm ở **Security Rules** (`firestore.rules`): chỉ đúng email Google của chủ web đọc/ghi được. Cấu hình Firebase trong `app/firebase.js` là thông tin công khai theo thiết kế, không phải bí mật.
+- Dữ liệu cũ lưu trong trình duyệt (trước khi có tài khoản) được đề nghị tải lên tài khoản ở lần đăng nhập đầu tiên.
+- Nút **Xuất file sao lưu / Nhập từ file** dùng để giữ một bản sao JSON ngoài Firebase.
+
+Thiết lập Firebase: bật Authentication (Google), thêm `phanduc.eu.org` vào *Authorized domains*, tạo Firestore và dán `firestore.rules` (đã đổi email).
 
 ## Giá vàng SJC
 
