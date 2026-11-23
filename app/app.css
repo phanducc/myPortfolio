@@ -128,3 +128,11 @@ table.data .none { text-align: center; color: var(--ink-3); padding: 24px; }
 .auth-bar { display: flex; align-items: center; gap: 10px; min-height: 36px; }
 .auth-bar .who { font-size: 13px; color: var(--ink-2); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 @media (max-width: 640px) { .auth-bar .who { display: none; } }
+
+/* Ô tài khoản tiết kiệm */
+.sv-now { text-align: right; }
+.sv-now .lb { display: block; font-size: 13px; color: var(--ink-2); font-weight: 700; }
+.sv-now b { font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+.sv-history { margin-top: 12px; }
+.sv-history summary { cursor: pointer; font-size: 13px; color: var(--ink-2); padding: 4px 0; }
+.sv-history summary:hover { color: var(--primary-color); }
