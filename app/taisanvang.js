@@ -188,8 +188,11 @@
     /* ===================== Giá SJC ===================== */
     function getJson(url) {
         return fetch(url).then(function (r) {
-            if (!r.ok) throw new Error('HTTP ' + r.status);
-            return r.json();
+            if (r.ok) return r.json();
+            // Proxy trả { error } khi SJC lỗi: hiển thị lý do thật thay vì chỉ "HTTP 502"
+            return r.json().catch(function () { return {}; }).then(function (b) {
+                throw new Error(b.error ? b.error + ' [HTTP ' + r.status + ']' : 'HTTP ' + r.status);
+            });
         });
     }
 
