@@ -16,11 +16,6 @@
     --s3: rgba(255, 255, 255, 0.4);
 }
 
-body.app { cursor: auto !important; }
-body.app a, body.app button, body.app .btn, body.app input, body.app select { cursor: pointer; }
-body.app input, body.app select { cursor: text; }
-body.app select { cursor: pointer; }
-
 [hidden] { display: none !important; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
