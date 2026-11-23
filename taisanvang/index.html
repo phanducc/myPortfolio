@@ -19,6 +19,17 @@
         <h1 class="app-title">Tài sản <span>vàng</span></h1>
         <p class="app-lead">Ghi lại các lần mua vàng, xem giá vàng nhẫn SJC và biểu đồ 30 ngày, rồi tính lãi lỗ theo giá hiện tại.</p>
 
+        <section id="login" class="glass-panel" aria-labelledby="t-login" hidden>
+            <h2 class="panel-title" id="t-login">Đăng nhập</h2>
+            <p class="panel-sub">Đăng nhập bằng tài khoản Google để xem và nhập số liệu. Dữ liệu được lưu trên tài khoản của bạn nên dùng được trên mọi thiết bị.</p>
+            <button type="button" class="btn primary">Đăng nhập bằng Google</button>
+            <p class="form-msg" role="alert" style="margin-top:10px"></p>
+        </section>
+
+        <div id="content" hidden>
+        <section id="legacy" class="glass-panel" hidden></section>
+
+
         <!-- 1. TÀI KHOẢN VÀNG -->
         <section class="glass-panel" aria-labelledby="t-entry">
             <h2 class="panel-title" id="t-entry">Tài khoản vàng · Nhập lần mua</h2>
@@ -137,13 +148,15 @@
 
         <section class="glass-panel" aria-labelledby="t-backup">
             <h2 class="panel-title" id="t-backup">Sao lưu dữ liệu</h2>
-            <p class="panel-sub">Dữ liệu chỉ nằm trong trình duyệt này. Xuất file để sao lưu hoặc chuyển sang máy khác.</p>
+            <p class="panel-sub">Xuất file JSON để giữ một bản sao ngoài tài khoản. Nhập file sẽ <b>thay toàn bộ</b> dữ liệu hiện có trên tài khoản.</p>
             <div id="backup"></div>
         </section>
+        </div>
     </main>
 
     <script src="/app/vendor/chart.umd.js"></script>
     <script src="/app/common.js"></script>
-    <script src="/app/taisanvang.js"></script>
+    <script type="module" src="/app/firebase.js"></script>
+    <script type="module" src="/app/taisanvang.js"></script>
 </body>
 </html>

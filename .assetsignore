@@ -4,3 +4,4 @@ worker.js
 functions
 dev
 README.md
+firestore.rules
