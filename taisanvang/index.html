@@ -46,7 +46,7 @@
                 <div class="field wide">
                     <label for="f-price">Giá mua</label>
                     <div class="price-row">
-                        <input type="text" id="f-price" placeholder="0" aria-label="Giá mua">
+                        <div class="money"><input type="text" id="f-price" placeholder="0" aria-label="Giá mua"></div>
                         <select id="f-unit" aria-label="Đơn vị giá">
                             <option value="chi">đ/chỉ</option>
                             <option value="luong">đ/lượng</option>
@@ -122,7 +122,7 @@
                 </div>
                 <div class="field" style="min-width:230px">
                     <label for="pl-manual">Giá mua vào tự nhập (đ/lượng, tuỳ chọn)</label>
-                    <input type="text" id="pl-manual" placeholder="Để trống = dùng giá SJC">
+                    <div class="money"><input type="text" id="pl-manual" placeholder="Để trống = dùng giá SJC"></div>
                 </div>
             </div>
             <div class="tiles" id="pl-tiles"></div>
