@@ -136,3 +136,11 @@ table.data .none { text-align: center; color: var(--ink-3); padding: 24px; }
 .sv-history { margin-top: 12px; }
 .sv-history summary { cursor: pointer; font-size: 13px; color: var(--ink-2); padding: 4px 0; }
 .sv-history summary:hover { color: var(--primary-color); }
+
+/* Tóm tắt trang chi tiêu: 4 ô nhỏ ở hàng trên, 1 ô tổng tài sản rộng hết trang ở hàng dưới */
+#summary { grid-template-columns: repeat(4, 1fr); }
+#summary .tile.wide { grid-column: 1 / -1; padding: 20px 24px; }
+#summary .tile.wide .v { font-size: 2.4rem; letter-spacing: -0.01em; }
+@media (max-width: 900px) { #summary { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) { #summary .tile.wide .v { font-size: 1.9rem; } }
+@media (max-width: 640px) { #summary .tile .v { font-size: 1.2rem; white-space: nowrap; } #summary .tile.wide .v { font-size: 1.9rem; } }
