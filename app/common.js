@@ -81,23 +81,24 @@
         catch (e) { return false; }
     };
 
-    /** Nút Xuất / Nhập file JSON để sao lưu hoặc chuyển sang thiết bị khác */
-    PD.backup = function (root, key, filename, validate, onChange) {
+    /** Nút Xuất / Nhập file JSON để sao lưu hoặc chuyển dữ liệu.
+     *  opt: { filename, validate(item), getAll(): mảng, replaceAll(mảng): Promise } */
+    PD.backup = function (root, opt) {
         root.innerHTML =
             '<div class="toolbar"><button type="button" class="btn secondary small" data-a="export">Xuất file sao lưu</button>' +
             '<button type="button" class="btn secondary small" data-a="import">Nhập từ file</button>' +
-            '<input type="file" accept="application/json,.json" hidden></div><span class="form-msg" aria-live="polite"></span>';
+            '<input type="file" accept="application/json,.json" hidden></div><p class="form-msg" aria-live="polite" style="margin-top:8px"></p>';
         var msg = root.querySelector('.form-msg');
         var file = root.querySelector('input[type=file]');
         var say = function (t, err) { msg.textContent = t; msg.className = 'form-msg' + (err ? ' err' : ''); };
         root.querySelector('[data-a=export]').addEventListener('click', function () {
-            var blob = new Blob([JSON.stringify(PD.load(key), null, 2)], { type: 'application/json' });
+            var blob = new Blob([JSON.stringify(opt.getAll(), null, 2)], { type: 'application/json' });
             var a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = filename;
+            a.download = opt.filename;
             document.body.appendChild(a); a.click(); a.remove();
             setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
-            say('Đã xuất file ' + filename);
+            say('Đã xuất file ' + opt.filename);
         });
         root.querySelector('[data-a=import]').addEventListener('click', function () { file.click(); });
         file.addEventListener('change', function () {
@@ -105,17 +106,87 @@
             if (!f) return;
             var r = new FileReader();
             r.onload = function () {
+                var data;
                 try {
-                    var data = JSON.parse(r.result);
-                    if (!Array.isArray(data) || !data.every(validate)) throw new Error('bad');
-                    if (!confirm('Thay toàn bộ dữ liệu hiện tại bằng ' + data.length + ' dòng trong file?')) return;
-                    PD.save(key, data);
-                    onChange();
-                    say('Đã nhập ' + data.length + ' dòng.');
-                } catch (e) { say('File không hợp lệ.', true); }
+                    data = JSON.parse(r.result);
+                    if (!Array.isArray(data) || !data.every(opt.validate)) throw new Error('bad');
+                } catch (e) { file.value = ''; return say('File không hợp lệ.', true); }
+                if (!confirm('Thay toàn bộ dữ liệu trên tài khoản bằng ' + data.length + ' dòng trong file?')) { file.value = ''; return; }
+                say('Đang nhập…');
+                opt.replaceAll(data).then(function () { say('Đã nhập ' + data.length + ' dòng.'); })
+                    .catch(function (e) { say('Nhập thất bại: ' + e.message, true); });
                 file.value = '';
             };
             r.readAsText(f);
+        });
+    };
+
+    /** Dữ liệu cũ lưu trong trình duyệt (trước khi có tài khoản): cho phép tải lên tài khoản.
+     *  opt: { key, validate, col, toItem(row) -> {id,data}, exists(id) } */
+    PD.legacy = function (root, opt) {
+        var old = PD.load(opt.key).filter(opt.validate);
+        if (!old.length) { root.hidden = true; root.innerHTML = ''; return; }
+        root.hidden = false;
+        root.innerHTML =
+            '<h2 class="panel-title">Có dữ liệu cũ trong trình duyệt này</h2>' +
+            '<p class="panel-sub">Tìm thấy ' + old.length + ' dòng lưu trên máy này từ trước khi có tài khoản. Tải lên để dùng trên mọi thiết bị' +
+            (opt.exists ? ' (ngày đã có trên tài khoản sẽ được giữ nguyên, không bị ghi đè)' : '') + '.</p>' +
+            '<div class="toolbar"><button type="button" class="btn primary small" data-a="up">Tải lên tài khoản</button>' +
+            '<button type="button" class="btn secondary small" data-a="drop">Bỏ bản cũ</button></div>' +
+            '<p class="form-msg" aria-live="polite" style="margin-top:8px"></p>';
+        var msg = root.querySelector('.form-msg');
+        var finish = function () {
+            try { localStorage.setItem(opt.key + '.migrated', JSON.stringify(old)); localStorage.removeItem(opt.key); } catch (e) { /* bỏ qua */ }
+            root.hidden = true;
+        };
+        root.querySelector('[data-a=up]').addEventListener('click', function () {
+            var items = old.map(opt.toItem).filter(function (it) { return !(opt.exists && opt.exists(it.id)); });
+            msg.className = 'form-msg'; msg.textContent = 'Đang tải lên…';
+            PDCloud.putMany(opt.col, items).then(finish).catch(function (e) {
+                msg.className = 'form-msg err'; msg.textContent = 'Tải lên thất bại: ' + e.message;
+            });
+        });
+        root.querySelector('[data-a=drop]').addEventListener('click', function () {
+            if (confirm('Bỏ dữ liệu cũ trên máy này? (Bản sao vẫn được giữ lại trong bộ nhớ trình duyệt dưới khoá ' + opt.key + '.migrated)')) finish();
+        });
+    };
+
+    /** Cổng đăng nhập: chưa đăng nhập thì chỉ hiện khung đăng nhập.
+     *  onIn(user) chạy khi đã đăng nhập (và khi đổi tài khoản), onOut() khi đăng xuất. */
+    PD.auth = function (onIn, onOut) {
+        var content = document.getElementById('content');
+        var login = document.getElementById('login');
+        var bar = document.getElementById('auth-bar');
+        var msg = login.querySelector('.form-msg');
+        var btn = login.querySelector('button');
+        var say = function (t) { msg.textContent = t || ''; msg.className = 'form-msg' + (t ? ' err' : ''); };
+        PD.authFail = function (t) { content.hidden = true; login.hidden = false; say(t); };
+
+        if (!g.PDCloud) {
+            content.hidden = true; login.hidden = false;
+            btn.disabled = true;
+            say('Không tải được Firebase (kiểm tra kết nối mạng rồi tải lại trang).');
+            return;
+        }
+        btn.addEventListener('click', function () {
+            say(''); btn.disabled = true;
+            PDCloud.signIn().catch(function (e) {
+                if (e && e.code === 'auth/popup-blocked') say('Trình duyệt chặn cửa sổ đăng nhập. Hãy cho phép popup rồi thử lại.');
+                else if (e && (e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request')) say('');
+                else say('Đăng nhập thất bại: ' + (e && e.message || e));
+            }).then(function () { btn.disabled = false; });
+        });
+        PDCloud.onUser(function (user) {
+            if (user) {
+                login.hidden = true; content.hidden = false;
+                bar.innerHTML = '<span class="who" title="' + PD.esc(user.email || '') + '">' + PD.esc(user.email || 'Đã đăng nhập') + '</span>' +
+                    '<button type="button" class="btn secondary small">Đăng xuất</button>';
+                bar.querySelector('button').addEventListener('click', function () { PDCloud.signOut(); });
+                onIn(user);
+            } else {
+                content.hidden = true; login.hidden = false; bar.innerHTML = '';
+                onOut();
+            }
         });
     };
 
@@ -196,7 +267,8 @@
         };
         el.className = 'app-header';
         el.innerHTML = '<div class="inner"><a class="brand" href="/"><img src="/assets/phanduc.png" alt="">PHAN ĐỨC.</a>' +
-            '<nav class="app-tabs" aria-label="Ứng dụng">' + tab('/chitieu/', 'Chi tiêu', 'chitieu') + tab('/taisanvang/', 'Tài sản vàng', 'taisanvang') + '</nav></div>';
+            '<nav class="app-tabs" aria-label="Ứng dụng">' + tab('/chitieu/', 'Chi tiêu', 'chitieu') + tab('/taisanvang/', 'Tài sản vàng', 'taisanvang') + '</nav>' +
+            '<div id="auth-bar" class="auth-bar"></div></div>';
     };
 
     g.PD = PD;
