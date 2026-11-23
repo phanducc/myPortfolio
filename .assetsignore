@@ -1,0 +1,6 @@
+.assetsignore
+wrangler.jsonc
+worker.js
+functions
+dev
+README.md
