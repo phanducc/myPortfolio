@@ -19,7 +19,7 @@
         total: $('f-total'), hint: $('f-hint'), submit: $('f-submit'), cancel: $('f-cancel'), msg: $('f-msg')
     };
     var editing = null;
-    var lotChart = null, histChart = null;
+    var histChart = null;
     var cache = [];                      // các lần mua mới nhất từ Firestore
     var unwatch = null, sjcTimer = null;
     var sjc = { ring: null, updatedAt: '', hist: null, error: '' };
@@ -143,45 +143,6 @@
                 tile('Tổng vốn đã bỏ ra', PD.vnd(t.cost), 'đ') +
                 tile('Giá vốn bình quân', PD.vnd(t.avg), 'đ/chỉ · ' + PD.vnd(t.avg * 10) + ' đ/lượng');
         }
-        renderLotChart(list);
-    }
-
-    function renderLotChart(list) {
-        if (lotChart) { lotChart.destroy(); lotChart = null; }
-        var box = $('lot-chart-box'), canvas = $('lot-chart');
-        var old = box.querySelector('.chart-empty');
-        if (old) old.remove();
-        if (!list.length) {
-            canvas.style.display = 'none';
-            var d = document.createElement('div');
-            d.className = 'chart-empty';
-            d.textContent = 'Chưa có dữ liệu để vẽ biểu đồ.';
-            box.appendChild(d);
-            return;
-        }
-        canvas.style.display = '';
-        var today = PD.today(), from = PD.addDays(today, -(DAYS - 1));
-        var cumCost = 0, cumChi = 0;
-        list.forEach(function (l) { if (l.date < from) { cumCost += cost(l); cumChi += l.chi; } });
-        var pts = [{ x: PD.dayMs(from), y: cumCost, chi: r3(cumChi), buy: false }];
-        list.filter(function (l) { return l.date >= from; }).forEach(function (l) {
-            cumCost += cost(l); cumChi += l.chi;
-            var x = PD.dayMs(l.date), last = pts[pts.length - 1];
-            if (last.x === x && last.buy) { last.y = cumCost; last.chi = r3(cumChi); }   // nhiều lần mua trong 1 ngày
-            else pts.push({ x: x, y: cumCost, chi: r3(cumChi), buy: true });
-        });
-        if (pts[pts.length - 1].x < PD.dayMs(today)) pts.push({ x: PD.dayMs(today), y: cumCost, chi: r3(cumChi), buy: false });
-
-        lotChart = PD.lineChart(canvas, {
-            datasets: [{
-                label: 'Vốn đã đầu tư', color: PD.cssVar('--s1'), data: pts, stepped: 'before',   // Chart.js: giữ nguyên giá trị cũ rồi mới nhảy lên đúng ngày mua
-                pointRadius: function (c) { return c.raw && c.raw.buy ? 4 : 0; }
-            }],
-            xMin: PD.dayMs(from), xMax: PD.dayMs(today), xStep: 5 * 86400000,
-            xFmt: PD.fmtDM,
-            tipTitle: function (x) { return PD.fmtDay(PD.msToDay(x)); },
-            tipFooter: function (items) { return 'Đang giữ: ' + PD.num(items[0].raw.chi, 3) + ' chỉ'; }
-        });
     }
 
     /* ===================== Giá SJC ===================== */
@@ -344,7 +305,6 @@
         if (unwatch) { unwatch(); unwatch = null; }
         cache = [];
         if (sjcTimer) { clearInterval(sjcTimer); sjcTimer = null; }
-        [lotChart, histChart].forEach(function (c) { if (c) c.destroy(); });
-        lotChart = histChart = null;
+        if (histChart) { histChart.destroy(); histChart = null; }
     });
 })();

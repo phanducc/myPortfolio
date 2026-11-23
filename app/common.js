@@ -245,8 +245,8 @@
                 plugins: {
                     legend: { display: false },
                     tooltip: {
-                        backgroundColor: 'rgba(30,30,30,.96)', titleColor: PD.cssVar('--ink'), bodyColor: ink2, footerColor: ink2,
-                        borderColor: 'rgba(255,255,255,.28)', borderWidth: 1, padding: 10, boxPadding: 4, usePointStyle: true,
+                        backgroundColor: '#000', titleColor: PD.cssVar('--ink'), bodyColor: ink2, footerColor: ink2,
+                        borderColor: 'rgba(255,255,255,.6)', borderWidth: 1, padding: 10, boxPadding: 4, usePointStyle: true,
                         callbacks: {
                             title: function (items) { return opt.tipTitle(items[0].parsed.x); },
                             label: function (it) { return ' ' + it.dataset.label + ': ' + PD.vnd(it.parsed.y) + ' đ'; },
