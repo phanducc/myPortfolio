@@ -258,6 +258,64 @@
         });
     };
 
+    /** Tháng: "2026-11" -> "Tháng 11/2026"; số ngày của tháng */
+    PD.monthLabel = function (ym) { var p = ym.split('-'); return 'Tháng ' + (+p[1]) + '/' + p[0]; };
+    PD.daysInMonth = function (y, m) { return new Date(Date.UTC(y, m, 0)).getUTCDate(); };
+
+    /** Màu nền sọc chéo cho cột "chi" (phân biệt với "thu" không chỉ bằng độ sáng) */
+    PD.hatch = function (color) {
+        var c = document.createElement('canvas'); c.width = c.height = 8;
+        var x = c.getContext('2d');
+        x.strokeStyle = color; x.lineWidth = 2;
+        x.beginPath(); x.moveTo(-2, 10); x.lineTo(10, -2); x.moveTo(-2, 2); x.lineTo(2, -2); x.moveTo(6, 10); x.lineTo(10, 6); x.stroke();
+        return x.createPattern(c, 'repeat');
+    };
+
+    /**
+     * Biểu đồ cột nhóm. opt.labels: nhãn trục x; opt.datasets: [{ label, color, hatch, data:[số đồng] }]
+     * opt.tipTitle(i): tiêu đề tooltip theo chỉ số cột
+     */
+    PD.barChart = function (canvas, opt) {
+        var ink2 = PD.cssVar('--ink-2'), grid = PD.cssVar('--grid');
+        return new g.Chart(canvas, {
+            type: 'bar',
+            data: {
+                labels: opt.labels,
+                datasets: opt.datasets.map(function (d) {
+                    return {
+                        label: d.label, data: d.data,
+                        backgroundColor: d.hatch ? PD.hatch(d.color) : d.color,
+                        borderColor: d.color, borderWidth: 1, borderRadius: 3, maxBarThickness: 22
+                    };
+                })
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false, animation: false,
+                interaction: { mode: 'index', intersect: false },
+                layout: { padding: { right: 8, top: 6 } },
+                scales: {
+                    x: { grid: { display: false }, border: { color: grid }, ticks: { color: ink2, maxRotation: 0, autoSkip: true, maxTicksLimit: 16 } },
+                    y: {
+                        beginAtZero: true, grid: { color: grid }, border: { display: false },
+                        ticks: { color: ink2, maxTicksLimit: 6, callback: function (v) { return PD.num(v / 1e6, 2); } },
+                        title: { display: true, text: 'triệu đồng', color: ink2, font: { size: 11 } }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#000', titleColor: PD.cssVar('--ink'), bodyColor: ink2,
+                        borderColor: 'rgba(255,255,255,.6)', borderWidth: 1, padding: 10, boxPadding: 4,
+                        callbacks: {
+                            title: function (items) { return opt.tipTitle ? opt.tipTitle(items[0].dataIndex) : items[0].label; },
+                            label: function (it) { return ' ' + it.dataset.label + ': ' + PD.vnd(it.parsed.y) + ' đ'; }
+                        }
+                    }
+                }
+            }
+        });
+    };
+
     /** Thanh điều hướng chung */
     PD.header = function (active) {
         var el = document.getElementById('app-header');
