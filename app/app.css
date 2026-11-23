@@ -117,3 +117,8 @@ table.data .none { text-align: center; color: var(--ink-3); padding: 24px; }
     .price-row { grid-template-columns: 1fr 96px; }
     .field.wide { grid-column: auto; }
 }
+
+/* Tài khoản */
+.auth-bar { display: flex; align-items: center; gap: 10px; min-height: 36px; }
+.auth-bar .who { font-size: 13px; color: var(--ink-2); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 640px) { .auth-bar .who { display: none; } }

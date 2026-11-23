@@ -2,7 +2,8 @@
 (function () {
     'use strict';
 
-    var KEY = 'pd.vang.v1';              // [{ id, date:'YYYY-MM-DD', chi:number, price:number (đ/chỉ) }]
+    var COL = 'vang';                    // Firestore: vang/{id} = { date, chi, price (đ/chỉ) }
+    var LEGACY_KEY = 'pd.vang.v1';       // dữ liệu cũ lưu trong trình duyệt (trước khi có tài khoản)
     var API = '/api/sjc';
     var RING_ID = 49;                    // Vàng nhẫn SJC 99,99% 1 chỉ, 2 chỉ, 5 chỉ
     var HIST_ID = 188;                   // Vàng SJC 1L, 10L, 1KG – Miền Trung
@@ -19,6 +20,8 @@
     };
     var editing = null;
     var lotChart = null, histChart = null;
+    var cache = [];                      // các lần mua mới nhất từ Firestore
+    var unwatch = null, sjcTimer = null;
     var sjc = { ring: null, updatedAt: '', hist: null, error: '' };
 
     /* ===================== Dữ liệu lần mua ===================== */
@@ -26,11 +29,13 @@
         return l && typeof l.id === 'string' && PD.isDay(l.date) && isFinite(l.chi) && l.chi > 0 && isFinite(l.price) && l.price > 0;
     };
     var lots = function () {
-        return PD.load(KEY).filter(valid).sort(function (a, b) {
+        return cache.filter(valid).sort(function (a, b) {
             return a.date === b.date ? (a.id < b.id ? -1 : 1) : (a.date < b.date ? -1 : 1);
         });
     };
     var cost = function (l) { return Math.round(l.chi * l.price); };
+    var toItem = function (l) { return { id: l.id, data: { date: l.date, chi: l.chi, price: l.price } }; };
+    var saveFail = function (e) { say('Lưu thất bại: ' + (e && e.message || e), true); };
     var newId = function () { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); };
 
     /* ===================== Form nhập ===================== */
@@ -71,15 +76,10 @@
         if (isNaN(q) || q <= 0) return say('Số lượng (chỉ) phải lớn hơn 0.', true);
         if (isNaN(p) || p <= 0) return say('Hãy nhập giá mua.', true);
 
-        var all = PD.load(KEY).filter(valid);
         var lot = { id: editing || newId(), date: date, chi: r3(q), price: Math.round(p) };
-        all = all.filter(function (l) { return l.id !== lot.id; });
-        all.push(lot);
-        if (!PD.save(KEY, all)) return say('Không lưu được (trình duyệt chặn lưu trữ).', true);
+        PDCloud.put(COL, lot.id, toItem(lot).data).catch(saveFail);
         say((editing ? 'Đã cập nhật' : 'Đã thêm') + ' lần mua ngày ' + PD.fmtDay(date) + '.');
         resetForm();
-        renderLots();
-        renderPL();
     });
     el.cancel.addEventListener('click', function () { resetForm(); say(''); });
 
@@ -91,9 +91,8 @@
         if (!lot) return;
         if (b.getAttribute('data-a') === 'del') {
             if (!confirm('Xoá lần mua ngày ' + PD.fmtDay(lot.date) + ' (' + PD.num(lot.chi, 3) + ' chỉ)?')) return;
-            PD.save(KEY, PD.load(KEY).filter(function (l) { return l.id !== id; }));
+            PDCloud.remove(COL, id).catch(saveFail);
             if (editing === id) resetForm();
-            renderLots(); renderPL();
         } else {
             editing = id;
             el.date.value = lot.date;
@@ -314,10 +313,38 @@
     }
 
     /* ===================== Khởi động ===================== */
-    PD.backup($('backup'), KEY, 'taisanvang-sao-luu.json', valid, function () { renderLots(); renderPL(); });
-    resetForm();
-    renderLots();
-    renderSjc(); renderHist(); renderPL();
-    loadSjc();
-    setInterval(loadSjc, REFRESH_MS);
+    PD.backup($('backup'), {
+        filename: 'taisanvang-sao-luu.json',
+        validate: valid,
+        getAll: function () { return lots(); },
+        replaceAll: function (arr) { return PDCloud.replaceAll(COL, arr.map(toItem)); }
+    });
+
+    function offerLegacy() {
+        PD.legacy($('legacy'), { key: LEGACY_KEY, validate: valid, col: COL, toItem: toItem });
+    }
+
+    PD.auth(function () {
+        resetForm();
+        if (unwatch) unwatch();
+        unwatch = PDCloud.watch(COL, function (docs) {
+            cache = docs;
+            renderLots();
+            renderPL();
+            offerLegacy();
+        }, function (err) {
+            PD.authFail(err && err.code === 'permission-denied'
+                ? 'Tài khoản này không có quyền truy cập dữ liệu. Hãy đăng nhập bằng đúng tài khoản Google của chủ web.'
+                : 'Không đọc được dữ liệu: ' + (err && err.message || err));
+        });
+        renderSjc(); renderHist(); renderPL();
+        loadSjc();
+        if (!sjcTimer) sjcTimer = setInterval(loadSjc, REFRESH_MS);
+    }, function () {
+        if (unwatch) { unwatch(); unwatch = null; }
+        cache = [];
+        if (sjcTimer) { clearInterval(sjcTimer); sjcTimer = null; }
+        [lotChart, histChart].forEach(function (c) { if (c) c.destroy(); });
+        lotChart = histChart = null;
+    });
 })();

@@ -1,0 +1,12 @@
+// Bản sao tham khảo của Firestore Security Rules (không tự deploy; dán vào Firebase Console > Firestore > Rules).
+// Thay EMAIL_CUA_BAN@gmail.com bằng email Google của chủ web.
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.email == 'EMAIL_CUA_BAN@gmail.com';
+    }
+  }
+}
