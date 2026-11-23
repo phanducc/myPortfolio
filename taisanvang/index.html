@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>Tài sản vàng | Phan Đức</title>
+    <link rel="icon" type="image/png" href="/assets/phanduc.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/app/app.css">
+</head>
+<body class="app">
+    <header id="app-header"></header>
+
+    <main class="app-main">
+        <h1 class="app-title">Tài sản <span>vàng</span></h1>
+        <p class="app-lead">Ghi lại các lần mua vàng, xem giá vàng nhẫn SJC và biểu đồ 30 ngày, rồi tính lãi lỗ theo giá hiện tại.</p>
+
+        <!-- 1. TÀI KHOẢN VÀNG -->
+        <section class="glass-panel" aria-labelledby="t-entry">
+            <h2 class="panel-title" id="t-entry">Tài khoản vàng · Nhập lần mua</h2>
+            <p class="panel-sub">1 lượng = 10 chỉ. Mỗi lần mua là một dòng riêng, có thể mua nhiều lần trong cùng một ngày.</p>
+            <form id="form" class="entry-form" novalidate>
+                <div class="field">
+                    <label for="f-date">Ngày mua</label>
+                    <input type="date" id="f-date" required>
+                </div>
+                <div class="field">
+                    <label for="f-qty">Số lượng (chỉ)</label>
+                    <input type="text" id="f-qty" inputmode="decimal" autocomplete="off" placeholder="vd: 2 hoặc 0,5">
+                </div>
+                <div class="field wide">
+                    <label for="f-price">Giá mua</label>
+                    <div class="price-row">
+                        <input type="text" id="f-price" placeholder="0" aria-label="Giá mua">
+                        <select id="f-unit" aria-label="Đơn vị giá">
+                            <option value="chi">đ/chỉ</option>
+                            <option value="luong">đ/lượng</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="field computed">
+                    <label>Thành tiền</label>
+                    <div class="val" id="f-total" aria-live="polite">0 đ</div>
+                    <div class="hint" id="f-hint"></div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn primary" id="f-submit">Thêm</button>
+                    <button type="button" class="btn secondary" id="f-cancel" hidden>Huỷ sửa</button>
+                </div>
+            </form>
+            <p class="form-msg" id="f-msg" aria-live="polite" style="margin-top:10px"></p>
+        </section>
+
+        <section id="summary" class="tiles" aria-label="Tóm tắt tài khoản vàng"></section>
+
+        <section class="glass-panel" aria-labelledby="t-table">
+            <h2 class="panel-title" id="t-table">Bảng tổng hợp các lần mua</h2>
+            <p class="panel-sub">Mới nhất ở trên cùng</p>
+            <div class="tbl-wrap">
+                <table class="data">
+                    <thead><tr><th>Ngày mua</th><th>Số lượng (chỉ)</th><th>Giá mua (đ/chỉ)</th><th>Thành tiền (đ)</th><th><span class="sr-only">Thao tác</span></th></tr></thead>
+                    <tbody id="lots-body"></tbody>
+                    <tfoot id="lots-foot"></tfoot>
+                </table>
+            </div>
+        </section>
+
+        <section class="glass-panel" aria-labelledby="t-lotchart">
+            <div class="panel-head">
+                <div>
+                    <h2 class="panel-title" id="t-lotchart">Vốn đã đầu tư · 30 ngày gần nhất</h2>
+                    <p class="panel-sub" style="margin:0">Tổng tiền đã bỏ ra mua vàng, cộng dồn theo ngày</p>
+                </div>
+            </div>
+            <div class="chart-box" id="lot-chart-box"><canvas id="lot-chart" role="img" aria-label="Biểu đồ vốn đã đầu tư vàng cộng dồn theo ngày"></canvas></div>
+        </section>
+
+        <!-- 2. GIÁ VÀNG SJC -->
+        <section class="glass-panel" aria-labelledby="t-sjc">
+            <div class="panel-head">
+                <div>
+                    <h2 class="panel-title" id="t-sjc">Giá vàng nhẫn SJC 99,99% (1 chỉ, 2 chỉ, 5 chỉ)</h2>
+                    <p class="panel-sub" style="margin:0" id="sjc-sub">Đang tải giá…</p>
+                </div>
+                <button type="button" class="btn secondary small" id="sjc-reload">Tải lại</button>
+            </div>
+            <div class="tiles" id="sjc-tiles" style="margin:14px 0 0"></div>
+            <p class="err-text" id="sjc-err" role="alert" hidden></p>
+        </section>
+
+        <section class="glass-panel" aria-labelledby="t-hist">
+            <div class="panel-head">
+                <div>
+                    <h2 class="panel-title" id="t-hist">Biểu đồ Vàng SJC 1L, 10L, 1KG · Miền Trung</h2>
+                    <p class="panel-sub" style="margin:0">30 ngày gần nhất · triệu đồng/lượng</p>
+                </div>
+                <div class="legend">
+                    <span><i style="background:var(--s1)"></i>Bán ra</span>
+                    <span><i style="background:var(--s2)"></i>Mua vào</span>
+                    <button type="button" class="btn secondary small" id="hist-toggle">Xem bảng</button>
+                </div>
+            </div>
+            <p class="change" id="hist-change"></p>
+            <div class="chart-box" id="hist-box"><canvas id="hist-chart" role="img" aria-label="Biểu đồ giá vàng SJC Miền Trung 30 ngày"></canvas></div>
+            <div class="tbl-wrap" id="hist-table" hidden>
+                <table class="data"><thead><tr><th>Thời điểm</th><th>Mua vào</th><th>Bán ra</th></tr></thead><tbody id="hist-body"></tbody></table>
+            </div>
+            <p class="note">Nguồn: <a href="https://sjc.com.vn" target="_blank" rel="noopener">Công ty Vàng bạc Đá quý Sài Gòn – SJC</a>. Dữ liệu lịch sử của SJC cập nhật chậm hơn bảng giá hiện tại nên điểm cuối biểu đồ có thể lệch vài ngày so với giá ở trên.</p>
+        </section>
+
+        <!-- 3. LÃI LỖ -->
+        <section class="glass-panel" aria-labelledby="t-pl">
+            <div class="panel-head">
+                <div>
+                    <h2 class="panel-title" id="t-pl">Tính lãi lỗ</h2>
+                    <p class="panel-sub" style="margin:0" id="pl-sub"></p>
+                </div>
+                <div class="field" style="min-width:230px">
+                    <label for="pl-manual">Giá mua vào tự nhập (đ/lượng, tuỳ chọn)</label>
+                    <input type="text" id="pl-manual" placeholder="Để trống = dùng giá SJC">
+                </div>
+            </div>
+            <div class="tiles" id="pl-tiles"></div>
+            <div class="tbl-wrap">
+                <table class="data" style="min-width:720px">
+                    <thead><tr><th>Ngày mua</th><th>Số lượng (chỉ)</th><th>Giá vốn (đ/chỉ)</th><th>Vốn (đ)</th><th>Giá trị hiện tại (đ)</th><th>Lãi / lỗ (đ)</th><th>%</th></tr></thead>
+                    <tbody id="pl-body"></tbody>
+                    <tfoot id="pl-foot"></tfoot>
+                </table>
+            </div>
+            <p class="note">Giá trị hiện tại = số chỉ × giá <b>mua vào</b> của SJC ÷ 10, tức là số tiền bạn nhận được nếu bán lại ngay. Chưa tính chênh lệch giữa các cửa hàng, phí gia công hay thuế.</p>
+        </section>
+
+        <section class="glass-panel" aria-labelledby="t-backup">
+            <h2 class="panel-title" id="t-backup">Sao lưu dữ liệu</h2>
+            <p class="panel-sub">Dữ liệu chỉ nằm trong trình duyệt này. Xuất file để sao lưu hoặc chuyển sang máy khác.</p>
+            <div id="backup"></div>
+        </section>
+    </main>
+
+    <script src="/app/vendor/chart.umd.js"></script>
+    <script src="/app/common.js"></script>
+    <script src="/app/taisanvang.js"></script>
+</body>
+</html>
