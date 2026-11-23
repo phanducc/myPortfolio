@@ -33,18 +33,23 @@
         <section class="glass-panel" aria-labelledby="t-entry">
             <h2 class="panel-title" id="t-entry">Nhập số liệu</h2>
             <p class="panel-sub">Nhập lại cùng một ngày sẽ cập nhật số liệu của ngày đó.</p>
-            <form id="form" class="entry-form" novalidate>
+            <form id="form" class="entry-form top" novalidate>
                 <div class="field">
                     <label for="f-date">Ngày</label>
                     <input type="date" id="f-date" required>
+                    <div class="chips">
+                        <button type="button" class="chip" data-d="0">Hôm nay</button>
+                        <button type="button" class="chip" data-d="-1">Hôm qua</button>
+                        <button type="button" class="chip" id="f-last" title="Điền tiền mặt và tiền tài khoản của lần nhập gần nhất trước ngày đang chọn">Số lần trước</button>
+                    </div>
                 </div>
                 <div class="field">
                     <label for="f-cash">Tiền mặt (đ)</label>
-                    <input type="text" id="f-cash" placeholder="0">
+                    <div class="money"><input type="text" id="f-cash" placeholder="0"></div>
                 </div>
                 <div class="field">
                     <label for="f-bank">Tiền tài khoản (đ)</label>
-                    <input type="text" id="f-bank" placeholder="0">
+                    <div class="money"><input type="text" id="f-bank" placeholder="0"></div>
                 </div>
                 <div class="field computed">
                     <label>Tổng số tiền</label>
@@ -70,7 +75,7 @@
             <form id="sv-form" class="entry-form" novalidate style="margin-top:14px">
                 <div class="field">
                     <label for="sv-value">Số dư tiết kiệm mới (đ)</label>
-                    <input type="text" id="sv-value" placeholder="0">
+                    <div class="money"><input type="text" id="sv-value" placeholder="0"></div>
                 </div>
                 <div class="field">
                     <label for="sv-date">Áp dụng từ ngày (trống = hôm nay)</label>
@@ -97,15 +102,14 @@
                     <p class="panel-sub" style="margin:0" id="tc-sub"></p>
                 </div>
                 <div class="picker">
+                    <button type="button" class="btn secondary icon" id="tc-prev" aria-label="Kỳ trước">‹</button>
                     <div class="field"><label for="tc-year">Năm</label><select id="tc-year"></select></div>
                     <div class="field"><label for="tc-month">Tháng</label><select id="tc-month"></select></div>
+                    <button type="button" class="btn secondary icon" id="tc-next" aria-label="Kỳ sau">›</button>
                 </div>
             </div>
             <div class="tiles" id="tc-tiles" style="margin:14px 0 6px"></div>
-            <div class="legend" style="margin-top:10px">
-                <span><i class="box" style="--c:var(--s1)"></i>Thu</span>
-                <span><i class="box hatch" style="--c:var(--s2)"></i>Chi</span>
-            </div>
+            <div class="comp" id="tc-ratio" hidden></div>
             <div class="chart-box" id="tc-box"><canvas id="tc-chart" role="img" aria-label="Biểu đồ tổng thu và tổng chi theo tháng hoặc theo ngày"></canvas></div>
             <p class="note">Thu và chi được tính từ chênh lệch tổng tiền giữa các lần nhập: tổng tiền tăng là thu, giảm là chi. Nếu trong cùng một ngày vừa thu vừa chi thì hai khoản bù trừ nhau, và nếu bỏ trống nhiều ngày thì chênh lệch được tính dồn vào ngày nhập kế tiếp.</p>
         </section>
