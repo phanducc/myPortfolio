@@ -160,11 +160,11 @@
             return;
         }
         canvas.style.display = '';
-        var series = function (label, cssName, key) {
-            return { label: label, color: PD.cssVar(cssName), data: recent.map(function (r) { return { x: PD.dayMs(r.date), y: r[key] }; }) };
+        var series = function (label, cssName, key, dash) {
+            return { label: label, color: PD.cssVar(cssName), dash: dash, data: recent.map(function (r) { return { x: PD.dayMs(r.date), y: r[key] }; }) };
         };
         chart = PD.lineChart(canvas, {
-            datasets: [series('Tổng', '--s1', 'total'), series('Tiền mặt', '--s2', 'cash'), series('Tiền tài khoản', '--s3', 'bank')],
+            datasets: [series('Tổng', '--s1', 'total'), series('Tiền mặt', '--s2', 'cash', [8, 5]), series('Tiền tài khoản', '--s3', 'bank', [2, 5])],
             points: true,
             xMin: PD.dayMs(from), xMax: PD.dayMs(today), xStep: 5 * 86400000,
             xFmt: PD.fmtDM,

@@ -217,7 +217,7 @@
             return {
                 label: d.label, data: d.data,
                 borderColor: d.color, backgroundColor: d.color,
-                borderWidth: 2, tension: 0, stepped: d.stepped || false,
+                borderWidth: 2.5, borderDash: d.dash || [], tension: 0, stepped: d.stepped || false,
                 pointRadius: d.pointRadius !== undefined ? d.pointRadius : (opt.points ? 4 : 0), pointHoverRadius: 6,
                 pointBackgroundColor: d.color, pointBorderColor: surface, pointBorderWidth: 2,
                 pointHoverBorderColor: surface, pointHoverBorderWidth: 2,
@@ -245,8 +245,8 @@
                 plugins: {
                     legend: { display: false },
                     tooltip: {
-                        backgroundColor: '#1a1216', titleColor: PD.cssVar('--ink'), bodyColor: ink2, footerColor: ink2,
-                        borderColor: 'rgba(251,203,223,.3)', borderWidth: 1, padding: 10, boxPadding: 4, usePointStyle: true,
+                        backgroundColor: 'rgba(30,30,30,.96)', titleColor: PD.cssVar('--ink'), bodyColor: ink2, footerColor: ink2,
+                        borderColor: 'rgba(255,255,255,.28)', borderWidth: 1, padding: 10, boxPadding: 4, usePointStyle: true,
                         callbacks: {
                             title: function (items) { return opt.tipTitle(items[0].parsed.x); },
                             label: function (it) { return ' ' + it.dataset.label + ': ' + PD.vnd(it.parsed.y) + ' đ'; },
