@@ -153,16 +153,17 @@
     function renderSummary(list) {
         if (!list.length) { el.summary.innerHTML = ''; return; }
         var last = list[list.length - 1];
-        var tile = function (label, value, unit) {
-            return '<div class="tile"><div class="lb">' + label + '</div><div class="v">' + value + '</div><div class="u">' + unit + '</div></div>';
+        var tile = function (label, value, unit, cls) {
+            return '<div class="tile' + (cls ? ' ' + cls : '') + '"><div class="lb">' + label + '</div><div class="v">' + value + '</div><div class="u">' + unit + '</div></div>';
         };
         var diffLabel = last.prevDate === null ? 'Chênh lệch' : 'Chênh lệch so với ' + (last.gap ? PD.fmtDay(last.prevDate).slice(0, 5) : 'hôm qua');
+        // Hàng trên: tiền mặt · tiền tài khoản · chênh lệch · tiền tiết kiệm. Hàng dưới: một ô rộng cả trang là tổng tài sản
         el.summary.innerHTML =
-            tile('Tổng số tiền', PD.vnd(last.total), 'đ · ngày ' + PD.fmtDay(last.date)) +
-            tile(diffLabel, PD.delta(last.diff), last.diff === null ? 'chưa có ngày trước để so sánh' : 'đ') +
             tile('Tiền mặt', PD.vnd(last.cash), 'đ') +
             tile('Tiền tài khoản', PD.vnd(last.bank), 'đ') +
-            tile('Tiết kiệm', PD.vnd(last.sav), 'đ');
+            tile(diffLabel, PD.delta(last.diff), last.diff === null ? 'chưa có ngày trước để so sánh' : 'đ') +
+            tile('Tiền tiết kiệm', PD.vnd(last.sav), 'đ') +
+            tile('Tổng tài sản', PD.vnd(last.total) + ' đ', 'Tiền mặt + tiền tài khoản + tiền tiết kiệm · ngày ' + PD.fmtDay(last.date), 'wide');
     }
 
     /* ---------- Khung tài khoản tiết kiệm ---------- */
