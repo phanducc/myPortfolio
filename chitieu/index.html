@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>Quản lý chi tiêu | Phan Đức</title>
+    <link rel="icon" type="image/png" href="/assets/phanduc.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/app/app.css">
+</head>
+<body class="app">
+    <header id="app-header"></header>
+
+    <main class="app-main">
+        <h1 class="app-title">Quản lý <span>chi tiêu</span></h1>
+        <p class="app-lead">Mỗi ngày ghi lại tiền mặt và tiền trong tài khoản. Ứng dụng tự tính tổng và chênh lệch so với hôm qua. Dữ liệu lưu ngay trên trình duyệt của bạn.</p>
+
+        <section class="glass-panel" aria-labelledby="t-entry">
+            <h2 class="panel-title" id="t-entry">Nhập số liệu</h2>
+            <p class="panel-sub">Nhập lại cùng một ngày sẽ cập nhật số liệu của ngày đó.</p>
+            <form id="form" class="entry-form" novalidate>
+                <div class="field">
+                    <label for="f-date">Ngày</label>
+                    <input type="date" id="f-date" required>
+                </div>
+                <div class="field">
+                    <label for="f-cash">Tiền mặt (đ)</label>
+                    <input type="text" id="f-cash" placeholder="0">
+                </div>
+                <div class="field">
+                    <label for="f-bank">Tiền tài khoản (đ)</label>
+                    <input type="text" id="f-bank" placeholder="0">
+                </div>
+                <div class="field computed">
+                    <label>Tổng số tiền</label>
+                    <div class="val" id="f-total" aria-live="polite">0 đ</div>
+                    <div class="hint" id="f-diff"></div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn primary" id="f-submit">Lưu</button>
+                    <button type="button" class="btn secondary" id="f-cancel" hidden>Huỷ sửa</button>
+                </div>
+            </form>
+            <p class="form-msg" id="f-msg" aria-live="polite" style="margin-top:10px"></p>
+        </section>
+
+        <section id="summary" class="tiles" aria-label="Tóm tắt"></section>
+
+        <section class="glass-panel" aria-labelledby="t-table">
+            <div class="panel-head">
+                <div>
+                    <h2 class="panel-title" id="t-table">Bảng tổng hợp</h2>
+                    <p class="panel-sub" style="margin:0">Mới nhất ở trên cùng · đơn vị: đồng</p>
+                </div>
+            </div>
+            <div class="tbl-wrap">
+                <table class="data">
+                    <thead><tr><th>Ngày</th><th>Tiền mặt</th><th>Tiền tài khoản</th><th>Tổng</th><th>Chênh lệch so với hôm qua</th><th><span class="sr-only">Thao tác</span></th></tr></thead>
+                    <tbody id="tbody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="glass-panel" aria-labelledby="t-chart">
+            <div class="panel-head">
+                <div>
+                    <h2 class="panel-title" id="t-chart">Biểu đồ 30 ngày gần nhất</h2>
+                    <p class="panel-sub" style="margin:0">Các ngày chưa nhập sẽ được nối liền giữa hai điểm gần nhất</p>
+                </div>
+                <div class="legend" aria-hidden="false">
+                    <span><i style="background:var(--s1)"></i>Tổng</span>
+                    <span><i style="background:var(--s2)"></i>Tiền mặt</span>
+                    <span><i style="background:var(--s3)"></i>Tiền tài khoản</span>
+                </div>
+            </div>
+            <div class="chart-box" id="chart-box"><canvas id="chart" role="img" aria-label="Biểu đồ tổng tiền, tiền mặt và tiền tài khoản theo ngày"></canvas></div>
+        </section>
+
+        <section class="glass-panel" aria-labelledby="t-backup">
+            <h2 class="panel-title" id="t-backup">Sao lưu dữ liệu</h2>
+            <p class="panel-sub">Dữ liệu chỉ nằm trong trình duyệt này. Xuất file để sao lưu hoặc chuyển sang máy khác.</p>
+            <div id="backup"></div>
+        </section>
+    </main>
+
+    <script src="/app/vendor/chart.umd.js"></script>
+    <script src="/app/common.js"></script>
+    <script src="/app/chitieu.js"></script>
+</body>
+</html>
