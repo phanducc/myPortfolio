@@ -3,6 +3,7 @@
     'use strict';
 
     var COL = 'chitieu';                // Firestore: chitieu/{YYYY-MM-DD} = { date, cash, bank }
+    var SV = 'tietkiem';                // Firestore: tietkiem/{YYYY-MM-DD} = { date, value } (số dư tiết kiệm có hiệu lực từ ngày đó)
     var LEGACY_KEY = 'pd.chitieu.v1';   // dữ liệu cũ lưu trong trình duyệt (trước khi có tài khoản)
     var DAYS = 30;
     var $ = function (id) { return document.getElementById(id); };
@@ -14,7 +15,9 @@
         total: $('f-total'), diff: $('f-diff'), submit: $('f-submit'), cancel: $('f-cancel'), msg: $('f-msg'),
         summary: $('summary'), tbody: $('tbody'), chartBox: $('chart-box'),
         tcYear: $('tc-year'), tcMonth: $('tc-month'), tcTiles: $('tc-tiles'), tcBox: $('tc-box'), tcSub: $('tc-sub'),
-        chRange: $('ch-range'), chOlder: $('ch-older'), chNewer: $('ch-newer'), chTitle: $('t-chart')
+        chRange: $('ch-range'), chOlder: $('ch-older'), chNewer: $('ch-newer'), chTitle: $('t-chart'),
+        svForm: $('sv-form'), svValue: $('sv-value'), svDate: $('sv-date'), svMsg: $('sv-msg'), svNow: $('sv-now'), svSub: $('sv-sub'),
+        svHist: $('sv-history'), svBody: $('sv-body')
     };
     var chart = null, tcChart = null;
     var nowYM = PD.today().slice(0, 7);
@@ -22,7 +25,8 @@
     var chRange = 'last30';              // biểu đồ đường: 'last30' hoặc 'YYYY-MM'
     var editing = null;                  // ngày đang sửa
     var cache = [];                      // dữ liệu mới nhất từ Firestore
-    var unwatch = null;
+    var svCache = [];                    // các mốc số dư tiết kiệm
+    var unwatch = null, unwatchSv = null;
 
     var valid = function (r) {
         return r && PD.isDay(r.date) && isFinite(r.cash) && isFinite(r.bank) && r.cash >= 0 && r.bank >= 0;
@@ -33,14 +37,24 @@
     var toItem = function (r) { return { id: r.date, data: { date: r.date, cash: r.cash, bank: r.bank } }; };
     var saveFail = function (e) { say('Lưu thất bại: ' + (e && e.message || e), true); };
 
-    /** Thêm tổng và chênh lệch so với hôm qua (nếu thiếu hôm qua thì so với ngày gần nhất trước đó) */
+    /* ---------- Tài khoản tiết kiệm: các mốc (từ ngày, số dư), không cần nhập lại mỗi ngày ---------- */
+    var svValid = function (s) { return s && PD.isDay(s.date) && isFinite(s.value) && s.value >= 0; };
+    var svList = function () { return svCache.filter(svValid).sort(function (a, b) { return a.date < b.date ? -1 : 1; }); };
+    /** Số dư tiết kiệm tại một ngày: mốc gần nhất không muộn hơn ngày đó; trước mốc đầu tiên thì lấy luôn giá trị của mốc đầu tiên */
+    function savingsAt(date) {
+        var l = svList(), v = l.length ? l[0].value : 0;
+        for (var i = 0; i < l.length; i++) { if (l[i].date <= date) v = l[i].value; else break; }
+        return v;
+    }
+
+    /** Thêm tổng (đã gồm tiết kiệm) và chênh lệch so với hôm qua (nếu thiếu hôm qua thì so với ngày gần nhất trước đó) */
     function enrich(list) {
         return list.map(function (r, i) {
-            var total = r.cash + r.bank;
+            var sav = savingsAt(r.date), total = r.cash + r.bank + sav;
             var prev = i > 0 ? list[i - 1] : null;
             return {
-                date: r.date, cash: r.cash, bank: r.bank, total: total,
-                diff: prev ? total - (prev.cash + prev.bank) : null,
+                date: r.date, cash: r.cash, bank: r.bank, sav: sav, total: total,
+                diff: prev ? total - (prev.cash + prev.bank + savingsAt(prev.date)) : null,
                 prevDate: prev ? prev.date : null,
                 gap: prev ? prev.date !== PD.addDays(r.date, -1) : false
             };
@@ -51,15 +65,17 @@
     function previewTotal() {
         var cash = PD.parseMoney(el.cash.value), bank = PD.parseMoney(el.bank.value);
         cash = isNaN(cash) ? 0 : cash; bank = isNaN(bank) ? 0 : bank;
-        var total = cash + bank;
+        var d = el.date.value, sav = PD.isDay(d) ? savingsAt(d) : 0;
+        var total = cash + bank + sav;
         el.total.textContent = PD.vnd(total) + ' đ';
         // Chênh lệch so với ngày liền trước ngày đang chọn
         if (isNaN(PD.parseMoney(el.cash.value)) && isNaN(PD.parseMoney(el.bank.value))) { el.diff.textContent = ''; return; }
-        var d = el.date.value, prev = null;
+        var prev = null;
         rows().forEach(function (r) { if (PD.isDay(d) && r.date < d) prev = r; });
-        if (!prev) { el.diff.textContent = ''; return; }
-        var diff = total - (prev.cash + prev.bank);
-        el.diff.innerHTML = 'So với ' + (prev.date === PD.addDays(d, -1) ? 'hôm qua' : PD.fmtDay(prev.date)) + ': ' + PD.delta(diff, ' đ');
+        var note = sav > 0 ? 'Đã gồm tiết kiệm ' + PD.vnd(sav) + ' đ. ' : '';
+        if (!prev) { el.diff.textContent = note.trim(); return; }
+        var diff = total - (prev.cash + prev.bank + savingsAt(prev.date));
+        el.diff.innerHTML = note + 'So với ' + (prev.date === PD.addDays(d, -1) ? 'hôm qua' : PD.fmtDay(prev.date)) + ': ' + PD.delta(diff, ' đ');
     }
 
     function say(text, err) { el.msg.textContent = text; el.msg.className = 'form-msg' + (err ? ' err' : ''); }
@@ -121,12 +137,12 @@
 
     function renderTable(list) {
         if (!list.length) {
-            el.tbody.innerHTML = '<tr><td colspan="6" class="none">Chưa có dữ liệu. Nhập số liệu đầu tiên ở phía trên.</td></tr>';
+            el.tbody.innerHTML = '<tr><td colspan="7" class="none">Chưa có dữ liệu. Nhập số liệu đầu tiên ở phía trên.</td></tr>';
             return;
         }
         el.tbody.innerHTML = list.slice().reverse().map(function (r) {
             var note = r.gap ? ' <span style="color:var(--ink-3);font-size:12px">(so với ' + PD.fmtDay(r.prevDate).slice(0, 5) + ')</span>' : '';
-            return '<tr><td>' + PD.fmtDay(r.date) + '</td><td>' + PD.vnd(r.cash) + '</td><td>' + PD.vnd(r.bank) + '</td>' +
+            return '<tr><td>' + PD.fmtDay(r.date) + '</td><td>' + PD.vnd(r.cash) + '</td><td>' + PD.vnd(r.bank) + '</td><td>' + PD.vnd(r.sav) + '</td>' +
                 '<td><b>' + PD.vnd(r.total) + '</b></td><td>' + PD.delta(r.diff) + note + '</td>' +
                 '<td class="act"><button type="button" class="link-btn" data-a="edit" data-d="' + r.date + '">Sửa</button>' +
                 '<button type="button" class="link-btn del" data-a="del" data-d="' + r.date + '">Xoá</button></td></tr>';
@@ -145,8 +161,38 @@
             tile('Tổng số tiền', PD.vnd(last.total), 'đ · ngày ' + PD.fmtDay(last.date)) +
             tile(diffLabel, PD.delta(last.diff), last.diff === null ? 'chưa có ngày trước để so sánh' : 'đ') +
             tile('Tiền mặt', PD.vnd(last.cash), 'đ') +
-            tile('Tiền tài khoản', PD.vnd(last.bank), 'đ');
+            tile('Tiền tài khoản', PD.vnd(last.bank), 'đ') +
+            tile('Tiết kiệm', PD.vnd(last.sav), 'đ');
     }
+
+    /* ---------- Khung tài khoản tiết kiệm ---------- */
+    function renderSavings() {
+        var l = svList(), today = PD.today();
+        el.svNow.textContent = PD.vnd(savingsAt(today)) + ' đ';
+        el.svSub.textContent = l.length ? 'Cập nhật lần cuối: có hiệu lực từ ' + PD.fmtDay(l[l.length - 1].date) : 'Chưa thiết lập. Nhập số dư tiết kiệm hiện có để cộng vào tổng tài sản.';
+        el.svHist.hidden = !l.length;
+        el.svBody.innerHTML = l.slice().reverse().map(function (s) {
+            return '<tr><td>' + PD.fmtDay(s.date) + '</td><td>' + PD.vnd(s.value) + '</td>' +
+                '<td class="act"><button type="button" class="link-btn del" data-d="' + s.date + '">Xoá</button></td></tr>';
+        }).join('');
+    }
+    el.svDate.max = PD.today();
+    PD.moneyInput(el.svValue);
+    el.svForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var v = PD.parseMoney(el.svValue.value), d = el.svDate.value || PD.today();
+        var say2 = function (t, err) { el.svMsg.textContent = t; el.svMsg.className = 'form-msg' + (err ? ' err' : ''); };
+        if (isNaN(v)) return say2('Nhập số dư tiết kiệm (có thể là 0).', true);
+        if (!PD.isDay(d) || d > PD.today()) return say2('Ngày áp dụng không hợp lệ.', true);
+        PDCloud.put(SV, d, { date: d, value: v }).catch(function (err) { say2('Lưu thất bại: ' + (err && err.message || err), true); });
+        say2('Đã cập nhật số dư tiết kiệm: ' + PD.vnd(v) + ' đ (từ ' + PD.fmtDay(d) + ').');
+        el.svValue.value = ''; el.svDate.value = '';
+    });
+    el.svBody.addEventListener('click', function (e) {
+        var b = e.target.closest('button[data-d]'); if (!b) return;
+        var d = b.getAttribute('data-d');
+        if (confirm('Xoá mốc số dư tiết kiệm từ ngày ' + PD.fmtDay(d) + '?')) PDCloud.remove(SV, d);
+    });
 
     /* ---------- Tổng thu · tổng chi theo tháng ---------- */
     var fillSelect = function (sel, opts, value) {
@@ -270,6 +316,7 @@
 
     function render() {
         var list = enrich(rows());
+        renderSavings();
         renderSummary(list);
         renderFlows(list);
         renderTable(list);
@@ -277,11 +324,22 @@
         previewTotal();
     }
 
+    // File sao lưu: mảng các dòng { date, cash, bank } và (nếu có) các mốc tiết kiệm { date, savings }
+    var svFileValid = function (x) { return x && PD.isDay(x.date) && isFinite(x.savings) && x.savings >= 0 && x.cash === undefined; };
     PD.backup($('backup'), {
         filename: 'chitieu-sao-luu.json',
-        validate: valid,
-        getAll: function () { return rows().map(function (r) { return { date: r.date, cash: r.cash, bank: r.bank }; }); },
-        replaceAll: function (arr) { return PDCloud.replaceAll(COL, arr.map(toItem)); }
+        validate: function (x) { return valid(x) || svFileValid(x); },
+        getAll: function () {
+            return rows().map(function (r) { return { date: r.date, cash: r.cash, bank: r.bank }; })
+                .concat(svList().map(function (s) { return { date: s.date, savings: s.value }; }));
+        },
+        replaceAll: function (arr) {
+            var rs = arr.filter(valid), ss = arr.filter(svFileValid);
+            var jobs = [];
+            if (rs.length) jobs.push(PDCloud.replaceAll(COL, rs.map(toItem)));
+            if (ss.length) jobs.push(PDCloud.replaceAll(SV, ss.map(function (s) { return { id: s.date, data: { date: s.date, value: s.savings } }; })));
+            return Promise.all(jobs);
+        }
     });
 
     function offerLegacy() {
@@ -303,9 +361,12 @@
                 ? 'Tài khoản này không có quyền truy cập dữ liệu. Hãy đăng nhập bằng đúng tài khoản Google của chủ web.'
                 : 'Không đọc được dữ liệu: ' + (err && err.message || err));
         });
+        if (unwatchSv) unwatchSv();
+        unwatchSv = PDCloud.watch(SV, function (docs) { svCache = docs; render(); previewTotal(); }, function () { /* lỗi quyền đã được báo ở collection chính */ });
     }, function () {
         if (unwatch) { unwatch(); unwatch = null; }
-        cache = [];
+        if (unwatchSv) { unwatchSv(); unwatchSv = null; }
+        cache = []; svCache = [];
         if (chart) { chart.destroy(); chart = null; }
         if (tcChart) { tcChart.destroy(); tcChart = null; }
     });

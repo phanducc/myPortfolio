@@ -59,6 +59,35 @@
             <p class="form-msg" id="f-msg" aria-live="polite" style="margin-top:10px"></p>
         </section>
 
+        <section class="glass-panel" aria-labelledby="t-sv">
+            <div class="panel-head">
+                <div>
+                    <h2 class="panel-title" id="t-sv">Tài khoản tiết kiệm</h2>
+                    <p class="panel-sub" style="margin:0" id="sv-sub"></p>
+                </div>
+                <div class="sv-now"><span class="lb">Số dư hiện tại</span><b id="sv-now">0 đ</b></div>
+            </div>
+            <form id="sv-form" class="entry-form" novalidate style="margin-top:14px">
+                <div class="field">
+                    <label for="sv-value">Số dư tiết kiệm mới (đ)</label>
+                    <input type="text" id="sv-value" placeholder="0">
+                </div>
+                <div class="field">
+                    <label for="sv-date">Áp dụng từ ngày (trống = hôm nay)</label>
+                    <input type="date" id="sv-date">
+                </div>
+                <div class="form-actions"><button type="submit" class="btn primary" id="sv-submit">Cập nhật</button></div>
+            </form>
+            <p class="form-msg" id="sv-msg" aria-live="polite" style="margin-top:10px"></p>
+            <p class="note" style="margin-top:6px">Chỉ cần cập nhật khi số dư tiết kiệm thay đổi, không cần nhập lại mỗi ngày. Số dư này được cộng vào tổng tài sản. Lần đầu thiết lập sẽ áp dụng cho cả các ngày trước đó để không tạo ra khoản thu giả.</p>
+            <details class="sv-history" id="sv-history" hidden>
+                <summary>Lịch sử thay đổi số dư tiết kiệm</summary>
+                <div class="tbl-wrap" style="max-height:240px">
+                    <table class="data" style="min-width:360px"><thead><tr><th>Từ ngày</th><th>Số dư (đ)</th><th><span class="sr-only">Thao tác</span></th></tr></thead><tbody id="sv-body"></tbody></table>
+                </div>
+            </details>
+        </section>
+
         <section id="summary" class="tiles" aria-label="Tóm tắt"></section>
 
         <section class="glass-panel" aria-labelledby="t-thuchi">
@@ -90,7 +119,7 @@
             </div>
             <div class="tbl-wrap">
                 <table class="data">
-                    <thead><tr><th>Ngày</th><th>Tiền mặt</th><th>Tiền tài khoản</th><th>Tổng</th><th>Chênh lệch so với hôm qua</th><th><span class="sr-only">Thao tác</span></th></tr></thead>
+                    <thead><tr><th>Ngày</th><th>Tiền mặt</th><th>Tiền tài khoản</th><th>Tiết kiệm</th><th>Tổng</th><th>Chênh lệch so với hôm qua</th><th><span class="sr-only">Thao tác</span></th></tr></thead>
                     <tbody id="tbody"></tbody>
                 </table>
             </div>
