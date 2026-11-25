@@ -52,6 +52,45 @@
     PD.icon = function (name, cls) {
         return '<span class="ico mi' + (cls ? ' ' + cls : '') + '" style="--i:url(/assets/icons/' + (ICON_FILES[name] || name) + '.svg)" aria-hidden="true"></span>';
     };
+    /* ---------- Hiệu ứng động (tôn trọng "giảm chuyển động" của hệ điều hành) ---------- */
+    PD.reduceMotion = function () { return !!(g.matchMedia && g.matchMedia('(prefers-reduced-motion: reduce)').matches); };
+    var firstAt = {};
+    /** Bật lớp .fx-in (hiệu ứng vào) cho khung chứa trong khoảng 1,2 giây đầu kể từ lần vẽ đầu tiên (dữ liệu về từng đợt nên có thể vẽ vài lần liên tiếp); sau đó tắt để không lặp lại mỗi lần dữ liệu đổi */
+    PD.fxFirst = function (el, key) {
+        if (!el) return;
+        var now = Date.now();
+        if (!firstAt[key]) firstAt[key] = now;
+        el.classList.toggle('fx-in', now - firstAt[key] < 1200);
+    };
+    var numPrev = {};
+    /** Số tiền trong ô (.tile .v) chạy từ giá trị cũ (lần đầu từ 0) lên giá trị mới */
+    PD.animateNums = function (root) {
+        if (!root) return;
+        Array.prototype.forEach.call(root.querySelectorAll('.tile .v'), function (v, i) {
+            var node = v.firstChild;
+            if (!node || node.nodeType !== 3) return;
+            var txt = node.nodeValue.trim();
+            if (!/^[\d.]+$/.test(txt)) return;
+            var to = Number(txt.replace(/\./g, '')), k = (root.id || 'x') + ':' + i, from = numPrev[k] === undefined ? 0 : numPrev[k];
+            numPrev[k] = to;
+            if (from === to || PD.reduceMotion()) return;
+            var t0 = null, dur = 750;
+            node.nodeValue = PD.vnd(from);
+            requestAnimationFrame(function step(ts) {
+                if (t0 === null) t0 = ts;
+                var p = Math.min((ts - t0) / dur, 1), e = 1 - Math.pow(1 - p, 3);
+                node.nodeValue = PD.vnd(from + (to - from) * e);
+                if (p < 1) requestAnimationFrame(step);
+            });
+        });
+    };
+    /** Gán các ô số liệu vào khung rồi chạy hiệu ứng: ô hiện lần lượt ở lần đầu, số chạy lên khi giá trị đổi */
+    PD.setTiles = function (container, html, key) {
+        PD.fxFirst(container, key || container.id || 'tiles');
+        container.innerHTML = html;
+        PD.animateNums(container);
+    };
+
     /** Ô số liệu: biểu tượng + nhãn, số lớn kèm ký hiệu "đ" mờ, dòng phụ.
      *  o: { label, value (html), sub, icon, cls, cur (false = không thêm "đ"), extra (html thêm bên dưới) } */
     PD.tile = function (o) {
@@ -277,7 +316,7 @@
             data: { datasets: datasets },
             plugins: [crosshair],
             options: {
-                responsive: true, maintainAspectRatio: false, animation: false,
+                responsive: true, maintainAspectRatio: false, animation: PD.reduceMotion() ? false : { duration: 700, easing: 'easeOutCubic' },
                 interaction: { mode: 'index', intersect: false },
                 layout: { padding: { right: 12, top: 6 } },
                 scales: {
@@ -336,7 +375,7 @@
                 })
             },
             options: {
-                responsive: true, maintainAspectRatio: false, animation: false,
+                responsive: true, maintainAspectRatio: false, animation: PD.reduceMotion() ? false : { duration: 700, easing: 'easeOutCubic' },
                 interaction: { mode: 'index', intersect: false },
                 layout: { padding: { right: 8, top: 6 } },
                 scales: {
