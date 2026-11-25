@@ -17,7 +17,9 @@
     --glass-badge-bg: var(--fill-1);
 }
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Nunito', sans-serif; scroll-behavior: smooth; }
-body { background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; overflow-x: hidden; }
+/* Luôn chừa chỗ cho thanh cuộn dọc (overflow-y: scroll lan lên khung nhìn nên thanh tiêu đề dính vẫn hoạt động) để trang không giật sang trái khi nội dung dài ra và thanh cuộn xuất hiện, ví dụ khi chuyển trang hoặc khi dữ liệu tải xong. */
+html { scrollbar-gutter: stable; }
+body { background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; overflow-x: hidden; overflow-y: scroll; }
 ::selection { background-color: var(--primary-color); color: var(--bg-color); }
 .glass-header {
     position: fixed; top: 0; left: 0; width: 100%;
