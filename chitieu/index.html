@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="robots" content="noindex">
     <title>Quản lý chi tiêu | Phan Đức</title>
     <link rel="icon" type="image/png" href="/assets/phanduc.png">
@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="/app/app.css">
 </head>
-<body class="app">
+<body class="app page-chitieu">
     <header id="app-header"></header>
 
     <main class="app-main">
@@ -30,7 +30,7 @@
         <section id="legacy" class="glass-panel" hidden></section>
 
 
-        <section class="glass-panel" aria-labelledby="t-entry">
+        <section class="glass-panel" id="entry-panel" aria-labelledby="t-entry">
             <h2 class="panel-title" id="t-entry">Nhập số liệu</h2>
             <p class="panel-sub">Nhập lại cùng một ngày sẽ cập nhật số liệu của ngày đó.</p>
             <form id="form" class="entry-form top" novalidate>
@@ -64,7 +64,7 @@
             <p class="form-msg" id="f-msg" aria-live="polite" style="margin-top:10px"></p>
         </section>
 
-        <section class="glass-panel" aria-labelledby="t-sv">
+        <section class="glass-panel" id="sv-panel" aria-labelledby="t-sv">
             <div class="panel-head">
                 <div>
                     <h2 class="panel-title" id="t-sv">Tài khoản tiết kiệm</h2>
@@ -72,6 +72,8 @@
                 </div>
                 <div class="sv-now"><span class="lb">Số dư hiện tại</span><b id="sv-now">0 đ</b></div>
             </div>
+            <button type="button" class="btn secondary sv-toggle" id="sv-toggle" aria-expanded="false" aria-controls="sv-more" style="margin-top:12px">Cập nhật số dư tiết kiệm</button>
+            <div class="sv-more" id="sv-more">
             <form id="sv-form" class="entry-form" novalidate style="margin-top:14px">
                 <div class="field">
                     <label for="sv-value">Số dư tiết kiệm mới (đ)</label>
@@ -91,11 +93,12 @@
                     <table class="data" style="min-width:360px"><thead><tr><th>Từ ngày</th><th>Số dư (đ)</th><th><span class="sr-only">Thao tác</span></th></tr></thead><tbody id="sv-body"></tbody></table>
                 </div>
             </details>
+            </div>
         </section>
 
-        <section id="summary" class="tiles" aria-label="Tóm tắt"></section>
+        <section id="summary" class="tiles four" aria-label="Tóm tắt"></section>
 
-        <section class="glass-panel" aria-labelledby="t-thuchi">
+        <section class="glass-panel" id="tc-panel" aria-labelledby="t-thuchi">
             <div class="panel-head">
                 <div>
                     <h2 class="panel-title" id="t-thuchi">Tổng thu · Tổng chi</h2>
@@ -114,14 +117,15 @@
             <p class="note">Thu và chi được tính từ chênh lệch tổng tiền giữa các lần nhập: tổng tiền tăng là thu, giảm là chi. Nếu trong cùng một ngày vừa thu vừa chi thì hai khoản bù trừ nhau, và nếu bỏ trống nhiều ngày thì chênh lệch được tính dồn vào ngày nhập kế tiếp.</p>
         </section>
 
-        <section class="glass-panel" aria-labelledby="t-table">
+        <section class="glass-panel" id="tx-panel" aria-labelledby="t-table">
             <div class="panel-head">
                 <div>
                     <h2 class="panel-title" id="t-table">Bảng tổng hợp</h2>
                     <p class="panel-sub" style="margin:0">Mới nhất ở trên cùng · đơn vị: đồng</p>
                 </div>
             </div>
-            <div class="tbl-wrap">
+            <div class="txlist" id="txlist"></div>
+            <div class="tbl-wrap desk-only">
                 <table class="data">
                     <thead><tr><th>Ngày</th><th>Tiền mặt</th><th>Tiền tài khoản</th><th>Tiết kiệm</th><th>Tổng</th><th>Chênh lệch so với hôm qua</th><th><span class="sr-only">Thao tác</span></th></tr></thead>
                     <tbody id="tbody"></tbody>
@@ -129,7 +133,7 @@
             </div>
         </section>
 
-        <section class="glass-panel" aria-labelledby="t-chart">
+        <section class="glass-panel" id="ch-panel" aria-labelledby="t-chart">
             <div class="panel-head">
                 <div>
                     <h2 class="panel-title" id="t-chart">Biểu đồ 30 ngày gần nhất</h2>
@@ -151,7 +155,7 @@
             <div class="chart-box" id="chart-box"><canvas id="chart" role="img" aria-label="Biểu đồ tổng tiền, tiền mặt và tiền tài khoản theo ngày"></canvas></div>
         </section>
 
-        <section class="glass-panel" aria-labelledby="t-backup">
+        <section class="glass-panel" id="bk-panel" aria-labelledby="t-backup">
             <h2 class="panel-title" id="t-backup">Sao lưu dữ liệu</h2>
             <p class="panel-sub">Xuất file JSON để giữ một bản sao ngoài tài khoản. Nhập file sẽ <b>thay toàn bộ</b> dữ liệu hiện có trên tài khoản.</p>
             <div id="backup"></div>

@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="robots" content="noindex">
     <title>Tài sản vàng | Phan Đức</title>
     <link rel="icon" type="image/png" href="/assets/phanduc.png">
@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="/app/app.css">
 </head>
-<body class="app">
+<body class="app page-gold">
     <header id="app-header"></header>
 
     <main class="app-main">
@@ -31,7 +31,7 @@
 
 
         <!-- 1. TÀI KHOẢN VÀNG -->
-        <section class="glass-panel" aria-labelledby="t-entry">
+        <section class="glass-panel" id="entry-panel" aria-labelledby="t-entry">
             <h2 class="panel-title" id="t-entry">Tài khoản vàng · Nhập lần mua</h2>
             <p class="panel-sub">1 lượng = 10 chỉ. Mỗi lần mua là một dòng riêng, có thể mua nhiều lần trong cùng một ngày.</p>
             <form id="form" class="entry-form" novalidate>
@@ -66,12 +66,13 @@
             <p class="form-msg" id="f-msg" aria-live="polite" style="margin-top:10px"></p>
         </section>
 
-        <section id="summary" class="tiles" aria-label="Tóm tắt tài khoản vàng"></section>
+        <section id="summary" class="tiles three" aria-label="Tóm tắt tài khoản vàng"></section>
 
         <section class="glass-panel" aria-labelledby="t-table">
             <h2 class="panel-title" id="t-table">Bảng tổng hợp các lần mua</h2>
             <p class="panel-sub">Mới nhất ở trên cùng</p>
-            <div class="tbl-wrap">
+            <div class="txlist" id="lots-list"></div>
+            <div class="tbl-wrap desk-only">
                 <table class="data">
                     <thead><tr><th>Ngày mua</th><th>Số lượng (chỉ)</th><th>Giá mua (đ/chỉ)</th><th>Thành tiền (đ)</th><th><span class="sr-only">Thao tác</span></th></tr></thead>
                     <tbody id="lots-body"></tbody>
@@ -126,7 +127,8 @@
                 </div>
             </div>
             <div class="tiles" id="pl-tiles"></div>
-            <div class="tbl-wrap">
+            <div class="txlist" id="pl-list"></div>
+            <div class="tbl-wrap desk-only">
                 <table class="data" style="min-width:720px">
                     <thead><tr><th>Ngày mua</th><th>Số lượng (chỉ)</th><th>Giá vốn (đ/chỉ)</th><th>Vốn (đ)</th><th>Giá trị hiện tại (đ)</th><th>Lãi / lỗ (đ)</th><th>%</th></tr></thead>
                     <tbody id="pl-body"></tbody>
