@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Phan Văn Đức | Điện tử nhúng và phát triển web</title>
     <meta name="description" content="Phan Văn Đức, sinh viên Điện tử - Viễn thông. Dự án khoá cửa ESP32 dùng TOTP, CPU 16-bit trên Logisim, máy tính bỏ túi Arduino, game C++ và các ứng dụng web.">
-    <link rel="icon" type="image/png" href="assets/phanduc.png">
+    <link rel="icon" type="image/webp" href="assets/logo.webp">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -16,7 +16,7 @@
     <header class="glass-header">
         <div class="header-container">
             <div class="logo gsap-nav">
-                <img src="assets/phanduc.png" alt="Phan Đức Icon" class="logo-img">
+                <img src="assets/logo.webp" alt="Logo Phan Đức" class="logo-img" width="400" height="360">
                 PHAN ĐỨC.
             </div>
             <div class="nav-pill gsap-nav">
@@ -38,8 +38,8 @@
             <h2 class="gsap-hero">Sinh viên Điện tử – Viễn thông, làm cả phần cứng lẫn phần mềm</h2>
             <p class="gsap-hero">Tôi thiết kế mạch, viết firmware cho vi điều khiển và dựng ứng dụng web. Gần đây tôi làm một khoá cửa ESP32 mở bằng mã TOTP, một bộ xử lý 16-bit mô phỏng trên Logisim và ứng dụng ghi sổ thu chi cho chính mình.</p>
             <div class="hero-buttons gsap-hero">
-                <a href="#projects" class="btn primary">Xem dự án</a>
-                <a href="https://github.com/phanducc" target="_blank" rel="noopener noreferrer" class="btn secondary">GitHub</a>
+                <a href="#projects" class="btn primary">Xem dự án<span class="mi" style="--i:url(assets/icons/arrow_downward.svg)" aria-hidden="true"></span></a>
+                <a href="https://github.com/phanducc" target="_blank" rel="noopener noreferrer" class="btn secondary"><i class="fab fa-github"></i>GitHub</a>
             </div>
         </div>
         
@@ -53,19 +53,19 @@
         <h2 class="section-title gsap-scroll">Kỹ năng <span>và công nghệ</span></h2>
         <div class="skills-grid">
             <div class="skill-category glass-panel gsap-scroll">
-                <h3>Phần cứng và nhúng</h3>
+                <h3><span class="badge"><span class="mi" style="--i:url(assets/icons/memory.svg)" aria-hidden="true"></span></span>Phần cứng và nhúng</h3>
                 <div class="tags">
                     <span>ESP32</span><span>Arduino (ATmega328P)</span><span>STM32</span><span>Thiết kế sơ đồ và PCB (EasyEDA)</span><span>I2C, PWM, quét ma trận phím</span><span>Mạch số và CPU (Logisim)</span>
                 </div>
             </div>
             <div class="skill-category glass-panel gsap-scroll">
-                <h3>Lập trình</h3>
+                <h3><span class="badge"><span class="mi" style="--i:url(assets/icons/code.svg)" aria-hidden="true"></span></span>Lập trình</h3>
                 <div class="tags">
                     <span>C/C++</span><span>Python</span><span>JavaScript</span><span>MATLAB</span><span>Google Apps Script</span>
                 </div>
             </div>
             <div class="skill-category glass-panel gsap-scroll">
-                <h3>Web và đám mây</h3>
+                <h3><span class="badge"><span class="mi" style="--i:url(assets/icons/cloud.svg)" aria-hidden="true"></span></span>Web và đám mây</h3>
                 <div class="tags">
                     <span>HTML/CSS</span><span>Cloudflare Workers</span><span>Firebase (Auth, Firestore)</span><span>Chart.js</span><span>REST API</span>
                 </div>
@@ -77,63 +77,63 @@
         <h2 class="section-title gsap-scroll">Dự án <span>tiêu biểu</span></h2>
         <div class="projects-grid">
             <div class="project-card glass-panel gsap-scroll">
-                <h3>Khoá cửa thông minh ESP32 dùng TOTP</h3>
+                <span class="badge lg"><span class="mi" style="--i:url(assets/icons/lock.svg)" aria-hidden="true"></span></span><h3>Khoá cửa thông minh ESP32 dùng TOTP</h3>
                 <p>Khoá cửa mở bằng mã 6 số đổi mỗi 30 giây, dùng được với Google Authenticator và nhận diện nhiều người dùng. Mỗi lần mở khoá được ghi lên Google Sheets qua HTTPS. Sơ đồ nguyên lý và mạch in 2 lớp do tôi tự thiết kế trên EasyEDA.</p>
                 <div class="tags">
                     <span>ESP32</span><span>C++</span><span>TOTP (RFC 6238)</span><span>Google Apps Script</span><span>EasyEDA</span>
                 </div>
                 <div class="project-links">
-                    <a href="https://github.com/phanducc/TOTP-Lock" target="_blank" rel="noopener noreferrer" class="btn secondary">Mã nguồn</a>
+                    <a href="https://github.com/phanducc/TOTP-Lock" target="_blank" rel="noopener noreferrer" class="btn secondary"><span class="mi" style="--i:url(assets/icons/code.svg)" aria-hidden="true"></span>Mã nguồn</a>
                 </div>
             </div>
             <div class="project-card glass-panel gsap-scroll">
-                <h3>CPU 16-bit và khoá số 4 chữ số</h3>
+                <span class="badge lg"><span class="mi" style="--i:url(assets/icons/developer_board.svg)" aria-hidden="true"></span></span><h3>CPU 16-bit và khoá số 4 chữ số</h3>
                 <p>Bộ xử lý 16-bit kiến trúc Harvard tự thiết kế trên Logisim-evolution: ALU làm được cộng, trừ, AND, OR, cùng ROM lệnh và bộ giải mã điều khiển với 7 lệnh. Chương trình chạy trên nó là một khoá số 4 chữ số BCD: đặt mật mã, so khớp rồi báo mở hoặc khoá bằng đèn LED.</p>
                 <div class="tags">
                     <span>Logisim-evolution</span><span>Kiến trúc máy tính</span><span>ALU</span><span>ROM/RAM</span>
                 </div>
                 <div class="project-links">
-                    <a href="https://github.com/phanducc/16bit-digital-lock-logisim" target="_blank" rel="noopener noreferrer" class="btn secondary">Mã nguồn</a>
+                    <a href="https://github.com/phanducc/16bit-digital-lock-logisim" target="_blank" rel="noopener noreferrer" class="btn secondary"><span class="mi" style="--i:url(assets/icons/code.svg)" aria-hidden="true"></span>Mã nguồn</a>
                 </div>
             </div>
             <div class="project-card glass-panel gsap-scroll">
-                <h3>Máy tính bỏ túi dùng Arduino</h3>
+                <span class="badge lg"><span class="mi" style="--i:url(assets/icons/calculate.svg)" aria-hidden="true"></span></span><h3>Máy tính bỏ túi dùng Arduino</h3>
                 <p>Đồ án môn Thiết kế máy tính bỏ túi. Tính 4 phép tính trên số thực đúng thứ tự ưu tiên nhờ thuật toán Shunting-yard và ký pháp Ba Lan ngược (RPN). Lưu 5 kết quả gần nhất, chặn chia cho 0 và tràn số.</p>
                 <div class="tags">
                     <span>C/C++</span><span>Arduino Uno</span><span>LCD I2C</span><span>Keypad 4x4</span><span>RPN</span>
                 </div>
                 <div class="project-links">
-                    <a href="https://github.com/phanducc/mini-calc-atmega328p" target="_blank" rel="noopener noreferrer" class="btn secondary">Mã nguồn</a>
+                    <a href="https://github.com/phanducc/mini-calc-atmega328p" target="_blank" rel="noopener noreferrer" class="btn secondary"><span class="mi" style="--i:url(assets/icons/code.svg)" aria-hidden="true"></span>Mã nguồn</a>
                 </div>
             </div>
             <div class="project-card glass-panel gsap-scroll">
-                <h3>Game 2D Circle Fight</h3>
+                <span class="badge lg"><span class="mi" style="--i:url(assets/icons/sports_esports.svg)" aria-hidden="true"></span></span><h3>Game 2D Circle Fight</h3>
                 <p>Game 2D né chướng ngại vật qua 3 màn, có đồng hồ bấm giờ và bảng kỷ lục. Viết bằng C++ theo hướng đối tượng với SFML, đọc bản đồ thiết kế từ Tiled bằng thư viện tmxlite.</p>
                 <div class="tags">
                     <span>C++</span><span>SFML</span><span>OOP</span><span>Tiled</span>
                 </div>
                 <div class="project-links">
-                    <a href="https://github.com/phanducc/circle_fight" target="_blank" rel="noopener noreferrer" class="btn secondary">Mã nguồn</a>
+                    <a href="https://github.com/phanducc/circle_fight" target="_blank" rel="noopener noreferrer" class="btn secondary"><span class="mi" style="--i:url(assets/icons/code.svg)" aria-hidden="true"></span>Mã nguồn</a>
                 </div>
             </div>
             <div class="project-card glass-panel gsap-scroll">
-                <h3>Freefilm</h3>
+                <span class="badge lg"><span class="mi" style="--i:url(assets/icons/movie.svg)" aria-hidden="true"></span></span><h3>Freefilm</h3>
                 <p>Website xem phim trực tuyến lấy dữ liệu từ API bên thứ ba, tối ưu tốc độ tải và chạy trên Cloudflare.</p>
                 <div class="tags">
                     <span>HTML/CSS/JS</span><span>API</span><span>Cloudflare</span>
                 </div>
                 <div class="project-links">
-                    <a href="https://freefilm.pp.ua" target="_blank" rel="noopener noreferrer" class="btn secondary">Xem web</a>
+                    <a href="https://freefilm.pp.ua" target="_blank" rel="noopener noreferrer" class="btn secondary">Xem web<span class="mi" style="--i:url(assets/icons/arrow_outward.svg)" aria-hidden="true"></span></a>
                 </div>
             </div>
             <div class="project-card glass-panel gsap-scroll">
-                <h3>Web cá nhân và sổ chi tiêu</h3>
+                <span class="badge lg"><span class="mi" style="--i:url(assets/icons/insights.svg)" aria-hidden="true"></span></span><h3>Web cá nhân và sổ chi tiêu</h3>
                 <p>Chính trang web này, kèm hai ứng dụng riêng: sổ thu chi theo ngày và theo dõi vàng SJC có tính lãi lỗ. Đăng nhập bằng Google, dữ liệu lưu trên Firestore, giá vàng lấy qua một Cloudflare Worker.</p>
                 <div class="tags">
                     <span>JavaScript</span><span>Firebase</span><span>Cloudflare Workers</span><span>Chart.js</span>
                 </div>
                 <div class="project-links">
-                    <a href="https://github.com/phanducc/myPortfolio" target="_blank" rel="noopener noreferrer" class="btn secondary">Mã nguồn</a>
+                    <a href="https://github.com/phanducc/myPortfolio" target="_blank" rel="noopener noreferrer" class="btn secondary"><span class="mi" style="--i:url(assets/icons/code.svg)" aria-hidden="true"></span>Mã nguồn</a>
                 </div>
             </div>
         </div>
@@ -142,15 +142,16 @@
     <section class="cta-section">
         <div class="cta-box glass-panel gsap-cta-box">
             <h2 class="gsap-cta-text">Có ý tưởng cần làm thành sản phẩm?</h2>
-            <a href="#contact" class="btn primary gsap-cta-btn">Liên hệ</a>
+            <a href="#contact" class="btn primary gsap-cta-btn"><span class="mi" style="--i:url(assets/icons/mail.svg)" aria-hidden="true"></span>Liên hệ</a>
         </div>
     </section>
 
     <footer id="contact" class="main-footer">
         <div class="footer-content">
+            <img class="mascot" src="assets/logo.webp" alt="" width="400" height="360" loading="lazy">
             <h2 class="gsap-scroll" style="margin-bottom: 20px;">Liên hệ</h2>
             <div class="social-links gsap-scroll">
-                <a href="mailto:phanduc.2915@gmail.com" class="glass-panel"><i class="fas fa-envelope"></i> Email</a>
+                <a href="mailto:phanduc.2915@gmail.com" class="glass-panel"><span class="mi" style="--i:url(assets/icons/mail.svg)" aria-hidden="true"></span> Email</a>
                 <a href="https://www.facebook.com/phanduc2915/" target="_blank" rel="noopener noreferrer" class="glass-panel"><i class="fab fa-facebook"></i> Facebook</a>
                 <a href="https://github.com/phanducc" target="_blank" rel="noopener noreferrer" class="glass-panel"><i class="fab fa-github"></i> GitHub</a>
             </div>
