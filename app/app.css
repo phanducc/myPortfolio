@@ -189,8 +189,10 @@ table.data tr.grp .gs { color: var(--ink-3); text-transform: none; letter-spacin
 .tx-sub { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; gap: 8px; color: var(--ink-3); font-size: 12px; }
 .tx-chev { width: 18px; height: 18px; margin: 0; transition: transform .2s; }
 .tx.open .tx-chev { transform: rotate(180deg); }
-.tx-detail { display: none; padding: 0 16px 14px; border-top: 1px solid var(--grid); }
-.tx.open .tx-detail { display: block; }
+.tx-detail { display: grid; grid-template-rows: 0fr; border-top: 1px solid transparent; transition: grid-template-rows .3s cubic-bezier(.2,.7,.2,1), border-color .3s; }
+.tx.open .tx-detail { grid-template-rows: 1fr; border-top-color: var(--grid); }
+.tx-in { overflow: hidden; min-height: 0; padding: 0 16px; }
+.tx-in > .tx-act { margin-bottom: 14px; }
 .tx-kv { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 12px 0; }
 .tx-kv span { display: block; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-2); font-weight: 700; }
 .tx-kv b { display: block; margin-top: 2px; font-size: 14px; font-variant-numeric: tabular-nums; }
@@ -290,9 +292,9 @@ table.data tr.grp .gs { color: var(--ink-3); text-transform: none; letter-spacin
         border-radius: 24px 24px 0 0 !important; border: 1px solid var(--stroke-2) !important; border-bottom: 0 !important;
         background: rgba(16, 16, 16, 0.94) !important; -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
         padding: 8px 18px calc(22px + var(--safe-b)) !important;
-        transform: translateY(105%); visibility: hidden; transition: transform .28s ease, visibility 0s linear .28s;
+        transform: translateY(105%); visibility: hidden; transition: transform .38s cubic-bezier(.2,.9,.3,1), visibility 0s linear .38s;
     }
-    .sheet.open { transform: none; visibility: visible; transition: transform .28s ease; }
+    .sheet.open { transform: none; visibility: visible; transition: transform .38s cubic-bezier(.2,.9,.3,1); }
     .sheet::before { content: ''; display: block; width: 40px; height: 4px; border-radius: 2px; background: var(--stroke-2); margin: 6px auto 16px; }
     .sheet-close { display: inline-flex; position: absolute; top: 12px; right: 14px; width: 38px; height: 38px; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid var(--stroke-2); background: var(--fill-2); color: #fff; font: inherit; font-size: 22px; line-height: 1; cursor: pointer; }
     .sheet-bg { display: block; position: fixed; inset: 0; z-index: 399; background: rgba(0, 0, 0, 0.62); opacity: 0; pointer-events: none; transition: opacity .28s; }
@@ -349,3 +351,56 @@ table.data tr.grp .gs { color: var(--ink-3); text-transform: none; letter-spacin
     .price-row { grid-template-columns: 1fr 104px; }
     .backup-note { display: none; }
 }
+
+/* ===================== Hiệu ứng động ===================== */
+@keyframes rise { from { opacity: 0; translate: 0 16px; } to { opacity: 1; translate: none; } }
+@keyframes pop { 0% { scale: 0.6; opacity: 0; } 70% { scale: 1.1; } 100% { scale: none; opacity: 1; } }
+@keyframes grow { from { clip-path: inset(0 100% 0 0 round 999px); } to { clip-path: inset(0 0 0 0 round 999px); } }
+@keyframes ring { 0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.55); } 100% { box-shadow: 0 0 0 18px rgba(255, 255, 255, 0); } }
+@keyframes shine { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+/* Khi nội dung hiện ra (sau đăng nhập), các khối nổi lên lần lượt */
+#content > * { animation: rise .6s cubic-bezier(.2,.7,.2,1) both; }
+#content > :nth-child(2) { animation-delay: .06s; } #content > :nth-child(3) { animation-delay: .12s; }
+#content > :nth-child(4) { animation-delay: .18s; } #content > :nth-child(5) { animation-delay: .24s; }
+#content > :nth-child(6) { animation-delay: .30s; } #content > :nth-child(7) { animation-delay: .36s; }
+#content > :nth-child(n+8) { animation-delay: .42s; }
+#content > .sheet { animation: none; }
+#login { animation: rise .6s cubic-bezier(.2,.7,.2,1) both; }
+
+/* Lần vẽ đầu: ô số liệu, thẻ, dòng bảng hiện lần lượt; thanh cơ cấu chạy ra */
+.fx-in > .tile { animation: rise .55s cubic-bezier(.2,.7,.2,1) both; }
+.fx-in > .tile:nth-child(2) { animation-delay: .06s; } .fx-in > .tile:nth-child(3) { animation-delay: .12s; }
+.fx-in > .tile:nth-child(4) { animation-delay: .18s; } .fx-in > .tile:nth-child(5) { animation-delay: .24s; }
+.fx-in .comp .bar i { animation: grow .9s .35s cubic-bezier(.2,.7,.2,1) both; }
+.fx-in .tx, .fx-in .gh { animation: rise .5s cubic-bezier(.2,.7,.2,1) both; }
+.fx-in .tx:nth-of-type(2), .fx-in .gh:nth-of-type(2) { animation-delay: .05s; } .fx-in .tx:nth-of-type(3) { animation-delay: .1s; }
+.fx-in .tx:nth-of-type(4) { animation-delay: .15s; } .fx-in .tx:nth-of-type(5) { animation-delay: .2s; }
+.fx-in .tx:nth-of-type(n+6) { animation-delay: .25s; }
+#tbody.fx-in tr:nth-child(-n+12) { animation: rise .45s cubic-bezier(.2,.7,.2,1) both; }
+#tbody.fx-in tr:nth-child(2) { animation-delay: .04s; } #tbody.fx-in tr:nth-child(3) { animation-delay: .08s; }
+#tbody.fx-in tr:nth-child(4) { animation-delay: .12s; } #tbody.fx-in tr:nth-child(n+5) { animation-delay: .16s; }
+
+/* Tương tác: nhấc nhẹ khi rê chuột, lún khi bấm */
+.tile { transition: border-color .2s, translate .25s cubic-bezier(.2,.7,.2,1); }
+.tile:hover { translate: 0 -3px; }
+.tx { transition: border-color .2s, background .2s; }
+.tx:hover { border-color: var(--stroke-2); }
+.tx-head:active { background: var(--fill-1); }
+.chip, .link-btn, .app-tabs a, .bn-tab { transition: background .15s, color .15s, scale .15s; }
+.chip:active, .bn-tab:active { scale: 0.94; }
+.btn.small:active, .btn.icon:active { scale: 0.92; }
+.pill { transition: scale .2s; }
+.tx-head:hover .pill, table.data tr:hover .pill { scale: 1.06; }
+.btn .ico { transition: translate .2s; }
+.btn.icon:hover .ico { translate: 0 0; }
+.field input, .field select { transition: border-color .2s, box-shadow .2s; }
+
+/* Thanh tab đáy: biểu tượng của mục đang chọn nảy lên; nút "+" toả vòng sáng nhẹ hai lần để gợi ý */
+.bn-tab.active .ico { animation: pop .45s cubic-bezier(.2,.9,.3,1.4); }
+.nav-add { transition: scale .15s; }
+@media (max-width: 720px) { body.authed .nav-add { animation: ring 1.8s 1.2s 2; } }
+/* Tab ở thanh trên */
+.app-tabs a.active { animation: pop .35s cubic-bezier(.2,.9,.3,1.3); }
+
+@media (prefers-reduced-motion: reduce) { .tile:hover { translate: none; } }

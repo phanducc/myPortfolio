@@ -38,7 +38,7 @@
             <h2 class="gsap-hero">Sinh viên Điện tử – Viễn thông, làm cả phần cứng lẫn phần mềm</h2>
             <p class="gsap-hero">Tôi thiết kế mạch, viết firmware cho vi điều khiển và dựng ứng dụng web. Gần đây tôi làm một khoá cửa ESP32 mở bằng mã TOTP, một bộ xử lý 16-bit mô phỏng trên Logisim và ứng dụng ghi sổ thu chi cho chính mình.</p>
             <div class="hero-buttons gsap-hero">
-                <a href="#projects" class="btn primary">Xem dự án<span class="mi" style="--i:url(assets/icons/arrow_downward.svg)" aria-hidden="true"></span></a>
+                <a href="#projects" class="btn primary">Xem dự án<span class="mi nudge-down" style="--i:url(assets/icons/arrow_downward.svg)" aria-hidden="true"></span></a>
                 <a href="https://github.com/phanducc" target="_blank" rel="noopener noreferrer" class="btn secondary"><i class="fab fa-github"></i>GitHub</a>
             </div>
         </div>
@@ -123,7 +123,7 @@
                     <span>HTML/CSS/JS</span><span>API</span><span>Cloudflare</span>
                 </div>
                 <div class="project-links">
-                    <a href="https://freefilm.pp.ua" target="_blank" rel="noopener noreferrer" class="btn secondary">Xem web<span class="mi" style="--i:url(assets/icons/arrow_outward.svg)" aria-hidden="true"></span></a>
+                    <a href="https://freefilm.pp.ua" target="_blank" rel="noopener noreferrer" class="btn secondary">Xem web<span class="mi nudge-out" style="--i:url(assets/icons/arrow_outward.svg)" aria-hidden="true"></span></a>
                 </div>
             </div>
             <div class="project-card glass-panel gsap-scroll">
@@ -194,6 +194,19 @@
             gsap.from(".gsap-cta-box", {
                 scrollTrigger: { trigger: ".cta-section", start: "top 95%" },
                 scale: 0.9, opacity: 0, duration: 1, ease: "power3.out"
+            });
+            // Thẻ tag nảy ra lần lượt, huy hiệu xoay vào khi cuộn tới
+            gsap.utils.toArray('.tags').forEach(t => {
+                gsap.from(t.children, {
+                    scrollTrigger: { trigger: t, start: "top 92%" },
+                    opacity: 0, y: 12, scale: 0.9, duration: 0.45, stagger: 0.05, ease: "back.out(1.6)"
+                });
+            });
+            gsap.utils.toArray('.badge').forEach(b => {
+                gsap.from(b, {
+                    scrollTrigger: { trigger: b, start: "top 92%" },
+                    scale: 0, rotate: -35, duration: 0.6, ease: "back.out(2)"
+                });
             });
             ScrollTrigger.refresh(); 
         });

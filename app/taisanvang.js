@@ -151,14 +151,14 @@
                     '<span class="tx-date">' + PD.fmtDay(l.date) + '</span>' +
                     '<span class="tx-total">' + PD.vnd(cost(l)) + '<span class="cur">đ</span></span>' +
                     '<span class="tx-sub"><span>' + PD.num(l.chi, 3) + ' chỉ × ' + PD.vnd(l.price) + ' đ/chỉ</span>' + PD.icon('chev', 'tx-chev') + '</span></button>' +
-                    '<div class="tx-detail"><div class="tx-act" style="margin-top:12px"><button type="button" class="btn secondary" data-a="edit" data-id="' + PD.esc(l.id) + '">' + PD.icon('edit') + 'Sửa</button>' +
-                    '<button type="button" class="btn secondary" data-a="del" data-id="' + PD.esc(l.id) + '">' + PD.icon('del') + 'Xoá</button></div></div></div>';
+                    '<div class="tx-detail"><div class="tx-in"><div class="tx-act" style="margin-top:12px"><button type="button" class="btn secondary" data-a="edit" data-id="' + PD.esc(l.id) + '">' + PD.icon('edit') + 'Sửa</button>' +
+                    '<button type="button" class="btn secondary" data-a="del" data-id="' + PD.esc(l.id) + '">' + PD.icon('del') + 'Xoá</button></div></div></div></div>';
             }).join('');
+            PD.fxFirst($('lots-list'), 'lots-list');
             foot.innerHTML = '<tr><td>Tổng (' + list.length + ' lần)</td><td>' + PD.num(t.chi, 3) + '</td><td>' + PD.vnd(t.avg) + ' <span style="font-weight:400;color:var(--ink-3)">(bình quân)</span></td><td>' + PD.vnd(t.cost) + '</td><td></td></tr>';
-            $('summary').innerHTML =
-                tile({ label: 'Đang giữ', value: PD.num(t.chi, 3) + ' chỉ', sub: luongChi(t.chi), icon: 'gold', cur: false }) +
+            PD.setTiles($('summary'), tile({ label: 'Đang giữ', value: PD.num(t.chi, 3) + ' chỉ', sub: luongChi(t.chi), icon: 'gold', cur: false }) +
                 tile({ label: 'Tổng vốn đã bỏ ra', value: PD.vnd(t.cost), icon: 'wallet' }) +
-                tile({ label: 'Giá vốn bình quân', value: PD.vnd(t.avg), sub: 'đ/chỉ · ' + PD.vnd(t.avg * 10) + ' đ/lượng', icon: 'target', cur: false });
+                tile({ label: 'Giá vốn bình quân', value: PD.vnd(t.avg), sub: 'đ/chỉ · ' + PD.vnd(t.avg * 10) + ' đ/lượng', icon: 'target', cur: false }), 'summary');
         }
     }
 
@@ -203,9 +203,8 @@
             return;
         }
         sub.textContent = 'Cập nhật lúc ' + sjc.updatedAt + ' · đơn vị: đ/lượng (1 lượng = 10 chỉ)';
-        tiles.innerHTML =
-            tile({ label: 'Mua vào', value: PD.vnd(sjc.ring.buy), sub: 'đ/lượng · ' + PD.vnd(sjc.ring.buy / 10) + ' đ/chỉ', icon: 'down', cur: false }) +
-            tile({ label: 'Bán ra', value: PD.vnd(sjc.ring.sell), sub: 'đ/lượng · ' + PD.vnd(sjc.ring.sell / 10) + ' đ/chỉ', icon: 'up', cur: false });
+        PD.setTiles(tiles, tile({ label: 'Mua vào', value: PD.vnd(sjc.ring.buy), sub: 'đ/lượng · ' + PD.vnd(sjc.ring.buy / 10) + ' đ/chỉ', icon: 'down', cur: false }) +
+            tile({ label: 'Bán ra', value: PD.vnd(sjc.ring.sell), sub: 'đ/lượng · ' + PD.vnd(sjc.ring.sell / 10) + ' đ/chỉ', icon: 'up', cur: false }), 'sjc-tiles');
     }
 
     function renderHist() {
@@ -293,10 +292,9 @@
         if (!haveCurrent) { foot.innerHTML = ''; tiles.innerHTML = ''; return; }
         var value = Math.round(t.chi * buyChi), pl = value - t.cost, pct = t.cost ? pl / t.cost * 100 : 0;
         foot.innerHTML = '<tr><td>Tổng</td><td>' + PD.num(t.chi, 3) + '</td><td>' + PD.vnd(t.avg) + '</td><td>' + PD.vnd(t.cost) + '</td><td>' + PD.vnd(value) + '</td><td>' + PD.pill(pl) + '</td><td>' + PD.deltaPct(pct) + '</td></tr>';
-        tiles.innerHTML =
-            tile({ label: 'Giá trị hiện tại', value: PD.vnd(value), sub: PD.num(t.chi, 3) + ' chỉ × ' + PD.vnd(buyChi) + ' đ/chỉ', icon: 'pie' }) +
+        PD.setTiles(tiles, tile({ label: 'Giá trị hiện tại', value: PD.vnd(value), sub: PD.num(t.chi, 3) + ' chỉ × ' + PD.vnd(buyChi) + ' đ/chỉ', icon: 'pie' }) +
             tile({ label: 'Lãi / lỗ', value: PD.delta(pl), sub: PD.pct(pct) + ' so với vốn', icon: 'trend' }) +
-            tile({ label: 'Giá hoà vốn', value: PD.vnd(t.avg), sub: 'đ/chỉ · giá mua vào hiện tại ' + PD.vnd(buyChi), icon: 'scale', cur: false });
+            tile({ label: 'Giá hoà vốn', value: PD.vnd(t.avg), sub: 'đ/chỉ · giá mua vào hiện tại ' + PD.vnd(buyChi), icon: 'scale', cur: false }), 'pl-tiles');
     }
 
     /* ===================== Khởi động ===================== */
