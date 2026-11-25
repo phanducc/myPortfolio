@@ -131,7 +131,12 @@ button.btn { font-family: inherit; cursor: pointer; }
 .picker .step { display: flex; gap: 6px; align-items: flex-end; }
 .btn.icon { padding: 0; width: 42px; height: 42px; font-size: 18px; line-height: 1; }
 .btn.icon:disabled { opacity: 0.35; pointer-events: none; }
+.chart-scroll { overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: var(--stroke-2) transparent; }
+.chart-scroll > .chart-box { min-width: var(--cw, 0px); }
 .chart-box { position: relative; height: 320px; margin-top: 8px; }
+.scroll-hint { display: none; margin-top: 6px; font-size: 12px; color: var(--ink-3); text-align: center; }
+.chart-scroll:has(> .chart-box[hidden]) + .scroll-hint { display: none !important; }
+.chart-scroll:has(.chart-empty) + .scroll-hint { display: none !important; }
 .chart-box[hidden], .tbl-wrap[hidden] { display: none; }
 .chart-empty { display: flex; align-items: center; justify-content: center; height: 100%; color: var(--ink-3); text-align: center; padding: 0 16px; }
 .change { font-size: 13px; color: var(--ink-2); margin: 6px 0 0; }
@@ -324,7 +329,8 @@ table.data tr.grp .gs { color: var(--ink-3); text-transform: none; letter-spacin
     .txlist { display: block; max-height: min(460px, 62dvh); overflow-y: auto; -webkit-overflow-scrolling: touch; padding-right: 2px; }
     .txlist .gh { position: sticky; top: 0; z-index: 1; background: #0d0d0d; }
     .tbl-wrap { max-height: none; }
-    .chart-box { height: 230px; }
+    .chart-box { height: 240px; }
+    .scroll-hint { display: block; }
     .legend { gap: 10px 14px; }
 
     /* Tiết kiệm: thu gọn form */

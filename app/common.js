@@ -400,6 +400,17 @@
         });
     };
 
+    /** Đặt độ rộng tối thiểu cho biểu đồ (px). Màn hình hẹp thì khung biểu đồ trượt ngang được và mở sẵn ở phía dữ liệu mới nhất (bên phải). */
+    PD.chartWidth = function (box, px) {
+        if (!px) { box.style.removeProperty('--cw'); return; }
+        box.style.setProperty('--cw', px + 'px');
+        var sc = box.parentNode;
+        if (sc && sc.classList && sc.classList.contains('chart-scroll')) {
+            var go = function () { sc.scrollLeft = sc.scrollWidth; };
+            requestAnimationFrame(function () { go(); setTimeout(go, 150); });
+        }
+    };
+
     /** Thông báo ngắn ở đáy màn hình (trên thanh tab) */
     var toastTimer = null;
     PD.toast = function (text) {
