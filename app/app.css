@@ -32,8 +32,11 @@ body.no-scroll { overflow: hidden; }
 }
 .app-header .inner {
     max-width: 1100px; margin: 0 auto; padding: 12px 24px;
-    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    /* 3 cột: logo | tab | tài khoản. Hai cột ngoài bằng nhau (1fr) nên tab luôn nằm đúng giữa, không xê dịch khi email hay nút đăng xuất đổi độ rộng */
+    display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 16px;
 }
+.app-header .brand { justify-self: start; }
+.app-header .auth-bar { justify-self: end; min-width: 0; max-width: 100%; }
 .app-header .brand { display: flex; align-items: center; gap: 10px; color: var(--text-color); text-decoration: none; font-weight: 800; letter-spacing: 1px; }
 .app-header .brand img { height: 36px; width: auto; display: block; object-fit: contain; }
 .page-name { display: none; font-weight: 800; font-size: 1.1rem; letter-spacing: -0.005em; margin-right: auto; }
@@ -46,8 +49,9 @@ body.no-scroll { overflow: hidden; }
 /* Tài khoản: máy tính hiện email + Đăng xuất; điện thoại gom vào nút tròn */
 .auth-bar { position: relative; display: flex; align-items: center; min-height: 36px; }
 .auth-bar .avatar { display: none; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--stroke-2); background: var(--fill-2); color: #fff; font: inherit; font-weight: 800; font-size: 15px; cursor: pointer; align-items: center; justify-content: center; }
-.auth-menu { display: flex; align-items: center; gap: 12px; }
-.auth-menu .who { font-size: 13px; color: var(--ink-2); max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.auth-menu { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.auth-menu .who { font-size: 13px; color: var(--ink-2); min-width: 0; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.auth-menu .btn { flex: none; }
 
 /* ===== Nội dung ===== */
 .app-main { max-width: 1100px; margin: 0 auto; padding: 32px 24px 64px; }
@@ -243,7 +247,7 @@ table.data tr.grp .gs { color: var(--ink-3); text-transform: none; letter-spacin
 /* =====================  ĐIỆN THOẠI  ===================== */
 @media (max-width: 720px) {
     /* Thanh trên gọn: logo + tên trang + nút tài khoản */
-    .app-header .inner { padding: 8px 16px; gap: 10px; flex-wrap: nowrap; }
+    .app-header .inner { padding: 8px 16px; gap: 10px; display: flex; justify-content: space-between; flex-wrap: nowrap; }
     .app-header .brand-name, .app-tabs { display: none; }
     .page-name { display: block; }
     .auth-bar .avatar { display: inline-flex; }
