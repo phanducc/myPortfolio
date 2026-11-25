@@ -78,12 +78,16 @@
 
         var lot = { id: editing || newId(), date: date, chi: r3(q), price: Math.round(p) };
         PDCloud.put(COL, lot.id, toItem(lot).data).catch(saveFail);
-        say((editing ? 'Đã cập nhật' : 'Đã thêm') + ' lần mua ngày ' + PD.fmtDay(date) + '.');
+        var done = (editing ? 'Đã cập nhật' : 'Đã thêm') + ' lần mua ngày ' + PD.fmtDay(date) + '.';
+        say(done);
         resetForm();
+        if (PD.isMobile()) { sheet.close(); PD.toast(done); }
     });
-    el.cancel.addEventListener('click', function () { resetForm(); say(''); });
+    el.cancel.addEventListener('click', function () { resetForm(); say(''); if (PD.isMobile()) sheet.close(); });
+    var sheet = PD.sheet($('entry-panel'), '#f-qty');
+    document.addEventListener('pd:add', function () { resetForm(); say(''); sheet.open(); });     // nút "+" ở thanh tab đáy
 
-    $('lots-body').addEventListener('click', function (e) {
+    function onLotAction(e) {
         var b = e.target.closest('button[data-a]');
         if (!b) return;
         var id = b.getAttribute('data-id');
@@ -103,8 +107,14 @@
             el.cancel.hidden = false;
             preview();
             say('Đang sửa lần mua ngày ' + PD.fmtDay(lot.date) + '.');
-            el.form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            sheet.open();
         }
+    }
+    $('lots-body').addEventListener('click', onLotAction);
+    $('lots-list').addEventListener('click', function (e) {
+        var h = e.target.closest('.tx-head');
+        if (h) { var o = h.parentNode.classList.toggle('open'); h.setAttribute('aria-expanded', o); return; }
+        onLotAction(e);
     });
 
     /* ===================== Bảng + tóm tắt + biểu đồ vốn ===================== */
@@ -127,6 +137,7 @@
         var body = $('lots-body'), foot = $('lots-foot');
         if (!list.length) {
             body.innerHTML = '<tr><td colspan="5" class="none">' + PD.emptyHtml('Chưa có lần mua nào. Nhập lần mua đầu tiên ở phía trên.') + '</td></tr>';
+            $('lots-list').innerHTML = PD.emptyHtml('Chưa có lần mua nào. Chạm nút + để nhập lần mua đầu tiên.');
             foot.innerHTML = '';
             $('summary').innerHTML = '';
         } else {
@@ -134,6 +145,14 @@
                 return '<tr><td>' + PD.fmtDay(l.date) + '</td><td>' + PD.num(l.chi, 3) + '</td><td>' + PD.vnd(l.price) + '</td><td><b>' + PD.vnd(cost(l)) + '</b></td>' +
                     '<td class="act"><button type="button" class="link-btn" data-a="edit" data-id="' + PD.esc(l.id) + '">Sửa</button>' +
                     '<button type="button" class="link-btn del" data-a="del" data-id="' + PD.esc(l.id) + '">Xoá</button></td></tr>';
+            }).join('');
+            $('lots-list').innerHTML = list.slice().reverse().map(function (l) {
+                return '<div class="tx"><button type="button" class="tx-head" aria-expanded="false">' +
+                    '<span class="tx-date">' + PD.fmtDay(l.date) + '</span>' +
+                    '<span class="tx-total">' + PD.vnd(cost(l)) + '<span class="cur">đ</span></span>' +
+                    '<span class="tx-sub"><span>' + PD.num(l.chi, 3) + ' chỉ × ' + PD.vnd(l.price) + ' đ/chỉ</span>' + PD.icon('chev').replace('class="ico"', 'class="ico tx-chev"') + '</span></button>' +
+                    '<div class="tx-detail"><div class="tx-act" style="margin-top:12px"><button type="button" class="btn secondary" data-a="edit" data-id="' + PD.esc(l.id) + '">Sửa</button>' +
+                    '<button type="button" class="btn secondary" data-a="del" data-id="' + PD.esc(l.id) + '">Xoá</button></div></div></div>';
             }).join('');
             foot.innerHTML = '<tr><td>Tổng (' + list.length + ' lần)</td><td>' + PD.num(t.chi, 3) + '</td><td>' + PD.vnd(t.avg) + ' <span style="font-weight:400;color:var(--ink-3)">(bình quân)</span></td><td>' + PD.vnd(t.cost) + '</td><td></td></tr>';
             $('summary').innerHTML =
@@ -249,6 +268,7 @@
         if (!list.length) {
             tiles.innerHTML = '';
             body.innerHTML = '<tr><td colspan="7" class="none">' + PD.emptyHtml('Chưa có lần mua nào để tính lãi lỗ.') + '</td></tr>';
+            $('pl-list').innerHTML = PD.emptyHtml('Chưa có lần mua nào để tính lãi lỗ.');
             foot.innerHTML = '';
             return;
         }
@@ -261,6 +281,12 @@
             return '<tr>' + cells + '<td>' + PD.vnd(v) + '</td><td>' + PD.pill(pl) + '</td><td>' + PD.deltaPct(pl / c * 100) + '</td></tr>';
         }).join('');
         body.innerHTML = rowsHtml;
+        $('pl-list').innerHTML = list.slice().reverse().map(function (l) {
+            var c = cost(l), v = haveCurrent ? Math.round(l.chi * buyChi) : NaN, pl = v - c;
+            return '<div class="tx static"><div class="tx-head"><span class="tx-date">' + PD.fmtDay(l.date) + '<small>' + PD.num(l.chi, 3) + ' chỉ</small></span>' +
+                '<span class="tx-total">' + (haveCurrent ? PD.pill(pl) : '—') + '</span>' +
+                '<span class="tx-sub"><span>Vốn ' + PD.vnd(c) + (haveCurrent ? ' → ' + PD.vnd(v) : '') + '</span>' + (haveCurrent ? PD.deltaPct(pl / c * 100) : '') + '</span></div></div>';
+        }).join('');
 
         if (!haveCurrent) { foot.innerHTML = ''; tiles.innerHTML = ''; return; }
         var value = Math.round(t.chi * buyChi), pl = value - t.cost, pct = t.cost ? pl / t.cost * 100 : 0;
