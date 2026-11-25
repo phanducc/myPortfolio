@@ -39,24 +39,58 @@
         return '<span class="pill ' + cls + '">' + arrow + ' ' + PD.signed(n) + (suffix || '') + '</span>';
     };
 
-    /* ---------- Biểu tượng (SVG nét mảnh, đơn sắc) ---------- */
-    var ICONS = {
-        wallet: '<path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H18a1 1 0 0 1 1 1v2"/><path d="M4 7.5V17a2 2 0 0 0 2 2h12a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1H6.5A2.5 2.5 0 0 1 4 7.5z"/><circle cx="15.5" cy="13.5" r="1" fill="currentColor"/>',
-        card: '<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3 10h18M7 15h4"/>',
-        coins: '<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/>',
-        trend: '<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
-        pie: '<circle cx="12" cy="12" r="9"/><path d="M12 3v9h9"/>',
-        up: '<circle cx="12" cy="12" r="9"/><path d="M12 16V8M8.5 11.5L12 8l3.5 3.5"/>',
-        down: '<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8.5 12.5L12 16l3.5-3.5"/>',
-        gold: '<path d="M3 18l3-8h12l3 8z"/><path d="M8.5 10l1-4h5l1 4"/>',
-        scale: '<path d="M12 4v16M6 20h12M5 8h14"/><path d="M5 8l-3 6a3 3 0 0 0 6 0zM19 8l-3 6a3 3 0 0 0 6 0z"/>',
-        target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/>',
-        empty: '<path d="M4 7h16M4 12h10M4 17h6"/>',
-        chev: '<path d="M6 9l6 6 6-6"/>'
+    /* ---------- Biểu tượng: Material Symbols (Outlined, FILL 1, Weight 700, Grade 200, Optical size 24) ----------
+       Tệp SVG nằm ở /assets/icons/<tên>.svg; vẽ bằng CSS mask nên đổi màu theo chữ (currentColor). */
+    var ICON_FILES = {
+        wallet: 'account_balance_wallet', card: 'credit_card', coins: 'savings', trend: 'trending_up', pie: 'pie_chart',
+        up: 'arrow_circle_up', down: 'arrow_circle_down', gold: 'diamond', scale: 'balance', target: 'target', empty: 'inbox',
+        chev: 'expand_more', add: 'add', close: 'close', logout: 'logout', login: 'login', edit: 'edit', del: 'delete',
+        refresh: 'refresh', download: 'download', upload: 'upload', code: 'code', out: 'arrow_outward', mail: 'mail',
+        left: 'chevron_left', right: 'chevron_right'
     };
-    PD.icon = function (name) {
-        return '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + (ICONS[name] || '') + '</svg>';
+    /** name: khoá trong ICON_FILES; cls: lớp CSS thêm (tuỳ chọn) */
+    PD.icon = function (name, cls) {
+        return '<span class="ico mi' + (cls ? ' ' + cls : '') + '" style="--i:url(/assets/icons/' + (ICON_FILES[name] || name) + '.svg)" aria-hidden="true"></span>';
     };
+    /* ---------- Hiệu ứng động (tôn trọng "giảm chuyển động" của hệ điều hành) ---------- */
+    PD.reduceMotion = function () { return !!(g.matchMedia && g.matchMedia('(prefers-reduced-motion: reduce)').matches); };
+    var firstAt = {};
+    /** Bật lớp .fx-in (hiệu ứng vào) cho khung chứa trong khoảng 1,2 giây đầu kể từ lần vẽ đầu tiên (dữ liệu về từng đợt nên có thể vẽ vài lần liên tiếp); sau đó tắt để không lặp lại mỗi lần dữ liệu đổi */
+    PD.fxFirst = function (el, key) {
+        if (!el) return;
+        var now = Date.now();
+        if (!firstAt[key]) firstAt[key] = now;
+        el.classList.toggle('fx-in', now - firstAt[key] < 1200);
+    };
+    var numPrev = {};
+    /** Số tiền trong ô (.tile .v) chạy từ giá trị cũ (lần đầu từ 0) lên giá trị mới */
+    PD.animateNums = function (root) {
+        if (!root) return;
+        Array.prototype.forEach.call(root.querySelectorAll('.tile .v'), function (v, i) {
+            var node = v.firstChild;
+            if (!node || node.nodeType !== 3) return;
+            var txt = node.nodeValue.trim();
+            if (!/^[\d.]+$/.test(txt)) return;
+            var to = Number(txt.replace(/\./g, '')), k = (root.id || 'x') + ':' + i, from = numPrev[k] === undefined ? 0 : numPrev[k];
+            numPrev[k] = to;
+            if (from === to || PD.reduceMotion()) return;
+            var t0 = null, dur = 750;
+            node.nodeValue = PD.vnd(from);
+            requestAnimationFrame(function step(ts) {
+                if (t0 === null) t0 = ts;
+                var p = Math.min((ts - t0) / dur, 1), e = 1 - Math.pow(1 - p, 3);
+                node.nodeValue = PD.vnd(from + (to - from) * e);
+                if (p < 1) requestAnimationFrame(step);
+            });
+        });
+    };
+    /** Gán các ô số liệu vào khung rồi chạy hiệu ứng: ô hiện lần lượt ở lần đầu, số chạy lên khi giá trị đổi */
+    PD.setTiles = function (container, html, key) {
+        PD.fxFirst(container, key || container.id || 'tiles');
+        container.innerHTML = html;
+        PD.animateNums(container);
+    };
+
     /** Ô số liệu: biểu tượng + nhãn, số lớn kèm ký hiệu "đ" mờ, dòng phụ.
      *  o: { label, value (html), sub, icon, cls, cur (false = không thêm "đ"), extra (html thêm bên dưới) } */
     PD.tile = function (o) {
@@ -123,8 +157,8 @@
      *  opt: { filename, validate(item), getAll(): mảng, replaceAll(mảng): Promise } */
     PD.backup = function (root, opt) {
         root.innerHTML =
-            '<div class="toolbar"><button type="button" class="btn secondary small" data-a="export">Xuất file sao lưu</button>' +
-            '<button type="button" class="btn secondary small" data-a="import">Nhập từ file</button>' +
+            '<div class="toolbar"><button type="button" class="btn secondary small" data-a="export">' + PD.icon('download') + 'Xuất file sao lưu</button>' +
+            '<button type="button" class="btn secondary small" data-a="import">' + PD.icon('upload') + 'Nhập từ file</button>' +
             '<input type="file" accept="application/json,.json" hidden></div><p class="form-msg" aria-live="polite" style="margin-top:8px"></p>';
         var msg = root.querySelector('.form-msg');
         var file = root.querySelector('input[type=file]');
@@ -222,7 +256,7 @@
                 bar.classList.remove('open');
                 bar.innerHTML = '<button type="button" class="avatar" aria-label="Tài khoản" aria-haspopup="true" aria-expanded="false">' + PD.esc(mail.charAt(0).toUpperCase()) + '</button>' +
                     '<div class="auth-menu"><span class="who" title="' + PD.esc(mail) + '">' + PD.esc(mail) + '</span>' +
-                    '<button type="button" class="btn secondary small" data-a="out">Đăng xuất</button></div>';
+                    '<button type="button" class="btn secondary small" data-a="out">' + PD.icon('logout') + 'Đăng xuất</button></div>';
                 bar.querySelector('[data-a=out]').addEventListener('click', function () { PDCloud.signOut(); });
                 var av = bar.querySelector('.avatar');
                 av.addEventListener('click', function (e) { e.stopPropagation(); var o = bar.classList.toggle('open'); av.setAttribute('aria-expanded', o); });
@@ -282,7 +316,7 @@
             data: { datasets: datasets },
             plugins: [crosshair],
             options: {
-                responsive: true, maintainAspectRatio: false, animation: false,
+                responsive: true, maintainAspectRatio: false, animation: PD.reduceMotion() ? false : { duration: 700, easing: 'easeOutCubic' },
                 interaction: { mode: 'index', intersect: false },
                 layout: { padding: { right: 12, top: 6 } },
                 scales: {
@@ -341,7 +375,7 @@
                 })
             },
             options: {
-                responsive: true, maintainAspectRatio: false, animation: false,
+                responsive: true, maintainAspectRatio: false, animation: PD.reduceMotion() ? false : { duration: 700, easing: 'easeOutCubic' },
                 interaction: { mode: 'index', intersect: false },
                 layout: { padding: { right: 8, top: 6 } },
                 scales: {
@@ -383,14 +417,14 @@
             return '<a class="bn-tab' + (active === key ? ' active' : '') + '" href="' + p[0] + '"' + (active === key ? ' aria-current="page"' : '') + '>' + PD.icon(p[2]) + '<span>' + p[1] + '</span></a>';
         };
         el.className = 'app-header';
-        el.innerHTML = '<div class="inner"><a class="brand" href="/" aria-label="Trang chủ"><img src="/assets/phanduc.png" alt=""><span class="brand-name">PHAN ĐỨC.</span></a>' +
+        el.innerHTML = '<div class="inner"><a class="brand" href="/" aria-label="Trang chủ"><img src="/assets/logo.webp" alt="" width="400" height="360"><span class="brand-name">PHAN ĐỨC.</span></a>' +
             '<span class="page-name">' + pages[active][1] + '</span>' +
             '<nav class="app-tabs" aria-label="Ứng dụng">' + tab('chitieu') + tab('taisanvang') + '</nav>' +
             '<div id="auth-bar" class="auth-bar"></div></div>';
         // Thanh tab đáy cho điện thoại; nút "+" báo cho trang mở khung nhập
         var nav = document.createElement('nav');
         nav.className = 'bottom-nav'; nav.setAttribute('aria-label', 'Điều hướng');
-        nav.innerHTML = btab('chitieu') + '<button type="button" class="nav-add" aria-label="Thêm số liệu">+</button>' + btab('taisanvang');
+        nav.innerHTML = btab('chitieu') + '<button type="button" class="nav-add" aria-label="Thêm số liệu">' + PD.icon('add') + '</button>' + btab('taisanvang');
         document.body.appendChild(nav);
         nav.querySelector('.nav-add').addEventListener('click', function () { document.dispatchEvent(new CustomEvent('pd:add')); });
         // Bấm ra ngoài thì đóng menu tài khoản
@@ -424,7 +458,7 @@
     PD.sheet = function (sec, focusSel) {
         sec.classList.add('sheet');
         var bg = document.createElement('div'); bg.className = 'sheet-bg'; document.body.appendChild(bg);
-        var x = document.createElement('button'); x.type = 'button'; x.className = 'sheet-close'; x.setAttribute('aria-label', 'Đóng'); x.innerHTML = '&times;';
+        var x = document.createElement('button'); x.type = 'button'; x.className = 'sheet-close'; x.setAttribute('aria-label', 'Đóng'); x.innerHTML = PD.icon('close');
         sec.insertBefore(x, sec.firstChild);
         var isOpen = function () { return sec.classList.contains('open'); };
         function open() {

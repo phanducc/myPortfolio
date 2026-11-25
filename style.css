@@ -38,10 +38,7 @@ body { background-color: var(--bg-color); color: var(--text-color); line-height:
     display: flex; align-items: center; gap: 12px;
     font-size: 26px; font-weight: 800; color: var(--text-color); letter-spacing: 1px; 
 }
-.logo-img {
-    height: 52px; width: 52px; border-radius: 50%; object-fit: cover; 
-    border: 2px solid var(--primary-color); background-color: #fff; padding: 3px;
-}
+.logo-img { height: 48px; width: auto; display: block; object-fit: contain; }
 .nav-pill {
     background: var(--fill-1);
     border: 1px solid var(--stroke);
@@ -130,7 +127,7 @@ body { background-color: var(--bg-color); color: var(--text-color); line-height:
     .header-container { flex-direction: row; justify-content: space-between; gap: 12px; padding: 0 16px; }
     .header-right { display: none; }
     .logo { font-size: 18px; gap: 10px; }
-    .logo-img { height: 40px; width: 40px; }
+    .logo-img { height: 38px; }
     .nav-pill { height: 42px; padding: 0 4px; }
     .nav-item { padding: 0 11px; font-size: 13.5px; }
     .hero { flex-direction: column; text-align: center; padding: 104px 20px 56px; min-height: auto; }
@@ -166,3 +163,55 @@ body { background-color: var(--bg-color); color: var(--text-color); line-height:
 
 /* Khi bấm liên kết neo, tiêu đề không bị thanh trên che mất */
 section[id] { scroll-margin-top: 72px; }
+
+/* Biểu tượng Material Symbols (Outlined, FILL 1, Weight 700, Grade 200, Optical size 24): SVG vẽ bằng mask nên theo màu chữ */
+.mi {
+    display: inline-block; width: 1.2em; height: 1.2em; flex: none; vertical-align: -0.22em;
+    background-color: currentColor;
+    -webkit-mask: var(--i) center / contain no-repeat; mask: var(--i) center / contain no-repeat;
+}
+.btn { gap: 8px; }
+
+/* Huy hiệu biểu tượng ở thẻ kỹ năng và thẻ dự án */
+.badge { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; margin-right: 10px; border-radius: 10px; border: 1px solid var(--stroke-2); background: var(--fill-2); color: #fff; vertical-align: middle; }
+.badge .mi { width: 19px; height: 19px; vertical-align: 0; }
+.badge.lg { width: 46px; height: 46px; border-radius: 14px; margin: 0 0 16px; display: flex; }
+.badge.lg .mi { width: 25px; height: 25px; }
+.skill-category h3 { display: flex; align-items: center; }
+
+/* Linh vật (nhãn dán mèo) */
+.mascot { display: block; width: 96px; height: auto; margin: 0 auto 16px; }
+
+/* ===================== Hiệu ứng động ===================== */
+@keyframes bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -7px; } }
+@keyframes wiggle { 0%, 100% { rotate: 0deg; } 25% { rotate: -10deg; } 75% { rotate: 8deg; } }
+
+/* Linh vật nhấp nhô nhẹ; logo lắc khi rê chuột */
+.mascot { animation: bob 3.8s ease-in-out infinite; }
+.logo:hover .logo-img, .brand:hover img { animation: wiggle .6s ease; }
+
+/* Thẻ nhấc lên, huy hiệu nghiêng, thẻ kỹ năng sáng lên khi rê chuột (dùng thuộc tính riêng translate/scale/rotate để không xung đột với GSAP) */
+.glass-panel { transition: border-color .3s, background .3s, translate .3s cubic-bezier(.2,.7,.2,1); }
+.project-card:hover, .skill-category:hover { translate: 0 -5px; }
+.badge { transition: scale .3s cubic-bezier(.2,.9,.3,1.4), rotate .3s, background .3s; }
+.project-card:hover .badge, .skill-category:hover .badge { scale: 1.12; rotate: -6deg; background: var(--fill-3); }
+.tags span { transition: background .3s, color .3s, border-color .3s, translate .25s cubic-bezier(.2,.7,.2,1); }
+.tags span:hover { translate: 0 -3px; }
+
+/* Nút: lún khi bấm, mũi tên nhích khi rê chuột */
+.btn { transition: background .3s, color .3s, transform .3s, scale .15s; }
+.btn:active { scale: 0.96; }
+.btn .mi { transition: translate .25s cubic-bezier(.2,.7,.2,1); }
+.btn:hover .mi.nudge-down { translate: 0 3px; }
+.btn:hover .mi.nudge-out { translate: 2px -2px; }
+.social-links a .mi, .social-links a i { transition: scale .25s cubic-bezier(.2,.9,.3,1.4); }
+.social-links a:hover .mi, .social-links a:hover i { scale: 1.25; }
+
+/* Ảnh chân dung: hơi nâng khi rê chuột */
+.hero-image-wrapper img { transition: translate .4s cubic-bezier(.2,.7,.2,1), border-color .3s; }
+.hero-image-wrapper:hover img { translate: 0 -6px; border-color: var(--stroke-2); }
+
+@media (prefers-reduced-motion: reduce) {
+    .mascot { animation: none; }
+    .project-card:hover, .skill-category:hover, .tags span:hover, .hero-image-wrapper:hover img { translate: none; }
+}
