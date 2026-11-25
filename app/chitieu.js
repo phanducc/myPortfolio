@@ -250,6 +250,7 @@
         sel.value = value;
     };
     var emptyBox = function (box, canvas, text) {
+        if (text) PD.chartWidth(box, 0);
         var old = box.querySelector('.chart-empty'); if (old) old.remove();
         canvas.style.display = text ? 'none' : '';
         if (text) { var d = document.createElement('div'); d.className = 'chart-empty'; d.innerHTML = PD.emptyHtml(text); box.appendChild(d); }
@@ -313,6 +314,7 @@
             return;
         }
         emptyBox(el.tcBox, $('tc-chart'), '');
+        PD.chartWidth(el.tcBox, tc.month === 'all' ? labels.length * 50 + 70 : labels.length * 26 + 70);   // rộng hơn màn hình, trượt ngang để xem
         tcChart = PD.barChart($('tc-chart'), {
             labels: labels,
             datasets: [{ label: 'Thu', color: PD.cssVar('--s1'), data: thu }, { label: 'Chi', color: PD.cssVar('--s2'), hatch: true, data: chi }],
@@ -362,6 +364,7 @@
             return;
         }
         emptyBox(el.chartBox, canvas, '');
+        PD.chartWidth(el.chartBox, ((PD.dayMs(to) - PD.dayMs(from)) / 86400000 + 1) * 26 + 80);
         var series = function (label, cssName, key, dash) {
             return { label: label, color: PD.cssVar(cssName), dash: dash, data: recent.map(function (r) { return { x: PD.dayMs(r.date), y: r[key] }; }) };
         };
