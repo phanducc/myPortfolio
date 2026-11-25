@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="robots" content="noindex">
     <title>Quản lý chi tiêu | Phan Đức</title>
-    <link rel="icon" type="image/png" href="/assets/phanduc.png">
+    <link rel="icon" type="image/webp" href="/assets/logo.webp">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -20,9 +20,10 @@
         <p class="app-lead">Mỗi ngày ghi lại tiền mặt và tiền trong tài khoản. Ứng dụng tự tính tổng và chênh lệch so với hôm qua. Dữ liệu lưu trên tài khoản Google của bạn.</p>
 
         <section id="login" class="glass-panel" aria-labelledby="t-login" hidden>
+            <img class="mascot" src="/assets/logo.webp" alt="" width="400" height="360">
             <h2 class="panel-title" id="t-login">Đăng nhập</h2>
             <p class="panel-sub">Đăng nhập bằng tài khoản Google để xem và nhập số liệu. Dữ liệu được lưu trên tài khoản của bạn nên dùng được trên mọi thiết bị.</p>
-            <button type="button" class="btn primary">Đăng nhập bằng Google</button>
+            <button type="button" class="btn primary"><span class="ico mi" style="--i:url(/assets/icons/login.svg)" aria-hidden="true"></span>Đăng nhập bằng Google</button>
             <p class="form-msg" role="alert" style="margin-top:10px"></p>
         </section>
 
@@ -105,10 +106,10 @@
                     <p class="panel-sub" style="margin:0" id="tc-sub"></p>
                 </div>
                 <div class="picker">
-                    <button type="button" class="btn secondary icon" id="tc-prev" aria-label="Kỳ trước">‹</button>
+                    <button type="button" class="btn secondary icon" id="tc-prev" aria-label="Kỳ trước"><span class="ico mi" style="--i:url(/assets/icons/chevron_left.svg)" aria-hidden="true"></span></button>
                     <div class="field"><label for="tc-year">Năm</label><select id="tc-year"></select></div>
                     <div class="field"><label for="tc-month">Tháng</label><select id="tc-month"></select></div>
-                    <button type="button" class="btn secondary icon" id="tc-next" aria-label="Kỳ sau">›</button>
+                    <button type="button" class="btn secondary icon" id="tc-next" aria-label="Kỳ sau"><span class="ico mi" style="--i:url(/assets/icons/chevron_right.svg)" aria-hidden="true"></span></button>
                 </div>
             </div>
             <div class="tiles" id="tc-tiles" style="margin:14px 0 6px"></div>
@@ -142,9 +143,9 @@
                 </div>
                 <div class="picker">
                     <div class="step">
-                        <button type="button" class="btn secondary icon" id="ch-older" aria-label="Tháng trước">‹</button>
+                        <button type="button" class="btn secondary icon" id="ch-older" aria-label="Tháng trước"><span class="ico mi" style="--i:url(/assets/icons/chevron_left.svg)" aria-hidden="true"></span></button>
                         <div class="field"><label for="ch-range">Xem theo</label><select id="ch-range"></select></div>
-                        <button type="button" class="btn secondary icon" id="ch-newer" aria-label="Tháng sau">›</button>
+                        <button type="button" class="btn secondary icon" id="ch-newer" aria-label="Tháng sau"><span class="ico mi" style="--i:url(/assets/icons/chevron_right.svg)" aria-hidden="true"></span></button>
                     </div>
                 </div>
             </div>

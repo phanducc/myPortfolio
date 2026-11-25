@@ -12,6 +12,8 @@ Web cá nhân (tĩnh) tại phanduc.eu.org, kèm 2 ứng dụng:
 ```
 chitieu/index.html        trang /chitieu
 taisanvang/index.html     trang /taisanvang
+assets/logo.webp          logo (nhãn dán mèo, nền trong suốt) dùng cho trang, thanh trên và favicon
+assets/icons/             biểu tượng Material Symbols dạng SVG (Outlined, FILL 1, Weight 700, Grade 200, Optical size 24), vẽ bằng CSS mask nên đổi màu theo chữ
 app/                      CSS + JS dùng chung (common.js, firebase.js, chitieu.js, taisanvang.js, vendor/chart.umd.js)
 functions/                code proxy giá SJC (/api/sjc/current, /api/sjc/history), được worker.js gọi
 worker.js                 Cloudflare Worker: định tuyến /api/sjc/*

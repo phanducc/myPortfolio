@@ -172,15 +172,16 @@
             cards += '<div class="tx"><button type="button" class="tx-head" aria-expanded="false">' +
                 '<span class="tx-date">' + PD.fmtDay(r.date).slice(0, 5) + '<small>' + PD.dow(r.date) + '</small></span>' +
                 '<span class="tx-total">' + PD.vnd(r.total) + '<span class="cur">đ</span></span>' +
-                '<span class="tx-sub"><span>' + PD.pill(r.diff) + (r.gap ? '<small>so với ' + PD.fmtDay(r.prevDate).slice(0, 5) + '</small>' : '') + '</span>' + PD.icon('chev').replace('class="ico"','class="ico tx-chev"') + '</span></button>' +
-                '<div class="tx-detail"><div class="tx-kv"><div><span>Tiền mặt</span><b>' + PD.vnd(r.cash) + '</b></div><div><span>Tài khoản</span><b>' + PD.vnd(r.bank) + '</b></div><div><span>Tiết kiệm</span><b>' + PD.vnd(r.sav) + '</b></div></div>' +
-                '<div class="tx-act"><button type="button" class="btn secondary" data-a="edit" data-d="' + r.date + '">Sửa</button><button type="button" class="btn secondary" data-a="del" data-d="' + r.date + '">Xoá</button></div></div></div>';
+                '<span class="tx-sub"><span>' + PD.pill(r.diff) + (r.gap ? '<small>so với ' + PD.fmtDay(r.prevDate).slice(0, 5) + '</small>' : '') + '</span>' + PD.icon('chev', 'tx-chev') + '</span></button>' +
+                '<div class="tx-detail"><div class="tx-in"><div class="tx-kv"><div><span>Tiền mặt</span><b>' + PD.vnd(r.cash) + '</b></div><div><span>Tài khoản</span><b>' + PD.vnd(r.bank) + '</b></div><div><span>Tiết kiệm</span><b>' + PD.vnd(r.sav) + '</b></div></div>' +
+                '<div class="tx-act"><button type="button" class="btn secondary" data-a="edit" data-d="' + r.date + '">' + PD.icon('edit') + 'Sửa</button><button type="button" class="btn secondary" data-a="del" data-d="' + r.date + '">' + PD.icon('del') + 'Xoá</button></div></div></div></div>';
             var note = r.gap ? ' <span style="color:var(--ink-3);font-size:12px">(so với ' + PD.fmtDay(r.prevDate).slice(0, 5) + ')</span>' : '';
             html += '<tr><td>' + PD.fmtDay(r.date) + '<span class="dow">' + PD.dow(r.date) + '</span></td><td>' + PD.vnd(r.cash) + '</td><td>' + PD.vnd(r.bank) + '</td><td>' + PD.vnd(r.sav) + '</td>' +
                 '<td><b>' + PD.vnd(r.total) + '</b></td><td>' + PD.pill(r.diff) + note + '</td>' +
                 '<td class="act"><button type="button" class="link-btn" data-a="edit" data-d="' + r.date + '">Sửa</button>' +
                 '<button type="button" class="link-btn del" data-a="del" data-d="' + r.date + '">Xoá</button></td></tr>';
         });
+        PD.fxFirst(el.tbody, 'tbody'); PD.fxFirst($('txlist'), 'txlist');
         el.tbody.innerHTML = html;
         $('txlist').innerHTML = cards;
     }
@@ -201,12 +202,11 @@
                 return '<span><i style="--c:var(' + p[2] + ')"></i>' + p[0] + ' <b>' + PD.num(p[1] / last.total * 100, 1) + '%</b></span>';
             }).join('') + '</div></div>';
         }
-        el.summary.innerHTML =
-            PD.tile({ label: 'Tiền mặt', value: PD.vnd(last.cash), icon: 'wallet' }) +
+        PD.setTiles(el.summary, PD.tile({ label: 'Tiền mặt', value: PD.vnd(last.cash), icon: 'wallet' }) +
             PD.tile({ label: 'Tiền tài khoản', value: PD.vnd(last.bank), icon: 'card' }) +
             PD.tile({ label: diffLabel, value: PD.delta(last.diff), icon: 'trend', sub: last.diff === null ? 'chưa có ngày trước để so sánh' : '', cur: last.diff !== null }) +
             PD.tile({ label: 'Tiền tiết kiệm', value: PD.vnd(last.sav), icon: 'coins' }) +
-            PD.tile({ label: 'Tổng tài sản', value: PD.vnd(last.total), icon: 'pie', cls: 'wide', sub: 'Tiền mặt + tiền tài khoản + tiền tiết kiệm · ngày ' + PD.fmtDay(last.date), extra: comp });
+            PD.tile({ label: 'Tổng tài sản', value: PD.vnd(last.total), icon: 'pie', cls: 'wide', sub: 'Tiền mặt + tiền tài khoản + tiền tiết kiệm · ngày ' + PD.fmtDay(last.date), extra: comp }), 'summary');
     }
 
     /* ---------- Khung tài khoản tiết kiệm ---------- */
@@ -296,9 +296,8 @@
             el.tcSub.textContent = 'Tháng ' + mm + '/' + tc.year + ' · từng ngày trong tháng';
         }
         var net = T - C;
-        el.tcTiles.innerHTML =
-            PD.tile({ label: 'Tổng thu', value: PD.vnd(T), icon: 'up' }) + PD.tile({ label: 'Tổng chi', value: PD.vnd(C), icon: 'down' }) +
-            PD.tile({ label: 'Chênh lệch (thu − chi)', value: PD.delta(net), icon: 'scale' });
+        PD.setTiles(el.tcTiles, PD.tile({ label: 'Tổng thu', value: PD.vnd(T), icon: 'up' }) + PD.tile({ label: 'Tổng chi', value: PD.vnd(C), icon: 'down' }) +
+            PD.tile({ label: 'Chênh lệch (thu − chi)', value: PD.delta(net), icon: 'scale' }), 'tc-tiles');
         // Thanh so sánh thu với chi
         var ratio = $('tc-ratio');
         if (T + C > 0) {
