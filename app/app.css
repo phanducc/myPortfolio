@@ -290,11 +290,15 @@ table.data tr.grp .gs { color: var(--ink-3); text-transform: none; letter-spacin
     .sheet .field.wide { grid-column: auto; }
 
     /* Tóm tắt: tổng tài sản lên đầu, 4 ô nhỏ 2×2 */
-    .tiles { gap: 10px; margin-bottom: 14px; }
+    /* Các ô trong cùng một hàng dùng chung 3 dòng (nhãn / số / ghi chú) nên số liệu luôn thẳng hàng dù nhãn hay ghi chú dài ngắn khác nhau */
+    .tiles { column-gap: 10px; row-gap: 0; margin-bottom: 14px; }
+    .tiles > .tile:not(.wide) { display: grid; grid-template-rows: subgrid; grid-row: span 3; align-content: start; row-gap: 0; margin-bottom: 10px; }
+    .tiles > .tile.wide { margin-bottom: 10px; }
+    .tiles > .tile:not(.wide) .v { margin-top: 8px; }
+    .tile:not(.wide) .ic { display: none; }
     .tiles.four { grid-template-columns: repeat(2, 1fr); }
     .tiles.four .tile.wide { order: -1; padding: 18px; }
     .tiles.four .tile.wide .v { font-size: 2rem; }
-    #summary .tile:not(.wide) .ic { display: none; }
     .tile { padding: 14px 16px; border-radius: 16px; }
     .tile .v { font-size: 1.25rem; white-space: nowrap; margin-top: 8px; }
     .tile .lb { font-size: 11.5px; letter-spacing: 0.04em; }
@@ -316,7 +320,9 @@ table.data tr.grp .gs { color: var(--ink-3); text-transform: none; letter-spacin
 
     /* Bảng → danh sách thẻ */
     .desk-only { display: none !important; }
-    .txlist { display: block; }
+    /* Danh sách có chiều cao cố định, kéo bên trong để xem thêm (không dài mãi theo số dòng) */
+    .txlist { display: block; max-height: min(460px, 62dvh); overflow-y: auto; -webkit-overflow-scrolling: touch; padding-right: 2px; }
+    .txlist .gh { position: sticky; top: 0; z-index: 1; background: #0d0d0d; }
     .tbl-wrap { max-height: none; }
     .chart-box { height: 230px; }
     .legend { gap: 10px 14px; }
