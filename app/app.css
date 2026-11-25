@@ -35,7 +35,7 @@ body.no-scroll { overflow: hidden; }
     display: flex; align-items: center; justify-content: space-between; gap: 16px;
 }
 .app-header .brand { display: flex; align-items: center; gap: 10px; color: var(--text-color); text-decoration: none; font-weight: 800; letter-spacing: 1px; }
-.app-header .brand img { width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(255,255,255,.7); background: #fff; padding: 2px; object-fit: cover; }
+.app-header .brand img { height: 36px; width: auto; display: block; object-fit: contain; }
 .page-name { display: none; font-weight: 800; font-size: 1.1rem; letter-spacing: -0.005em; margin-right: auto; }
 .app-tabs { display: flex; gap: 4px; padding: 4px; border-radius: 12px; border: 1px solid var(--stroke); background: var(--fill-1); }
 .app-tabs a { display: inline-flex; align-items: center; gap: 7px; padding: 6px 16px; border-radius: 8px; font-weight: 800; font-size: 14px; color: var(--text-color); text-decoration: none; white-space: nowrap; transition: background .2s, color .2s; }
@@ -130,6 +130,7 @@ button.btn { font-family: inherit; cursor: pointer; }
 .picker select { min-height: 42px; padding: 6px 12px; }
 .picker .step { display: flex; gap: 6px; align-items: flex-end; }
 .btn.icon { padding: 0; width: 42px; height: 42px; font-size: 18px; line-height: 1; }
+.btn.icon .ico { width: 20px; height: 20px; margin: 0; }
 .btn.icon:disabled { opacity: 0.35; pointer-events: none; }
 .chart-scroll { overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: var(--stroke-2) transparent; }
 .chart-scroll > .chart-box { min-width: var(--cw, 0px); }
@@ -186,7 +187,7 @@ table.data tr.grp .gs { color: var(--ink-3); text-transform: none; letter-spacin
 .tx-total { font-weight: 800; font-size: 1.1rem; text-align: right; font-variant-numeric: tabular-nums; }
 .tx-total .cur { font-size: 0.65em; color: var(--ink-2); margin-left: 3px; }
 .tx-sub { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; gap: 8px; color: var(--ink-3); font-size: 12px; }
-.tx-chev { width: 16px; height: 16px; transition: transform .2s; }
+.tx-chev { width: 18px; height: 18px; margin: 0; transition: transform .2s; }
 .tx.open .tx-chev { transform: rotate(180deg); }
 .tx-detail { display: none; padding: 0 16px 14px; border-top: 1px solid var(--grid); }
 .tx.open .tx-detail { display: block; }
@@ -214,6 +215,13 @@ table.data tr.grp .gs { color: var(--ink-3); text-transform: none; letter-spacin
 .sv-history { margin-top: 12px; }
 .sv-history summary { cursor: pointer; font-size: 13px; color: var(--ink-2); padding: 6px 0; }
 .sv-history summary:hover { color: var(--primary-color); }
+
+/* Biểu tượng trong nút */
+.btn .ico { width: 1.15em; height: 1.15em; vertical-align: -0.2em; }
+.tx-act .btn { gap: 6px; }
+.nav-add .ico { width: 28px; height: 28px; margin: 0; }
+.sheet-close .ico { width: 20px; height: 20px; margin: 0; }
+.mascot { display: block; width: 88px; height: auto; margin: 0 0 12px; }
 
 /* Khung nhập trượt từ dưới lên: chỉ có trên điện thoại */
 .sheet-close, .sheet-bg, .bottom-nav { display: none; }

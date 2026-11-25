@@ -172,9 +172,9 @@
             cards += '<div class="tx"><button type="button" class="tx-head" aria-expanded="false">' +
                 '<span class="tx-date">' + PD.fmtDay(r.date).slice(0, 5) + '<small>' + PD.dow(r.date) + '</small></span>' +
                 '<span class="tx-total">' + PD.vnd(r.total) + '<span class="cur">đ</span></span>' +
-                '<span class="tx-sub"><span>' + PD.pill(r.diff) + (r.gap ? '<small>so với ' + PD.fmtDay(r.prevDate).slice(0, 5) + '</small>' : '') + '</span>' + PD.icon('chev').replace('class="ico"','class="ico tx-chev"') + '</span></button>' +
+                '<span class="tx-sub"><span>' + PD.pill(r.diff) + (r.gap ? '<small>so với ' + PD.fmtDay(r.prevDate).slice(0, 5) + '</small>' : '') + '</span>' + PD.icon('chev', 'tx-chev') + '</span></button>' +
                 '<div class="tx-detail"><div class="tx-kv"><div><span>Tiền mặt</span><b>' + PD.vnd(r.cash) + '</b></div><div><span>Tài khoản</span><b>' + PD.vnd(r.bank) + '</b></div><div><span>Tiết kiệm</span><b>' + PD.vnd(r.sav) + '</b></div></div>' +
-                '<div class="tx-act"><button type="button" class="btn secondary" data-a="edit" data-d="' + r.date + '">Sửa</button><button type="button" class="btn secondary" data-a="del" data-d="' + r.date + '">Xoá</button></div></div></div>';
+                '<div class="tx-act"><button type="button" class="btn secondary" data-a="edit" data-d="' + r.date + '">' + PD.icon('edit') + 'Sửa</button><button type="button" class="btn secondary" data-a="del" data-d="' + r.date + '">' + PD.icon('del') + 'Xoá</button></div></div></div>';
             var note = r.gap ? ' <span style="color:var(--ink-3);font-size:12px">(so với ' + PD.fmtDay(r.prevDate).slice(0, 5) + ')</span>' : '';
             html += '<tr><td>' + PD.fmtDay(r.date) + '<span class="dow">' + PD.dow(r.date) + '</span></td><td>' + PD.vnd(r.cash) + '</td><td>' + PD.vnd(r.bank) + '</td><td>' + PD.vnd(r.sav) + '</td>' +
                 '<td><b>' + PD.vnd(r.total) + '</b></td><td>' + PD.pill(r.diff) + note + '</td>' +

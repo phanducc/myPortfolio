@@ -38,10 +38,7 @@ body { background-color: var(--bg-color); color: var(--text-color); line-height:
     display: flex; align-items: center; gap: 12px;
     font-size: 26px; font-weight: 800; color: var(--text-color); letter-spacing: 1px; 
 }
-.logo-img {
-    height: 52px; width: 52px; border-radius: 50%; object-fit: cover; 
-    border: 2px solid var(--primary-color); background-color: #fff; padding: 3px;
-}
+.logo-img { height: 48px; width: auto; display: block; object-fit: contain; }
 .nav-pill {
     background: var(--fill-1);
     border: 1px solid var(--stroke);
@@ -130,7 +127,7 @@ body { background-color: var(--bg-color); color: var(--text-color); line-height:
     .header-container { flex-direction: row; justify-content: space-between; gap: 12px; padding: 0 16px; }
     .header-right { display: none; }
     .logo { font-size: 18px; gap: 10px; }
-    .logo-img { height: 40px; width: 40px; }
+    .logo-img { height: 38px; }
     .nav-pill { height: 42px; padding: 0 4px; }
     .nav-item { padding: 0 11px; font-size: 13.5px; }
     .hero { flex-direction: column; text-align: center; padding: 104px 20px 56px; min-height: auto; }
@@ -166,3 +163,21 @@ body { background-color: var(--bg-color); color: var(--text-color); line-height:
 
 /* Khi bấm liên kết neo, tiêu đề không bị thanh trên che mất */
 section[id] { scroll-margin-top: 72px; }
+
+/* Biểu tượng Material Symbols (Outlined, FILL 1, Weight 700, Grade 200, Optical size 24): SVG vẽ bằng mask nên theo màu chữ */
+.mi {
+    display: inline-block; width: 1.2em; height: 1.2em; flex: none; vertical-align: -0.22em;
+    background-color: currentColor;
+    -webkit-mask: var(--i) center / contain no-repeat; mask: var(--i) center / contain no-repeat;
+}
+.btn { gap: 8px; }
+
+/* Huy hiệu biểu tượng ở thẻ kỹ năng và thẻ dự án */
+.badge { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; margin-right: 10px; border-radius: 10px; border: 1px solid var(--stroke-2); background: var(--fill-2); color: #fff; vertical-align: middle; }
+.badge .mi { width: 19px; height: 19px; vertical-align: 0; }
+.badge.lg { width: 46px; height: 46px; border-radius: 14px; margin: 0 0 16px; display: flex; }
+.badge.lg .mi { width: 25px; height: 25px; }
+.skill-category h3 { display: flex; align-items: center; }
+
+/* Linh vật (nhãn dán mèo) */
+.mascot { display: block; width: 96px; height: auto; margin: 0 auto 16px; }

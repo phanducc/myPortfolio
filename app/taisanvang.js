@@ -150,9 +150,9 @@
                 return '<div class="tx"><button type="button" class="tx-head" aria-expanded="false">' +
                     '<span class="tx-date">' + PD.fmtDay(l.date) + '</span>' +
                     '<span class="tx-total">' + PD.vnd(cost(l)) + '<span class="cur">đ</span></span>' +
-                    '<span class="tx-sub"><span>' + PD.num(l.chi, 3) + ' chỉ × ' + PD.vnd(l.price) + ' đ/chỉ</span>' + PD.icon('chev').replace('class="ico"', 'class="ico tx-chev"') + '</span></button>' +
-                    '<div class="tx-detail"><div class="tx-act" style="margin-top:12px"><button type="button" class="btn secondary" data-a="edit" data-id="' + PD.esc(l.id) + '">Sửa</button>' +
-                    '<button type="button" class="btn secondary" data-a="del" data-id="' + PD.esc(l.id) + '">Xoá</button></div></div></div>';
+                    '<span class="tx-sub"><span>' + PD.num(l.chi, 3) + ' chỉ × ' + PD.vnd(l.price) + ' đ/chỉ</span>' + PD.icon('chev', 'tx-chev') + '</span></button>' +
+                    '<div class="tx-detail"><div class="tx-act" style="margin-top:12px"><button type="button" class="btn secondary" data-a="edit" data-id="' + PD.esc(l.id) + '">' + PD.icon('edit') + 'Sửa</button>' +
+                    '<button type="button" class="btn secondary" data-a="del" data-id="' + PD.esc(l.id) + '">' + PD.icon('del') + 'Xoá</button></div></div></div>';
             }).join('');
             foot.innerHTML = '<tr><td>Tổng (' + list.length + ' lần)</td><td>' + PD.num(t.chi, 3) + '</td><td>' + PD.vnd(t.avg) + ' <span style="font-weight:400;color:var(--ink-3)">(bình quân)</span></td><td>' + PD.vnd(t.cost) + '</td><td></td></tr>';
             $('summary').innerHTML =
