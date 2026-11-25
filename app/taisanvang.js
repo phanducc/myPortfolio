@@ -224,9 +224,11 @@
             d.className = 'chart-empty';
             d.innerHTML = PD.emptyHtml(sjc.error ? 'Không tải được dữ liệu biểu đồ.' : 'Chưa có dữ liệu.');
             box.appendChild(d);
+            PD.chartWidth(box, 0);
             return;
         }
         canvas.style.display = '';
+        PD.chartWidth(box, DAYS * 26 + 80);        // rộng hơn màn hình, trượt ngang để xem
         var first = pts[0], last = pts[pts.length - 1], dlt = last.sell - first.sell;
         $('hist-change').innerHTML = 'Giá bán ra ' + DAYS + ' ngày qua: <b>' + PD.delta(dlt, ' đ') + ' (' + PD.pct(dlt / first.sell * 100) + ')</b> · từ ' + PD.vnd(first.sell) + ' đến ' + PD.vnd(last.sell) + ' đ/lượng';
         var series = function (label, color, key, dash) {
