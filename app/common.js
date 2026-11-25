@@ -51,7 +51,8 @@
         gold: '<path d="M3 18l3-8h12l3 8z"/><path d="M8.5 10l1-4h5l1 4"/>',
         scale: '<path d="M12 4v16M6 20h12M5 8h14"/><path d="M5 8l-3 6a3 3 0 0 0 6 0zM19 8l-3 6a3 3 0 0 0 6 0z"/>',
         target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/>',
-        empty: '<path d="M4 7h16M4 12h10M4 17h6"/>'
+        empty: '<path d="M4 7h16M4 12h10M4 17h6"/>',
+        chev: '<path d="M6 9l6 6 6-6"/>'
     };
     PD.icon = function (name) {
         return '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + (ICONS[name] || '') + '</svg>';
@@ -214,11 +215,17 @@
             }).then(function () { btn.disabled = false; });
         });
         PDCloud.onUser(function (user) {
+            document.body.classList.toggle('authed', !!user);        // hiện thanh tab đáy chỉ khi đã đăng nhập
             if (user) {
                 login.hidden = true; content.hidden = false;
-                bar.innerHTML = '<span class="who" title="' + PD.esc(user.email || '') + '">' + PD.esc(user.email || 'Đã đăng nhập') + '</span>' +
-                    '<button type="button" class="btn secondary small">Đăng xuất</button>';
-                bar.querySelector('button').addEventListener('click', function () { PDCloud.signOut(); });
+                var mail = user.email || 'Đã đăng nhập';
+                bar.classList.remove('open');
+                bar.innerHTML = '<button type="button" class="avatar" aria-label="Tài khoản" aria-haspopup="true" aria-expanded="false">' + PD.esc(mail.charAt(0).toUpperCase()) + '</button>' +
+                    '<div class="auth-menu"><span class="who" title="' + PD.esc(mail) + '">' + PD.esc(mail) + '</span>' +
+                    '<button type="button" class="btn secondary small" data-a="out">Đăng xuất</button></div>';
+                bar.querySelector('[data-a=out]').addEventListener('click', function () { PDCloud.signOut(); });
+                var av = bar.querySelector('.avatar');
+                av.addEventListener('click', function (e) { e.stopPropagation(); var o = bar.classList.toggle('open'); av.setAttribute('aria-expanded', o); });
                 onIn(user);
             } else {
                 content.hidden = true; login.hidden = false; bar.innerHTML = '';
@@ -361,16 +368,65 @@
     };
 
     /** Thanh điều hướng chung */
+    PD.isMobile = function () { return g.matchMedia && g.matchMedia('(max-width: 720px)').matches; };
+
     PD.header = function (active) {
         var el = document.getElementById('app-header');
         if (!el) return;
-        var tab = function (href, label, key) {
-            return '<a href="' + href + '"' + (active === key ? ' class="active" aria-current="page"' : '') + '>' + PD.icon(key === 'chitieu' ? 'wallet' : 'gold') + '<span>' + label + '</span></a>';
+        var pages = { chitieu: ['/chitieu/', 'Chi tiêu', 'wallet'], taisanvang: ['/taisanvang/', 'Tài sản vàng', 'gold'] };
+        var tab = function (key) {
+            var p = pages[key];
+            return '<a href="' + p[0] + '"' + (active === key ? ' class="active" aria-current="page"' : '') + '>' + PD.icon(p[2]) + '<span>' + p[1] + '</span></a>';
+        };
+        var btab = function (key) {
+            var p = pages[key];
+            return '<a class="bn-tab' + (active === key ? ' active' : '') + '" href="' + p[0] + '"' + (active === key ? ' aria-current="page"' : '') + '>' + PD.icon(p[2]) + '<span>' + p[1] + '</span></a>';
         };
         el.className = 'app-header';
-        el.innerHTML = '<div class="inner"><a class="brand" href="/"><img src="/assets/phanduc.png" alt="">PHAN ĐỨC.</a>' +
-            '<nav class="app-tabs" aria-label="Ứng dụng">' + tab('/chitieu/', 'Chi tiêu', 'chitieu') + tab('/taisanvang/', 'Tài sản vàng', 'taisanvang') + '</nav>' +
+        el.innerHTML = '<div class="inner"><a class="brand" href="/" aria-label="Trang chủ"><img src="/assets/phanduc.png" alt=""><span class="brand-name">PHAN ĐỨC.</span></a>' +
+            '<span class="page-name">' + pages[active][1] + '</span>' +
+            '<nav class="app-tabs" aria-label="Ứng dụng">' + tab('chitieu') + tab('taisanvang') + '</nav>' +
             '<div id="auth-bar" class="auth-bar"></div></div>';
+        // Thanh tab đáy cho điện thoại; nút "+" báo cho trang mở khung nhập
+        var nav = document.createElement('nav');
+        nav.className = 'bottom-nav'; nav.setAttribute('aria-label', 'Điều hướng');
+        nav.innerHTML = btab('chitieu') + '<button type="button" class="nav-add" aria-label="Thêm số liệu">+</button>' + btab('taisanvang');
+        document.body.appendChild(nav);
+        nav.querySelector('.nav-add').addEventListener('click', function () { document.dispatchEvent(new CustomEvent('pd:add')); });
+        // Bấm ra ngoài thì đóng menu tài khoản
+        document.addEventListener('click', function (e) {
+            var bar = document.getElementById('auth-bar');
+            if (bar && bar.classList.contains('open') && !bar.contains(e.target)) bar.classList.remove('open');
+        });
+    };
+
+    /** Thông báo ngắn ở đáy màn hình (trên thanh tab) */
+    var toastTimer = null;
+    PD.toast = function (text) {
+        var t = document.getElementById('pd-toast');
+        if (!t) { t = document.createElement('div'); t.id = 'pd-toast'; t.className = 'toast'; t.setAttribute('role', 'status'); document.body.appendChild(t); }
+        t.textContent = text; t.classList.add('show');
+        clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2600);
+    };
+
+    /** Biến một khung nhập thành khung trượt từ dưới lên trên điện thoại (máy tính: giữ nguyên, open() chỉ cuộn tới khung). */
+    PD.sheet = function (sec, focusSel) {
+        sec.classList.add('sheet');
+        var bg = document.createElement('div'); bg.className = 'sheet-bg'; document.body.appendChild(bg);
+        var x = document.createElement('button'); x.type = 'button'; x.className = 'sheet-close'; x.setAttribute('aria-label', 'Đóng'); x.innerHTML = '&times;';
+        sec.insertBefore(x, sec.firstChild);
+        var isOpen = function () { return sec.classList.contains('open'); };
+        function open() {
+            if (!PD.isMobile()) { sec.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+            sec.classList.add('open'); bg.classList.add('open'); document.body.classList.add('no-scroll');
+            var f = focusSel && sec.querySelector(focusSel);
+            if (f) setTimeout(function () { try { f.focus({ preventScroll: true }); } catch (e) { f.focus(); } }, 320);
+        }
+        function close() { sec.classList.remove('open'); bg.classList.remove('open'); document.body.classList.remove('no-scroll'); }
+        bg.addEventListener('click', close); x.addEventListener('click', close);
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && isOpen()) close(); });
+        g.addEventListener('resize', function () { if (isOpen() && !PD.isMobile()) close(); });
+        return { open: open, close: close, isOpen: isOpen };
     };
 
     g.PD = PD;
