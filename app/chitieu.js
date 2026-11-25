@@ -117,13 +117,17 @@
         var row = { date: date, cash: cash, bank: bank };
         PDCloud.put(COL, date, toItem(row).data).catch(saveFail);
         if (editing && editing !== date) PDCloud.remove(COL, editing).catch(saveFail);   // đổi ngày khi sửa
-        say((existed || editing ? 'Đã cập nhật ' : 'Đã lưu ') + 'ngày ' + PD.fmtDay(date) + '.');
+        var done = (existed || editing ? 'Đã cập nhật ' : 'Đã lưu ') + 'ngày ' + PD.fmtDay(date) + '.';
+        say(done);
         resetForm();
+        if (PD.isMobile()) { sheet.close(); PD.toast(done); }          // điện thoại: đóng khung nhập và báo bằng thông báo ngắn
     });
-    el.cancel.addEventListener('click', function () { resetForm(); say(''); });
+    el.cancel.addEventListener('click', function () { resetForm(); say(''); if (PD.isMobile()) sheet.close(); });
+    var sheet = PD.sheet($('entry-panel'), '#f-cash');
+    document.addEventListener('pd:add', function () { resetForm(); say(''); sheet.open(); });     // nút "+" ở thanh tab đáy
 
     /* ---------- Bảng ---------- */
-    el.tbody.addEventListener('click', function (e) {
+    function onRowAction(e) {
         var b = e.target.closest('button[data-a]');
         if (!b) return;
         var date = b.getAttribute('data-d');
@@ -141,22 +145,36 @@
             el.cancel.hidden = false;
             previewTotal();
             say('Đang sửa ngày ' + PD.fmtDay(date) + '.');
-            el.form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            sheet.open();
         }
+    }
+    el.tbody.addEventListener('click', onRowAction);
+    $('txlist').addEventListener('click', function (e) {
+        var h = e.target.closest('.tx-head');                       // chạm vào thẻ để mở/đóng chi tiết
+        if (h) { var t = h.parentNode, o = t.classList.toggle('open'); h.setAttribute('aria-expanded', o); return; }
+        onRowAction(e);
     });
 
     function renderTable(list) {
         if (!list.length) {
             el.tbody.innerHTML = '<tr><td colspan="7" class="none">' + PD.emptyHtml('Chưa có dữ liệu. Nhập số liệu đầu tiên ở phía trên.') + '</td></tr>';
+            $('txlist').innerHTML = PD.emptyHtml('Chưa có dữ liệu. Chạm nút + để nhập số liệu đầu tiên.');
             return;
         }
-        var fm = flows(list).byMonth, curMonth = '', html = '';
+        var fm = flows(list).byMonth, curMonth = '', html = '', cards = '';
         list.slice().reverse().forEach(function (r) {
             var m = r.date.slice(0, 7);
             if (m !== curMonth) {                                   // dòng tiêu đề nhóm theo tháng, kèm tổng thu chi của tháng
                 curMonth = m; var o = fm[m] || { thu: 0, chi: 0 };
                 html += '<tr class="grp"><td colspan="7"><div class="gw"><span>' + PD.monthLabel(m) + '</span><span class="gs">Thu ' + PD.vnd(o.thu) + ' · Chi ' + PD.vnd(o.chi) + '</span></div></td></tr>';
+                cards += '<div class="gh"><span>' + PD.monthLabel(m) + '</span><span class="gs">Thu ' + PD.vnd(o.thu) + ' · Chi ' + PD.vnd(o.chi) + '</span></div>';
             }
+            cards += '<div class="tx"><button type="button" class="tx-head" aria-expanded="false">' +
+                '<span class="tx-date">' + PD.fmtDay(r.date).slice(0, 5) + '<small>' + PD.dow(r.date) + '</small></span>' +
+                '<span class="tx-total">' + PD.vnd(r.total) + '<span class="cur">đ</span></span>' +
+                '<span class="tx-sub"><span>' + PD.pill(r.diff) + (r.gap ? '<small>so với ' + PD.fmtDay(r.prevDate).slice(0, 5) + '</small>' : '') + '</span>' + PD.icon('chev').replace('class="ico"','class="ico tx-chev"') + '</span></button>' +
+                '<div class="tx-detail"><div class="tx-kv"><div><span>Tiền mặt</span><b>' + PD.vnd(r.cash) + '</b></div><div><span>Tài khoản</span><b>' + PD.vnd(r.bank) + '</b></div><div><span>Tiết kiệm</span><b>' + PD.vnd(r.sav) + '</b></div></div>' +
+                '<div class="tx-act"><button type="button" class="btn secondary" data-a="edit" data-d="' + r.date + '">Sửa</button><button type="button" class="btn secondary" data-a="del" data-d="' + r.date + '">Xoá</button></div></div></div>';
             var note = r.gap ? ' <span style="color:var(--ink-3);font-size:12px">(so với ' + PD.fmtDay(r.prevDate).slice(0, 5) + ')</span>' : '';
             html += '<tr><td>' + PD.fmtDay(r.date) + '<span class="dow">' + PD.dow(r.date) + '</span></td><td>' + PD.vnd(r.cash) + '</td><td>' + PD.vnd(r.bank) + '</td><td>' + PD.vnd(r.sav) + '</td>' +
                 '<td><b>' + PD.vnd(r.total) + '</b></td><td>' + PD.pill(r.diff) + note + '</td>' +
@@ -164,6 +182,7 @@
                 '<button type="button" class="link-btn del" data-a="del" data-d="' + r.date + '">Xoá</button></td></tr>';
         });
         el.tbody.innerHTML = html;
+        $('txlist').innerHTML = cards;
     }
 
     /* ---------- Ô tóm tắt ---------- */
@@ -203,6 +222,10 @@
     }
     el.svDate.max = PD.today();
     PD.moneyInput(el.svValue);
+    $('sv-toggle').addEventListener('click', function () {
+        var o = $('sv-more').classList.toggle('open'); this.setAttribute('aria-expanded', o);
+        if (o) setTimeout(function () { el.svValue.focus({ preventScroll: false }); }, 50);
+    });
     el.svForm.addEventListener('submit', function (e) {
         e.preventDefault();
         var v = PD.parseMoney(el.svValue.value), d = el.svDate.value || PD.today();
@@ -210,8 +233,10 @@
         if (isNaN(v)) return say2('Nhập số dư tiết kiệm (có thể là 0).', true);
         if (!PD.isDay(d) || d > PD.today()) return say2('Ngày áp dụng không hợp lệ.', true);
         PDCloud.put(SV, d, { date: d, value: v }).catch(function (err) { say2('Lưu thất bại: ' + (err && err.message || err), true); });
-        say2('Đã cập nhật số dư tiết kiệm: ' + PD.vnd(v) + ' đ (từ ' + PD.fmtDay(d) + ').');
+        var msg2 = 'Đã cập nhật số dư tiết kiệm: ' + PD.vnd(v) + ' đ (từ ' + PD.fmtDay(d) + ').';
+        say2(msg2);
         el.svValue.value = ''; el.svDate.value = '';
+        if (PD.isMobile()) { $('sv-more').classList.remove('open'); $('sv-toggle').setAttribute('aria-expanded', 'false'); PD.toast(msg2); }
     });
     el.svBody.addEventListener('click', function (e) {
         var b = e.target.closest('button[data-d]'); if (!b) return;
