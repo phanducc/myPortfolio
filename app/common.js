@@ -22,8 +22,8 @@
     PD.delta = function (n, suffix) {
         if (n === null || n === undefined || isNaN(n)) return '<span class="flat">—</span>';
         var cls = n > 0 ? 'up' : n < 0 ? 'down' : 'flat';
-        var arrow = n > 0 ? '▲' : n < 0 ? '▼' : '■';
-        return '<span class="' + cls + '">' + arrow + ' ' + PD.signed(n) + (suffix || '') + '</span>';
+        var arrow = PD.icon(n > 0 ? 'arrowup' : n < 0 ? 'arrowdown' : 'flat', 'dl');
+        return '<span class="' + cls + '">' + arrow + PD.signed(n) + (suffix || '') + '</span>';
     };
 
     PD.deltaPct = function (p) {
@@ -35,8 +35,8 @@
     PD.pill = function (n, suffix) {
         if (n === null || n === undefined || isNaN(n)) return '<span class="pill flat">—</span>';
         var cls = n > 0 ? 'up' : n < 0 ? 'down' : 'flat';
-        var arrow = n > 0 ? '▲' : n < 0 ? '▼' : '■';
-        return '<span class="pill ' + cls + '">' + arrow + ' ' + PD.signed(n) + (suffix || '') + '</span>';
+        var arrow = PD.icon(n > 0 ? 'arrowup' : n < 0 ? 'arrowdown' : 'flat', 'dl');
+        return '<span class="pill ' + cls + '">' + arrow + PD.signed(n) + (suffix || '') + '</span>';
     };
 
     /* ---------- Biểu tượng: Material Symbols (Outlined, FILL 1, Weight 700, Grade 200, Optical size 24) ----------
@@ -46,7 +46,8 @@
         up: 'arrow_circle_up', down: 'arrow_circle_down', gold: 'diamond', scale: 'balance', target: 'target', empty: 'inbox',
         chev: 'expand_more', add: 'add', close: 'close', logout: 'logout', login: 'login', edit: 'edit', del: 'delete',
         refresh: 'refresh', download: 'download', upload: 'upload', code: 'code', out: 'arrow_outward', mail: 'mail',
-        left: 'chevron_left', right: 'chevron_right'
+        left: 'chevron_left', right: 'chevron_right',
+        arrowup: 'arrow_upward', arrowdown: 'arrow_downward', flat: 'remove', to: 'arrow_forward'
     };
     /** name: khoá trong ICON_FILES; cls: lớp CSS thêm (tuỳ chọn) */
     PD.icon = function (name, cls) {

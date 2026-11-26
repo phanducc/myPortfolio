@@ -8,7 +8,7 @@
     --ink-2: rgba(255, 255, 255, 0.66);    /* chữ phụ */
     --ink-3: rgba(255, 255, 255, 0.5);     /* chữ mờ */
     --grid: rgba(255, 255, 255, 0.12);
-    /* Đen trắng: tăng/giảm phân biệt bằng mũi tên ▲▼ và dấu +/−, không dựa vào màu */
+    /* Đen trắng: tăng/giảm phân biệt bằng mũi tên (icon) và dấu +/−, không dựa vào màu */
     --up: #fff;
     --down: rgba(255, 255, 255, 0.66);
     /* Chuỗi dữ liệu: phân biệt bằng độ sáng + kiểu nét (liền / đứt / chấm) */
@@ -108,6 +108,9 @@ button.btn { font-family: inherit; cursor: pointer; }
 .tile .lb { display: flex; align-items: center; gap: 9px; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); font-weight: 700; }
 .tile .ic, .empty .ic { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; flex: none; border: 1px solid var(--stroke-2); border-radius: 50%; color: #fff; }
 .ico { width: 15px; height: 15px; flex: none; }
+/* Mũi tên tăng/giảm và mũi tên → đứng cạnh chữ số */
+.ico.dl { width: .95em; height: .95em; vertical-align: -0.1em; margin-right: .2em; }
+.pill .ico.dl { margin-right: 0; }
 .tile .v { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.01em; line-height: 1.15; font-variant-numeric: tabular-nums; margin-top: 12px; word-break: break-word; }
 .tile .v .cur { font-size: 0.55em; font-weight: 700; color: var(--ink-2); margin-left: 5px; letter-spacing: 0; }
 .tile .u { font-size: 12px; color: var(--ink-3); margin-top: 4px; }

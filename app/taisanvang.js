@@ -286,7 +286,7 @@
             var c = cost(l), v = haveCurrent ? Math.round(l.chi * buyChi) : NaN, pl = v - c;
             return '<div class="tx static"><div class="tx-head"><span class="tx-date">' + PD.fmtDay(l.date) + '<small>' + PD.num(l.chi, 3) + ' chỉ</small></span>' +
                 '<span class="tx-total">' + (haveCurrent ? PD.pill(pl) : '—') + '</span>' +
-                '<span class="tx-sub"><span>Vốn ' + PD.vnd(c) + (haveCurrent ? ' → ' + PD.vnd(v) : '') + '</span>' + (haveCurrent ? PD.deltaPct(pl / c * 100) : '') + '</span></div></div>';
+                '<span class="tx-sub"><span>Vốn ' + PD.vnd(c) + (haveCurrent ? ' ' + PD.icon('to', 'dl') + ' ' + PD.vnd(v) : '') + '</span>' + (haveCurrent ? PD.deltaPct(pl / c * 100) : '') + '</span></div></div>';
         }).join('');
 
         if (!haveCurrent) { foot.innerHTML = ''; tiles.innerHTML = ''; return; }
