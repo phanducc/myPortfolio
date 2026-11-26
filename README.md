@@ -13,8 +13,10 @@ Web cá nhân (tĩnh) tại phanduc.eu.org, kèm 2 ứng dụng:
 chitieu/index.html        trang /chitieu
 taisanvang/index.html     trang /taisanvang
 assets/logo.webp          logo (nhãn dán mèo, nền trong suốt) dùng cho trang, thanh trên và favicon
+assets/fonts/             phông Nunito tự lưu (không tải từ Google Fonts)
 assets/icons/             biểu tượng Material Symbols dạng SVG (Outlined, FILL 1, Weight 700, Grade 200, Optical size 24), vẽ bằng CSS mask nên đổi màu theo chữ
-app/                      CSS + JS dùng chung (common.js, firebase.js, chitieu.js, taisanvang.js, vendor/chart.umd.js)
+app/                      CSS + JS dùng chung (common.js, firebase.js, chitieu.js, taisanvang.js, vendor/: Chart.js, GSAP, ScrollTrigger)
+_headers                  header bảo mật (CSP, X-Frame-Options, HSTS, ...)
 functions/                code proxy giá SJC (/api/sjc/current, /api/sjc/history), được worker.js gọi
 worker.js                 Cloudflare Worker: định tuyến /api/sjc/*
 firestore.rules          Security Rules tham khảo
@@ -32,6 +34,13 @@ Số liệu lưu trên **Firebase Firestore** (project `pd-budgeting`), đăng n
 - Nút **Xuất file sao lưu / Nhập từ file** dùng để giữ một bản sao JSON ngoài Firebase.
 
 Thiết lập Firebase: bật Authentication (Google), thêm `phanduc.eu.org` vào *Authorized domains*, tạo Firestore và dán `firestore.rules` (đã đổi email).
+
+## Bảo mật
+
+- Không có khoá bí mật trong repo; cấu hình Firebase là công khai theo thiết kế, quyền truy cập do Security Rules quyết định.
+- `_headers` đặt CSP và các header bảo mật. CSP chỉ cho phép script từ chính web, `www.gstatic.com` và `apis.google.com` (Firebase). Nếu thêm thư viện hay dịch vụ bên ngoài thì phải thêm vào CSP, tốt nhất là lưu thư viện vào `app/vendor/` thay vì gọi từ CDN.
+- Proxy `/api/sjc/*` chỉ nhận `id` 49 và 188; `days` được làm tròn lên 7, 30 hoặc 90.
+- Không đưa số điện thoại, địa chỉ hay thông tin cá nhân vào repo: lịch sử Git của repo công khai ai cũng đọc được.
 
 ## Giá vàng SJC
 

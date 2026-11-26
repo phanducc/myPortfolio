@@ -8,6 +8,11 @@ export const GOLD_IDS = {
   MIEN_TRUNG_SJC_1L: 188, // Vàng SJC 1L, 10L, 1KG — Miền Trung
 };
 
+// Chỉ cho phép đúng các loại vàng và số ngày web đang dùng, để người ngoài không lợi dụng proxy này gọi SJC tuỳ ý.
+export const ALLOWED_IDS = new Set(Object.values(GOLD_IDS));
+export const ALLOWED_DAYS = [7, 30, 90]; // số ngày được chọn = mức nhỏ nhất >= số ngày yêu cầu (tối đa 90)
+export const snapDays = (n) => ALLOWED_DAYS.find((d) => d >= n) ?? ALLOWED_DAYS[ALLOWED_DAYS.length - 1];
+
 async function callSjc(params) {
   let res;
   try {
@@ -138,6 +143,12 @@ export async function cached(ctx, name, ttlSec, fn) {
 export function json(body, status = 200, extra = {}) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, max-age=60', ...extra },
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': 'public, max-age=60',
+      'X-Content-Type-Options': 'nosniff',
+      'Cross-Origin-Resource-Policy': 'same-origin',
+      ...extra,
+    },
   });
 }

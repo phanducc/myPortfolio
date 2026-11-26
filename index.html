@@ -6,11 +6,9 @@
     <title>Phan Văn Đức | Điện tử nhúng và phát triển web</title>
     <meta name="description" content="Phan Văn Đức, sinh viên Điện tử - Viễn thông. Dự án khoá cửa ESP32 dùng TOTP, CPU 16-bit trên Logisim, máy tính bỏ túi Arduino, game C++ và các ứng dụng web.">
     <link rel="icon" type="image/webp" href="assets/logo.webp">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preload" href="assets/fonts/nunito-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="assets/fonts/fonts.css">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <header class="glass-header">
@@ -39,7 +37,7 @@
             <p class="gsap-hero">Tôi thiết kế mạch, viết firmware cho vi điều khiển và dựng ứng dụng web. Gần đây tôi làm một khoá cửa ESP32 mở bằng mã TOTP, một bộ xử lý 16-bit mô phỏng trên Logisim và ứng dụng ghi sổ thu chi cho chính mình.</p>
             <div class="hero-buttons gsap-hero">
                 <a href="#projects" class="btn primary">Xem dự án<span class="mi nudge-down" style="--i:url(assets/icons/arrow_downward.svg)" aria-hidden="true"></span></a>
-                <a href="https://github.com/phanducc" target="_blank" rel="noopener noreferrer" class="btn secondary"><i class="fab fa-github"></i>GitHub</a>
+                <a href="https://github.com/phanducc" target="_blank" rel="noopener noreferrer" class="btn secondary"><span class="mi" style="--i:url(assets/icons/github.svg)" aria-hidden="true"></span>GitHub</a>
             </div>
         </div>
         
@@ -152,16 +150,16 @@
             <h2 class="gsap-scroll" style="margin-bottom: 20px;">Liên hệ</h2>
             <div class="social-links gsap-scroll">
                 <a href="mailto:phanduc.2915@gmail.com" class="glass-panel"><span class="mi" style="--i:url(assets/icons/mail.svg)" aria-hidden="true"></span> Email</a>
-                <a href="https://www.facebook.com/phanduc2915/" target="_blank" rel="noopener noreferrer" class="glass-panel"><i class="fab fa-facebook"></i> Facebook</a>
-                <a href="https://github.com/phanducc" target="_blank" rel="noopener noreferrer" class="glass-panel"><i class="fab fa-github"></i> GitHub</a>
+                <a href="https://www.facebook.com/phanduc2915/" target="_blank" rel="noopener noreferrer" class="glass-panel"><span class="mi" style="--i:url(assets/icons/facebook.svg)" aria-hidden="true"></span> Facebook</a>
+                <a href="https://github.com/phanducc" target="_blank" rel="noopener noreferrer" class="glass-panel"><span class="mi" style="--i:url(assets/icons/github.svg)" aria-hidden="true"></span> GitHub</a>
             </div>
             <p>&copy; 2026 Phan Văn Đức.</p>
             <a href="/chitieu/" class="budget-link" title="Quản lý chi tiêu" aria-label="Quản lý chi tiêu">$</a>
         </div>
     </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="app/vendor/gsap.min.js"></script>
+    <script src="app/vendor/ScrollTrigger.min.js"></script>
 
     <script>
         gsap.registerPlugin(ScrollTrigger);
