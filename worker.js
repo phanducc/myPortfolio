@@ -18,6 +18,9 @@ export default {
       }
       return handler({ request, waitUntil: (p) => ctx.waitUntil(p) });
     }
+    if (url.pathname.startsWith('/api/')) {
+      return new Response('Not Found', { status: 404, headers: { 'Cache-Control': 'no-store' } });
+    }
     return env.ASSETS.fetch(request);
   },
 };
