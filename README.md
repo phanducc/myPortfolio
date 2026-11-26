@@ -12,6 +12,7 @@ Web cá nhân (tĩnh) tại phanduc.eu.org, kèm 2 ứng dụng:
 ```
 chitieu/index.html        trang /chitieu
 taisanvang/index.html     trang /taisanvang
+assets/avatar.webp        ảnh đại diện trang chủ
 assets/logo.webp          logo (nhãn dán mèo, nền trong suốt) dùng cho trang, thanh trên và favicon
 assets/fonts/             phông Nunito tự lưu (không tải từ Google Fonts)
 assets/icons/             biểu tượng Material Symbols dạng SVG (Outlined, FILL 1, Weight 700, Grade 200, Optical size 24), vẽ bằng CSS mask nên đổi màu theo chữ
