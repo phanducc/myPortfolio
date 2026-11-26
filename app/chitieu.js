@@ -175,9 +175,9 @@
                 '<span class="tx-sub"><span>' + PD.pill(r.diff) + (r.gap ? '<small>so với ' + PD.fmtDay(r.prevDate).slice(0, 5) + '</small>' : '') + '</span>' + PD.icon('chev', 'tx-chev') + '</span></button>' +
                 '<div class="tx-detail"><div class="tx-in"><div class="tx-kv"><div><span>Tiền mặt</span><b>' + PD.vnd(r.cash) + '</b></div><div><span>Tài khoản</span><b>' + PD.vnd(r.bank) + '</b></div><div><span>Tiết kiệm</span><b>' + PD.vnd(r.sav) + '</b></div></div>' +
                 '<div class="tx-act"><button type="button" class="btn secondary" data-a="edit" data-d="' + r.date + '">' + PD.icon('edit') + 'Sửa</button><button type="button" class="btn secondary" data-a="del" data-d="' + r.date + '">' + PD.icon('del') + 'Xoá</button></div></div></div></div>';
-            var note = r.gap ? ' <span style="color:var(--ink-3);font-size:12px">(so với ' + PD.fmtDay(r.prevDate).slice(0, 5) + ')</span>' : '';
+            var note = '<span class="dnote">' + (r.gap ? '(so với ' + PD.fmtDay(r.prevDate).slice(0, 5) + ')' : '') + '</span>';
             html += '<tr><td>' + PD.fmtDay(r.date) + '<span class="dow">' + PD.dow(r.date) + '</span></td><td>' + PD.vnd(r.cash) + '</td><td>' + PD.vnd(r.bank) + '</td><td>' + PD.vnd(r.sav) + '</td>' +
-                '<td><b>' + PD.vnd(r.total) + '</b></td><td>' + PD.pill(r.diff) + note + '</td>' +
+                '<td><b>' + PD.vnd(r.total) + '</b></td><td><span class="dwrap">' + PD.pill(r.diff) + note + '</span></td>' +
                 '<td class="act"><button type="button" class="link-btn" data-a="edit" data-d="' + r.date + '">Sửa</button>' +
                 '<button type="button" class="link-btn del" data-a="del" data-d="' + r.date + '">Xoá</button></td></tr>';
         });
