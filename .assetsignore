@@ -5,3 +5,9 @@ functions
 dev
 README.md
 firestore.rules
+.git
+.gitignore
+.github
+node_modules
+package.json
+package-lock.json
