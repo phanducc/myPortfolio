@@ -169,6 +169,10 @@ table.data tbody tr:hover td { background: var(--fill-1); }
 table.data thead th { position: sticky; top: 0; background: #0d0d0d; color: var(--ink-2); font-weight: 700; font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; border-bottom: 1px solid var(--stroke-2); z-index: 1; }
 table.data tfoot td { font-weight: 800; border-top: 2px solid var(--stroke-2); border-bottom: 0; }
 table.data td.act { text-align: right; }
+/* Cột tăng/giảm: viên thuốc cùng độ rộng; ở trang chi tiêu thêm ghi chú "(so với dd/mm)" cùng độ rộng nên các dòng thẳng hàng */
+table.data .dwrap { display: inline-flex; align-items: center; gap: 8px; }
+table.data td .pill { min-width: 116px; justify-content: center; } /* mọi viên thuốc trong bảng cùng độ rộng */
+table.data .dnote { width: 92px; text-align: left; font-size: 12px; color: var(--ink-3); }
 table.data .none { text-align: center; color: var(--ink-3); padding: 8px; }
 table.data .dow { color: var(--ink-3); font-size: 12px; margin-left: 6px; font-weight: 700; }
 table.data tr.grp td { background: var(--fill-1); border-bottom: 1px solid var(--stroke); padding: 9px 12px; text-align: left; font-size: 12px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-2); }
