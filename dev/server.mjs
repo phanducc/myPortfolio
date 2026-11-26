@@ -9,6 +9,8 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const port = Number(process.env.PORT) || 3000;
+// DIST=1: phục vụ bản đã build trong dist/ (để thử bản nén) thay vì file gốc.
+const web = process.env.DIST ? path.join(root, 'dist') : root;
 
 if (process.argv.includes('--mock')) {
   const sample = JSON.parse(fs.readFileSync(path.join(root, 'dev/sample-data.json'), 'utf8'));
@@ -38,8 +40,8 @@ http.createServer(async (req, res) => {
     res.writeHead(r.status, Object.fromEntries(r.headers));
     return res.end(await r.text());
   }
-  let file = path.join(root, decodeURIComponent(url.pathname));
-  if (!file.startsWith(root + path.sep) && file !== root) { res.writeHead(403); return res.end('Forbidden'); }
+  let file = path.join(web, decodeURIComponent(url.pathname));
+  if (!file.startsWith(web + path.sep) && file !== web) { res.writeHead(403); return res.end('Forbidden'); }
   if (fs.existsSync(file) && fs.statSync(file).isDirectory()) {
     if (!url.pathname.endsWith('/')) { res.writeHead(301, { Location: url.pathname + '/' }); return res.end(); }
     file = path.join(file, 'index.html');
