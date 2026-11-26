@@ -22,4 +22,4 @@ Khi deploy, `scripts/build.mjs` chỉ đưa vào `dist/` những mục liệt k�
 - Trả lời và viết nội dung giao diện bằng tiếng Việt.
 - Ảnh dùng định dạng WebP. Biểu tượng là SVG trong `assets/icons/`, vẽ bằng CSS mask (`.mi`).
 - Giao diện đen trắng thuần, nền bán trong suốt; giữ nguyên bố cục hiện có.
-- Làm xong thì đẩy lên nhánh làm việc và hỏi trước khi tạo PR.
+- Làm xong thì đẩy lên nhánh làm việc, rồi tạo PR và merge luôn, không cần hỏi lại (chủ repo đã cho phép lâu dài). Trước khi merge kiểm tra PR không xung đột. Việc phá huỷ (ghi đè lịch sử, xoá nhánh hay repo) vẫn phải hỏi trước.
