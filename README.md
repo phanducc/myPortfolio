@@ -18,6 +18,7 @@ assets/icons/             biểu tượng Material Symbols dạng SVG (Outlined,
 app/                      CSS + JS dùng chung (common.js, firebase.js, chitieu.js, taisanvang.js, vendor/: Chart.js, GSAP, ScrollTrigger)
 _headers                  header bảo mật (CSP, X-Frame-Options, HSTS, ...)
 functions/                code proxy giá SJC (/api/sjc/current, /api/sjc/history), được worker.js gọi
+scripts/build.mjs         build + nén web vào dist/ khi deploy
 worker.js                 Cloudflare Worker: định tuyến /api/sjc/*
 firestore.rules          Security Rules tham khảo
 dev/server.mjs            server chạy thử trên máy
@@ -48,7 +49,11 @@ Trình duyệt không gọi thẳng SJC được (CORS), nên `functions/api/sjc
 
 ## Triển khai (Cloudflare Workers)
 
-Web chạy trên **Cloudflare Workers + static assets** (cấu hình trong `wrangler.jsonc`). `worker.js` chỉ chạy cho `/api/*`, các đường khác trả file tĩnh trực tiếp. `.assetsignore` giữ mã nguồn server (`worker.js`, `functions/`, `dev/`) khỏi bị phục vụ công khai. Push lên `main` là Cloudflare tự deploy.
+Web chạy trên **Cloudflare Workers + static assets** (cấu hình trong `wrangler.jsonc`). `worker.js` chỉ chạy cho `/api/*`, các đường khác trả file tĩnh trực tiếp. Push lên `main` là Cloudflare tự deploy.
+
+Trước khi deploy, `wrangler.jsonc` chạy `npm run build` (`scripts/build.mjs`): copy các file công khai vào `dist/` và nén HTML, CSS, JS (esbuild + html-minifier-terser). Worker phục vụ thư mục `dist/`. Chỉ các file liệt kê trong `PUBLIC` của script build mới vào `dist/`, nên mã server (`worker.js`, `functions/`, `dev/`) và `.git` không bao giờ bị phục vụ công khai. Khi thêm file hay thư mục công khai mới ở thư mục gốc, nhớ thêm vào `PUBLIC`.
+
+Thử bản đã nén trên máy: `npm install && npm run build && DIST=1 node dev/server.mjs --mock`.
 
 ## Chạy thử trên máy
 
@@ -58,4 +63,4 @@ node dev/server.mjs --mock   # dùng dev/sample-data.json, chạy offline
 # mở http://localhost:3000/chitieu/ và http://localhost:3000/taisanvang/
 ```
 
-Cần Node 18 trở lên.
+Cần Node 18 trở lên. Dev server phục vụ file gốc (chưa nén), nên sửa là thấy ngay.
