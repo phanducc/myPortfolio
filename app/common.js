@@ -456,22 +456,48 @@
     };
 
     /** Biến một khung nhập thành khung trượt từ dưới lên trên điện thoại (máy tính: giữ nguyên, open() chỉ cuộn tới khung). */
+    var sheetCount = 0;
     PD.sheet = function (sec, focusSel) {
         sec.classList.add('sheet');
         var bg = document.createElement('div'); bg.className = 'sheet-bg'; document.body.appendChild(bg);
         var x = document.createElement('button'); x.type = 'button'; x.className = 'sheet-close'; x.setAttribute('aria-label', 'Đóng'); x.innerHTML = PD.icon('close');
         sec.insertBefore(x, sec.firstChild);
         var isOpen = function () { return sec.classList.contains('open'); };
+        var lastFocus = null;
+        // Khi mở (điện thoại) khung là hộp thoại: có vai trò, tên, giữ Tab bên trong và trả focus về nút đã mở
+        var heading = sec.querySelector('h2');
+        if (heading && !heading.id) heading.id = 'sheet-title-' + (++sheetCount);
+        function focusables() {
+            return Array.prototype.filter.call(sec.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]):not([type=hidden]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'), function (e) {
+                return e.offsetWidth > 0 || e.offsetHeight > 0;
+            });
+        }
         function open() {
             if (!PD.isMobile()) { sec.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+            lastFocus = document.activeElement;
+            sec.setAttribute('role', 'dialog'); sec.setAttribute('aria-modal', 'true');
+            if (heading) sec.setAttribute('aria-labelledby', heading.id);
             sec.classList.add('open'); bg.classList.add('open'); document.body.classList.add('no-scroll');
             var f = focusSel && sec.querySelector(focusSel);
             if (f) setTimeout(function () { try { f.focus({ preventScroll: true }); } catch (e) { f.focus(); } }, 320);
         }
-        function close() { sec.classList.remove('open'); bg.classList.remove('open'); document.body.classList.remove('no-scroll'); }
-        bg.addEventListener('click', close); x.addEventListener('click', close);
-        document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && isOpen()) close(); });
-        g.addEventListener('resize', function () { if (isOpen() && !PD.isMobile()) close(); });
+        function close(skipFocus) {
+            sec.classList.remove('open'); bg.classList.remove('open'); document.body.classList.remove('no-scroll');
+            sec.removeAttribute('role'); sec.removeAttribute('aria-modal'); sec.removeAttribute('aria-labelledby');
+            if (skipFocus !== true && lastFocus && document.contains(lastFocus)) { try { lastFocus.focus(); } catch (e) { /* bỏ qua */ } }
+            lastFocus = null;
+        }
+        bg.addEventListener('click', function () { close(); }); x.addEventListener('click', function () { close(); });
+        document.addEventListener('keydown', function (e) {
+            if (!isOpen()) return;
+            if (e.key === 'Escape') { close(); return; }
+            if (e.key !== 'Tab') return;
+            var f = focusables(); if (!f.length) return;
+            var first = f[0], last = f[f.length - 1], a = document.activeElement;
+            if (e.shiftKey && (a === first || !sec.contains(a))) { e.preventDefault(); last.focus(); }
+            else if (!e.shiftKey && (a === last || !sec.contains(a))) { e.preventDefault(); first.focus(); }
+        });
+        g.addEventListener('resize', function () { if (isOpen() && !PD.isMobile()) close(true); });
         return { open: open, close: close, isOpen: isOpen };
     };
 

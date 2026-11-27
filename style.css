@@ -217,3 +217,14 @@ section[id] { scroll-margin-top: 72px; }
     .mascot { animation: none; }
     .project-card:hover, .skill-category:hover, .tags span:hover, .hero-image-wrapper:hover img { translate: none; }
 }
+
+/* Liên kết "Bỏ qua tới nội dung" cho người dùng bàn phím: chỉ hiện khi được focus */
+.skip-link { position: absolute; left: 12px; top: -80px; z-index: 2000; padding: 10px 16px; border-radius: 10px; background: #fff; color: #000; font-weight: 800; text-decoration: none; transition: top .15s; }
+.skip-link:focus { top: 12px; }
+main:focus { outline: none; }
+
+/* Vùng bấm tối thiểu 44px (mở rộng bằng phần tử ảo, không đổi bố cục) */
+.nav-item, .budget-link { position: relative; }
+.nav-item::after { content: ''; position: absolute; inset: -8px 0; }
+.budget-link::after { content: ''; position: absolute; inset: -5px; }
+@media (max-width: 720px) { .btn { min-height: 44px; } }

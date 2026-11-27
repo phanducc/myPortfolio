@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <a class="skip-link" href="#main">Bỏ qua tới nội dung</a>
     <header class="glass-header">
         <div class="header-container">
             <div class="logo gsap-nav">
@@ -31,6 +32,7 @@
         </div>
     </header>
 
+    <main id="main" tabindex="-1">
     <section id="about" class="hero">
         <div class="hero-content">
             <h1 class="gsap-hero">Xin chào, tôi là <br><span>Phan Văn Đức</span></h1>
@@ -145,6 +147,8 @@
         </div>
     </section>
 
+    </main>
+
     <footer id="contact" class="main-footer">
         <div class="footer-content">
             <img class="mascot" src="assets/logo.webp" alt="" width="400" height="360" loading="lazy">
@@ -164,6 +168,8 @@
 
     <script>
         gsap.registerPlugin(ScrollTrigger);
+        // Người dùng chọn "giảm chuyển động" trong hệ điều hành: bỏ các hiệu ứng vào, nội dung hiện sẵn
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { gsap.from = function () {}; }
 
         let lastScroll = 0;
         const header = document.querySelector('.glass-header');
