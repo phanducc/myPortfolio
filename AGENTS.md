@@ -23,3 +23,12 @@ Khi deploy, `scripts/build.mjs` chỉ đưa vào `dist/` những mục liệt k�
 - Ảnh dùng định dạng WebP. Biểu tượng là SVG trong `assets/icons/`, vẽ bằng CSS mask (`.mi`).
 - Giao diện đen trắng thuần, nền bán trong suốt; giữ nguyên bố cục hiện có.
 - Làm xong thì đẩy lên nhánh làm việc, rồi tạo PR và merge luôn, không cần hỏi lại (chủ repo đã cho phép lâu dài). Trước khi merge kiểm tra PR không xung đột. Việc phá huỷ (ghi đè lịch sử, xoá nhánh hay repo) vẫn phải hỏi trước.
+
+## Khả năng truy cập (WCAG 2.1 AA)
+
+- Trang nào cũng có liên kết `.skip-link` đầu trang và `<main id="main" tabindex="-1">`.
+- Nút bấm, liên kết lẻ cần vùng bấm >= 44px (dùng `min-height` hoặc phần tử ảo `::after` như `.link-btn`). Nút lặp lại theo dòng (Sửa/Xoá) phải có `aria-label` nêu rõ dòng nào.
+- Khung nhập trượt trên điện thoại (`PD.sheet`) là hộp thoại: có `role="dialog"`, giữ Tab bên trong, trả focus khi đóng. Vùng cuộn ngang (`.chart-scroll`) có `tabindex="0"`, `role="region"` và `aria-label`.
+- Chữ phụ không mờ hơn `--ink-3` (5,3:1), viền ô nhập >= 3:1; tăng/giảm luôn kèm icon và dấu +/−, không chỉ dựa vào màu.
+- Trang chủ không chạy hiệu ứng GSAP khi hệ điều hành bật "giảm chuyển động".
+- Kiểm tra: chạy axe-core trên bản `npm run build` + `DIST=1 node dev/server.mjs --mock`, ở 1280px và 390px, kể cả 320px để xem có tràn ngang.

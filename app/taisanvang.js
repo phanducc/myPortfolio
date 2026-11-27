@@ -143,16 +143,16 @@
         } else {
             body.innerHTML = list.slice().reverse().map(function (l) {
                 return '<tr><td>' + PD.fmtDay(l.date) + '</td><td>' + PD.num(l.chi, 3) + '</td><td>' + PD.vnd(l.price) + '</td><td><b>' + PD.vnd(cost(l)) + '</b></td>' +
-                    '<td class="act"><button type="button" class="link-btn" data-a="edit" data-id="' + PD.esc(l.id) + '">Sửa</button>' +
-                    '<button type="button" class="link-btn del" data-a="del" data-id="' + PD.esc(l.id) + '">Xoá</button></td></tr>';
+                    '<td class="act"><button type="button" class="link-btn" data-a="edit" data-id="' + PD.esc(l.id) + '" aria-label="Sửa lần mua ngày ' + PD.fmtDay(l.date) + '">Sửa</button>' +
+                    '<button type="button" class="link-btn del" data-a="del" data-id="' + PD.esc(l.id) + '" aria-label="Xoá lần mua ngày ' + PD.fmtDay(l.date) + '">Xoá</button></td></tr>';
             }).join('');
             $('lots-list').innerHTML = list.slice().reverse().map(function (l) {
                 return '<div class="tx"><button type="button" class="tx-head" aria-expanded="false">' +
                     '<span class="tx-date">' + PD.fmtDay(l.date) + '</span>' +
                     '<span class="tx-total">' + PD.vnd(cost(l)) + '<span class="cur">đ</span></span>' +
                     '<span class="tx-sub"><span>' + PD.num(l.chi, 3) + ' chỉ × ' + PD.vnd(l.price) + ' đ/chỉ</span>' + PD.icon('chev', 'tx-chev') + '</span></button>' +
-                    '<div class="tx-detail"><div class="tx-in"><div class="tx-act" style="margin-top:12px"><button type="button" class="btn secondary" data-a="edit" data-id="' + PD.esc(l.id) + '">' + PD.icon('edit') + 'Sửa</button>' +
-                    '<button type="button" class="btn secondary" data-a="del" data-id="' + PD.esc(l.id) + '">' + PD.icon('del') + 'Xoá</button></div></div></div></div>';
+                    '<div class="tx-detail"><div class="tx-in"><div class="tx-act" style="margin-top:12px"><button type="button" class="btn secondary" data-a="edit" data-id="' + PD.esc(l.id) + '" aria-label="Sửa lần mua ngày ' + PD.fmtDay(l.date) + '">' + PD.icon('edit') + 'Sửa</button>' +
+                    '<button type="button" class="btn secondary" data-a="del" data-id="' + PD.esc(l.id) + '" aria-label="Xoá lần mua ngày ' + PD.fmtDay(l.date) + '">' + PD.icon('del') + 'Xoá</button></div></div></div></div>';
             }).join('');
             PD.fxFirst($('lots-list'), 'lots-list');
             foot.innerHTML = '<tr><td>Tổng (' + list.length + ' lần)</td><td>' + PD.num(t.chi, 3) + '</td><td>' + PD.vnd(t.avg) + ' <span style="font-weight:400;color:var(--ink-3)">(bình quân)</span></td><td>' + PD.vnd(t.cost) + '</td><td></td></tr>';

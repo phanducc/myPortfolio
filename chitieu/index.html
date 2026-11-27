@@ -13,9 +13,10 @@
     <link rel="stylesheet" href="/app/app.css">
 </head>
 <body class="app page-chitieu">
+    <a class="skip-link" href="#main">Bỏ qua tới nội dung</a>
     <header id="app-header"></header>
 
-    <main class="app-main">
+    <main class="app-main" id="main" tabindex="-1">
         <h1 class="app-title">Quản lý <span>chi tiêu</span></h1>
         <p class="app-lead">Mỗi ngày ghi lại tiền mặt và tiền trong tài khoản. Ứng dụng tự tính tổng và chênh lệch so với hôm qua. Dữ liệu lưu trên tài khoản Google của bạn.</p>
 
@@ -114,7 +115,7 @@
             </div>
             <div class="tiles" id="tc-tiles" style="margin:14px 0 6px"></div>
             <div class="comp" id="tc-ratio" hidden></div>
-            <div class="chart-scroll"><div class="chart-box" id="tc-box"><canvas id="tc-chart" role="img" aria-label="Biểu đồ tổng thu và tổng chi theo tháng hoặc theo ngày"></canvas></div></div>
+            <div class="chart-scroll" tabindex="0" role="region" aria-label="Biểu đồ tổng thu và tổng chi (cuộn ngang để xem thêm)"><div class="chart-box" id="tc-box"><canvas id="tc-chart" role="img" aria-label="Biểu đồ tổng thu và tổng chi theo tháng hoặc theo ngày"></canvas></div></div>
             <p class="scroll-hint">Vuốt ngang để xem hết biểu đồ</p>
             <p class="note">Thu và chi được tính từ chênh lệch tổng tiền giữa các lần nhập: tổng tiền tăng là thu, giảm là chi. Nếu trong cùng một ngày vừa thu vừa chi thì hai khoản bù trừ nhau, và nếu bỏ trống nhiều ngày thì chênh lệch được tính dồn vào ngày nhập kế tiếp.</p>
         </section>
@@ -154,7 +155,7 @@
                 <span><i class="dash" style="--c:var(--s2)"></i>Tiền mặt</span>
                 <span><i class="dot" style="--c:var(--s3)"></i>Tiền tài khoản</span>
             </div>
-            <div class="chart-scroll"><div class="chart-box" id="chart-box"><canvas id="chart" role="img" aria-label="Biểu đồ tổng tiền, tiền mặt và tiền tài khoản theo ngày"></canvas></div></div>
+            <div class="chart-scroll" tabindex="0" role="region" aria-label="Biểu đồ tổng tiền, tiền mặt, tiền tài khoản (cuộn ngang để xem thêm)"><div class="chart-box" id="chart-box"><canvas id="chart" role="img" aria-label="Biểu đồ tổng tiền, tiền mặt và tiền tài khoản theo ngày"></canvas></div></div>
             <p class="scroll-hint">Vuốt ngang để xem hết biểu đồ</p>
         </section>
 

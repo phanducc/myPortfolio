@@ -13,9 +13,10 @@
     <link rel="stylesheet" href="/app/app.css">
 </head>
 <body class="app page-gold">
+    <a class="skip-link" href="#main">Bỏ qua tới nội dung</a>
     <header id="app-header"></header>
 
-    <main class="app-main">
+    <main class="app-main" id="main" tabindex="-1">
         <h1 class="app-title">Tài sản <span>vàng</span></h1>
         <p class="app-lead">Ghi lại các lần mua vàng, xem giá vàng nhẫn SJC và biểu đồ 30 ngày, rồi tính lãi lỗ theo giá hiện tại.</p>
 
@@ -108,7 +109,7 @@
                 </div>
             </div>
             <p class="change" id="hist-change"></p>
-            <div class="chart-scroll"><div class="chart-box" id="hist-box"><canvas id="hist-chart" role="img" aria-label="Biểu đồ giá vàng SJC Miền Trung 30 ngày"></canvas></div></div>
+            <div class="chart-scroll" tabindex="0" role="region" aria-label="Biểu đồ giá vàng SJC Miền Trung (cuộn ngang để xem thêm)"><div class="chart-box" id="hist-box"><canvas id="hist-chart" role="img" aria-label="Biểu đồ giá vàng SJC Miền Trung 30 ngày"></canvas></div></div>
             <p class="scroll-hint">Vuốt ngang để xem hết biểu đồ</p>
             <div class="tbl-wrap" id="hist-table" hidden>
                 <table class="data"><thead><tr><th>Thời điểm</th><th>Mua vào</th><th>Bán ra</th></tr></thead><tbody id="hist-body"></tbody></table>
