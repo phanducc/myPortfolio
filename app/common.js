@@ -47,7 +47,7 @@
         chev: 'expand_more', add: 'add', close: 'close', logout: 'logout', login: 'login', edit: 'edit', del: 'delete',
         refresh: 'refresh', download: 'download', upload: 'upload', code: 'code', out: 'arrow_outward', mail: 'mail',
         left: 'chevron_left', right: 'chevron_right',
-        arrowup: 'arrow_upward', arrowdown: 'arrow_downward', flat: 'remove', to: 'arrow_forward'
+        arrowup: 'arrow_upward', arrowdown: 'arrow_downward', flat: 'equal', to: 'arrow_forward'
     };
     /** name: khoá trong ICON_FILES; cls: lớp CSS thêm (tuỳ chọn) */
     PD.icon = function (name, cls) {
@@ -500,6 +500,24 @@
         g.addEventListener('resize', function () { if (isOpen() && !PD.isMobile()) close(true); });
         return { open: open, close: close, isOpen: isOpen };
     };
+
+    /* Vùng cuộn ngang của biểu đồ chỉ nhận Tab khi thật sự cuộn được (bàn phím cần focus để cuộn; khi không cuộn được thì không thêm điểm Tab thừa) */
+    function syncScrollFocus(sc) {
+        if (sc.scrollWidth > sc.clientWidth + 1) sc.setAttribute('tabindex', '0'); else sc.removeAttribute('tabindex');
+    }
+    function watchChartScrollers() {
+        var list = document.querySelectorAll('.chart-scroll');
+        if (!list.length) return;
+        var ro = g.ResizeObserver ? new g.ResizeObserver(function (entries) {
+            entries.forEach(function (en) { var sc = en.target.closest('.chart-scroll'); if (sc) syncScrollFocus(sc); });
+        }) : null;
+        Array.prototype.forEach.call(list, function (sc) {
+            syncScrollFocus(sc);
+            if (ro) { ro.observe(sc); if (sc.firstElementChild) ro.observe(sc.firstElementChild); }
+        });
+        g.addEventListener('resize', function () { Array.prototype.forEach.call(list, syncScrollFocus); });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watchChartScrollers); else watchChartScrollers();
 
     g.PD = PD;
 })(window);

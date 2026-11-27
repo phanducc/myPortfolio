@@ -31,8 +31,8 @@ async function emit(src) {
   let data = raw;
   if (!SKIP_MIN.test(rel)) {
     const text = raw.toString('utf8');
-    if (ext === '.js') data = (await transform(text, { loader: 'js', minify: true, legalComments: 'none', target: 'es2020' })).code;
-    else if (ext === '.css') data = (await transform(text, { loader: 'css', minify: true, legalComments: 'none' })).code;
+    if (ext === '.js') data = (await transform(text, { loader: 'js', minify: true, legalComments: 'none', target: 'es2020', charset: 'utf8' })).code;
+    else if (ext === '.css') data = (await transform(text, { loader: 'css', minify: true, legalComments: 'none', charset: 'utf8' })).code;
     else if (ext === '.html') {
       data = await minifyHtml(text, {
         collapseWhitespace: true, conservativeCollapse: true, removeComments: true,

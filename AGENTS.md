@@ -27,8 +27,8 @@ Khi deploy, `scripts/build.mjs` chỉ đưa vào `dist/` những mục liệt k�
 ## Khả năng truy cập (WCAG 2.1 AA)
 
 - Trang nào cũng có liên kết `.skip-link` đầu trang và `<main id="main" tabindex="-1">`.
-- Nút bấm, liên kết lẻ cần vùng bấm >= 44px (dùng `min-height` hoặc phần tử ảo `::after` như `.link-btn`). Nút lặp lại theo dòng (Sửa/Xoá) phải có `aria-label` nêu rõ dòng nào.
-- Khung nhập trượt trên điện thoại (`PD.sheet`) là hộp thoại: có `role="dialog"`, giữ Tab bên trong, trả focus khi đóng. Vùng cuộn ngang (`.chart-scroll`) có `tabindex="0"`, `role="region"` và `aria-label`.
+- Trên điện thoại (<= 720px) nút bấm và liên kết lẻ cần vùng bấm >= 44px (dùng `min-height` hoặc phần tử ảo `::after`); trên máy tính dùng chuột thì tối thiểu 24px (WCAG 2.2). Các nút đặt cạnh nhau không để vùng mở rộng chồng lên nhau. Nút lặp lại theo dòng (Sửa/Xoá) phải có `aria-label` nêu rõ dòng nào.
+- Khung nhập trượt trên điện thoại (`PD.sheet`) là hộp thoại: có `role="dialog"`, giữ Tab bên trong, trả focus khi đóng. Vùng cuộn ngang (`.chart-scroll`) có `role="region"` và `aria-label`; `tabindex="0"` do `common.js` tự bật khi vùng thật sự cuộn được.
 - Chữ phụ không mờ hơn `--ink-3` (5,3:1), viền ô nhập >= 3:1; tăng/giảm luôn kèm icon và dấu +/−, không chỉ dựa vào màu.
 - Trang chủ không chạy hiệu ứng GSAP khi hệ điều hành bật "giảm chuyển động".
 - Kiểm tra: chạy axe-core trên bản `npm run build` + `DIST=1 node dev/server.mjs --mock`, ở 1280px và 390px, kể cả 320px để xem có tràn ngang.
